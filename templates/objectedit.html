@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r
+	</title>
+	<script type="text/javascript" src="/js/jquery1.7.1min.js"></script>
+	<script type= "text/javascript" src="/js/vote.js"></script>
+	<script type= "text/javascript" src="/js/rate.js"></script>	
+	<script type= "text/javascript" src="/js/flag.js"></script>
+	<script type= "text/javascript" src="/js/show_hide_com_form.js"></script>	
+	<script type= "text/javascript" src="/js/show_hide_subcom_form.js"></script>	
+	<script type= "text/javascript" src="/js/show_hide_obj_edit.js"></script>		
+	<script type= "text/javascript" src="/js/votecom.js"></script>
+	<script type= "text/javascript" src="/js/flagcom.js"></script>
+</head>
+
+<style>
+	* a{
+		text-decoration: none;
+	}
+	.clear {
+		clear: both;
+	}
+	.img_box {
+		float:left;
+		width:auto;
+	}
+	.no_decoration a {
+		text-decoration: none;
+		color:black;
+	}
+	.voteup{
+		color:black;
+	}
+	.votedup{
+		color:red;
+	}
+	.voteup2{
+		color:black;
+	}
+	.votedown{
+		color:black;
+	}
+	.voteddown{
+		color:red;
+	}
+	.votedown2{
+		color:black;
+	}
+	.one_star {
+		color:black;
+	}
+	.two_star {
+		color:black;
+	}
+	.three_star {
+		color:black;
+	}
+	.four_star {
+		color:black;
+	}
+	.five_star {
+		color:black;
+	}
+	.star_highlighted{
+		color:Gold;
+	}
+	.flag{
+		color:black;
+	}
+	.flagged{
+		color:red;
+	}
+	.user_rated a{
+		color:#C7A317;
+	}
+	.rating_span {
+	  unicode-bidi: bidi-override;
+	  direction: rtl;
+	}
+	.rating_span > span {
+	  display: inline-block;
+	  position: relative;
+	  width: 1.1em;
+	}
+	.rating_span > span:hover:before,
+	.rating_span > span:hover ~ span:before {
+	   content: "\2605";
+	   position: absolute;
+	   color: Gold;
+	}
+
+
+	.img1 {
+		float:left;
+		padding: 15px;
+	}
+	.data1 {
+		float:left;
+		clear:left;
+		padding:15px;
+	}
+	.link {
+		float:left;
+		clear:left;
+		padding: 15px;
+	}
+	.combox {
+		display: none;
+	}
+	.subcombox {
+		display: none;
+	}	
+	.description_edit {
+		display: none;
+	}
+	.tags_edit {
+		display: none;
+	}
+</style>
+
+<body>
+	<h1>
+		<a class="title" href="/">Bld3r</a>
+	</h1>
+
+	{% if deleted == False %}
+		
+		<div class="object_section">
+			<div class="top_group">
+				<h1>
+					Object: {{title}}
+				</h1>
+
+				<div class="img_box">
+					{% if img1 %}
+					<div class="img1">
+						<img src="{{img1}}" height="150">
+					</div>
+					{% else %}
+					{% endif %}
+				</div>
+
+				{% if user_is_author == True %}
+					<div style="text-align:right; border:solid 1px; float:right; padding:5px; text-align:center;">
+						<a href="/obj/del/{{obj_id}}">
+							delete this object
+						</a>
+					</div>
+				{% else %}
+				{% endif %}
+				<br>
+			</div>
+			<div class="clear">
+				<hr>
+				<hr>
+			</div>
+
+			<div name="obj_id">
+				Object id:
+				{{obj_id}}
+			</div>
+
+			<hr>
+
+			{% if obj_type == 'upload' %}
+				<div>
+					Type: 
+					Uploaded file
+				</div>
+				<hr>
+				<div>
+					License:
+					{{license}}
+					<br>
+					This cannot be edited, if you want to change your license preference, please delete and resubmit your object.
+				</div>
+				<hr>
+				<div>
+					Description:
+					<div class="description_current">
+						<br>
+						{{description}}
+					</div>
+					<div class="description_edit">
+						<br>
+						<form method="post">
+							<pre><textarea name='description'>{{description}}</textarea></pre>
+							<input type="submit" value="update">
+						</form>
+						<br>
+						<br>
+						<span class="description_cancel">
+							<a href="#">
+								Cancel
+							</a>
+						</span>						
+					</div>
+					<div class="description_current">
+						<a href="#">
+							Edit
+						</a>
+					</div>					
+				</div>
+				<hr>
+				<div>
+					Tags:
+					<div class="tags_current">
+						<br>
+						{{tag_str}}
+					</div>
+					<div class="tags_current">
+						<a href="/obj/tags/{{obj_id}}">
+							Edit
+						</a>
+					</div>
+				</div>
+				<hr>
+			{% elif obj_type == 'link' %}
+				<div>
+					Type: 
+					Link
+				</div>
+				<hr>
+				<div>
+					Description:
+					<div class="description_current">
+						<br>
+						{{description}}
+					</div>
+					<div class="description_edit">
+						<br>
+						<form method="post">
+							<pre><textarea name='description'>{{description}}</textarea></pre>
+							<input type="submit" value="update">
+						</form>
+						<br>
+						<br>
+						<span class="description_cancel">
+							<a href="#">
+								Cancel
+							</a>
+						</span>
+					</div>
+					<div class="description_current">
+						<a href="#">
+							Edit
+						</a>
+					</div>					
+				</div>
+				<hr>
+				<div>
+					Tags:
+					<div class="tags_current">
+						<br>
+						{{tag_str}}
+					</div>
+					<div class="tags_current">
+						<a href="/obj/tags/{{obj_id}}">
+							Edit
+						</a>
+					</div>
+				</div>
+				<hr>
+			{% elif obj_type == 'tor' %}
+				<div>
+					Type: 
+					Link to torrent
+				</div>
+				<hr>
+				<div>
+					Torrent link url:
+					<a href="{{obj_link}}">{{obj_link}}</a>
+				</div>
+				<hr>
+				<div>
+					Description:
+					<div class="description_current">
+						<br>
+						{{description}}
+					</div>
+					<div class="description_edit">
+						<br>
+						<form method="post">
+							<pre><textarea name='description'>{{description}}</textarea></pre>
+							<input type="submit" value="update">
+						</form>
+						<br>
+						<br>
+						<span class="description_cancel">
+							<a href="#">
+								Cancel
+							</a>
+						</span>						
+					</div>
+					<div class="description_current">
+						<a href="#">
+							Edit
+						</a>
+					</div>					
+
+				</div>
+				<hr>
+				<div>
+					Tags:
+					<div class="tags_current">
+						<br>
+						{{tag_str}}
+					</div>
+					<div class="tags_current">
+						<a href="/obj/tags/{{obj_id}}">
+							Edit
+						</a>
+					</div>
+				</div>
+				<hr>
+			{% else %}
+			<!-- obj_type == 'learn' or some later added type -->
+				<div>
+					Type: 
+					Learn
+				</div>
+				<hr>
+				<div>
+					Description:
+					<div class="description_current">
+						<br>
+						{{description}}
+					</div>
+					<div class="description_edit">
+						<br>
+						<form method="post">
+							<pre><textarea name='description'>{{description}}</textarea></pre>
+							<input type="submit" value="update">
+						</form>
+						<br>
+						<br>
+						<span class="description_cancel">
+							<a href="#">
+								Cancel
+							</a>
+						</span>						
+					</div>
+					<div class="description_current">
+						<a href="#">Edit</a>
+					</div>										
+				</div>
+				<hr>
+				<div>
+					Tags:
+					<div class="tags_current">
+						<br>
+						{{tag_str}}
+					</div>
+
+					<div class="tags_current">
+						<a href="/obj/tags/{{obj_id}}">
+							Edit
+						</a>
+					</div>
+				</div>
+				<hr>
+			{% endif %}
+		</div>
+
+	{% else %}
+		<h1>
+			This object has been deleted.
+		</h1>
+	{% endif %}
+
+
+</body>
+</html>

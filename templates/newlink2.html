@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Step 2
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />			
+</head>
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+
+	* td {
+		padding-bottom: 20px;
+		padding-right: 50px;
+		vertical-align:text-top;
+		color:#333;
+		font-size:18px;
+	}	
+
+	.error {
+		color:red;
+		float:left; 
+		clear:left; 
+		padding-top:5px;
+	}
+	.all {
+		float:left;
+		margin-top: 10px;
+		margin-left: 20px;
+	}
+	.top {
+		float:left;
+	}
+	.top * {
+		float:left;
+		font-size: 40px;
+		font-weight: bold;
+		max-width: 500px;
+		margin-left: 15px;
+	}
+	form {
+		clear:both;
+		margin-top: 20px;
+		max-width: 800px;
+	}
+
+	.name {
+		float: left;
+		clear: left;
+		font-size: 40px;
+		font-weight: bold;
+		margin-top: 20px;
+		margin-left: 130px;
+	}
+	.skip {
+		float:left;
+		margin-left: 25px;
+		padding-top: 3px;
+		font-size: 13px;
+	}
+</style>
+<body>
+
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">		
+			<div class="top" style="width:1000px; margin-top:20px;">
+				<img src="/img/up.ico" width="100" height="auto" />
+				<span>
+					Step 2 of 2:
+					<br>
+					Upload an image
+				</span>
+			</div>
+
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+			
+			<div class="input_container" style="float:left; width:600px;  height:auto;">
+				<div class="name">
+					{{title}}	
+				</div>	
+
+				<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+					<table>
+						<tr>
+							<td>
+								<span style="
+									float:left;
+									clear:left; 
+									padding-bottom:2px;
+									border-bottom: solid 1px #999
+									">
+									Optional
+								</span>	
+							</td>
+							<td>
+							</td>													
+						</tr>
+						<tr>
+							<td>
+								Image file 
+							</td>					
+							<td>
+								<input type="file" name="img" value="{{main_img}}">
+								{% if error_2 %}
+									<span class="error">
+										{{error_2}}
+									</span>
+								{% else %}
+								{% endif %}										
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Copyright
+							</td>
+							<td>
+								<input type="checkbox" name="rights" value="yes" {% if rights %} checked {% endif %}>
+								<span style="font-size: 14px;">
+									Sharing this image complies with the <a href="/tos" target="_blank">terms of service</a>.
+								</span>
+								{% if error_1 %}
+									{% if not error_2 %}
+										<br>
+										<span class="error">
+											{{error_1}}
+										</span>
+									{% endif %}
+								{% endif %}							
+							</td>
+						</tr>						
+					</table>				
+					<div style="
+						padding-bottom:20px; 
+						float:left; 
+						clear:left; 
+						margin-left:130px;
+						">
+						<br>
+						<input type="submit" value="Upload" >
+					</div>
+					<div>
+						<br>
+						<a href="/obj/{{obj_id}}"> 
+							<div class="skip">
+								
+								skip
+							</div>
+						</a>
+					</div>
+				</form>
+			</div>
+			<div style="float:left; margin-top:30px; margin-left:50px; width:260px; height: 340px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+				<span style="font-size:30px; color:#d45e6a;">
+					How to Link
+				</span>
+				<br>
+				<span style="font-size:12px; color:#999;">
+					Link freely and responsibly
+				</span>
+				<br>
+				<br>
+				<span style="font-size:14px;">
+					Images are <span style="font-weight:bold;">optional</span>, but strongly encouraged (+ reputation points).
+					<br>
+					<br>
+					You must be able to freely share the image. 
+					<br>
+					<br>					
+					Only .png, .jpg, .jpeg, or .bmp files are accepted.
+					<br>
+					<br>
+					The upload cannot be over 5mb.
+					<br>
+					<br>
+					Misleading images are frowned upon by the community.
+				</span>
+			</div>
+		
+
+		</div>
+	</div>
+</body>
+</html>

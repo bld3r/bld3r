@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r Wiki All
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<script type= "text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.masonry.min.js"></script>
+	<script type="text/javascript" src="/js/masonry_front.js"></script>
+
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+	.header3 {
+		margin:0px;
+		padding-top: 3px;
+		//border-bottom: 1px #999 solid;
+		vertical-align: top;
+		color:#4a6b82;		
+	}
+	.header3 a {
+		text-decoration: none;
+		color:#4a6b82;
+		vertical-align: top;
+	}	
+</style>
+	
+	
+</head>
+
+<body>
+
+	{% include "header3.html" %}
+
+	<div>
+		<a href="/w/"><img src="/img/wiki.ico" width="43" height="auto" /></a>
+	</div>
+	<h1>
+		All Wiki pages in existence
+	</h1>
+	
+	<div>
+		{% for page in pages %}
+			<div>
+				<hr>
+				<a href="/w/{{page.title}}">
+					{{page.title}}
+				</a>
+				<br>
+			</div>
+		{% endfor %}
+		<hr>
+	</div>
+
+</body>
+</html>

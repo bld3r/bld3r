@@ -1,0 +1,162 @@
+* {
+	text-decoration: none;
+	background-color: black;
+	color: white;
+}
+.no_decoration a {
+	text-decoration: none;
+	color:black;
+}
+.header{
+	text-align: left;
+}
+.user_info {
+	float:right;
+	float:top;
+	margin-right:8px;
+}
+.logo{
+	font-size:40px;
+}
+
+.sitemap{
+	text-align: center;
+}
+.sitemap a{
+	color:red;
+}
+.sitemap_object {
+	background-color: black;
+	text-wrap: normal;
+	margin-left:10px;
+	margin-bottom:10px;
+	width:70px;
+	//color:#666;
+	//border-top:1px solid #e8e8e8;
+	//border-left:1px solid #e8e8e8;
+	//border-right:1px solid #e8e8e8;
+
+	//-webkit-box-shadow: 0 8px 6px -6px #888888;
+	//-moz-box-shadow: 0 8px 6px -6px #888888;
+	//box-shadow: 0 8px 6px -6px #888888;
+	//-moz-border-radius: 3px;
+	//-webkit-border-radius: 3px;
+	//border-radius: 3px;        
+	float:left;
+	overflow: hidden;
+	}
+.nsfw_span {
+	color:#f5f5f5;
+}
+.nsfw_span a {
+	color:#f5f5f5;
+}
+
+#masonry_division {
+	opacity: 0;
+	float:center;  
+	width:auto;  
+	padding:0px; 
+	}     
+.masonry_object {
+	text-wrap: normal;
+	margin-left:10px;
+	margin-bottom:10px;
+	width:264px;
+	color:#666;
+	border-top:1px solid #e8e8e8;
+	border-left:1px solid #e8e8e8;
+	border-right:1px solid #e8e8e8;
+	background:black;
+	-webkit-box-shadow: 0 8px 6px -6px #888888;
+	-moz-box-shadow: 0 8px 6px -6px #888888;
+	box-shadow: 0 8px 6px -6px #888888;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;        
+	float:left;
+	overflow: hidden;
+	}   
+.masonry_img{
+    float:none; 
+    margin-right:auto; 
+    margin-left:auto; 
+    padding:5px 5px 5px 5px;
+    overflow:hidden;
+}   
+.masonry_img img{
+    width: 253px;
+    height:auto;
+}
+.under_masonry_img{
+    width:auto;
+}
+.voteholder{
+    color:#7F7F7F; 
+    font-weight:bold;
+    font-size:14px;
+    height:auto;
+    width:auto; 
+    float:left; 
+    margin-left:10px; 
+    margin-right:10px; 
+    padding-left:1px; 
+    padding-right:0px; 
+    vertical-align:middle;
+}
+.masonry_text{
+    width:180px;
+    color:black;
+    font-weight:bold;
+    font-size:14px;
+    float:left;      
+}
+.short_url {
+	padding-left: ;
+	color:#999;
+}
+.masonry_base_div {
+	clear:left;
+}
+.voteup{
+	color:black;
+}
+.votedup{
+	color:red;
+}
+.voteup2{
+	color:black;
+}
+.votedown{
+	color:black;
+}
+.voteddown{
+	color:red;
+}
+.votedown2{
+	color:black;
+}
+.one_star {
+	color:black;
+}
+.two_star {
+	color:black;
+}
+.three_star {
+	color:black;
+}
+.four_star {
+	color:black;
+}
+.five_star {
+	color:black;
+}
+.star_highlighted{
+	color:Gold;
+}
+.flag{
+	color:black;
+}
+.flagged{
+	color:red;
+}

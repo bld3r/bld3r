@@ -1,0 +1,73 @@
+$(document).ready(
+    function() {
+        $(function(){
+            $("body").on("click","#follow_toggle", 
+                function(){
+                	followee_id = $(this).attr('class');
+                    $('.check_follow').fadeToggle('slow');
+			        $(function(){
+			            $("body").on("click",".yes_follow", 
+			                function(){
+            					$('.check_follow').fadeOut('slow');
+			                    $('.follow_box').fadeOut('slow',
+			                    	function(){
+			                    		$('.unfollow_box').fadeIn('slow');
+			                    	}
+			                    );
+			                    $.post(
+			                        '/follow/',
+			                        {'followee_id': followee_id, 'follow':'follow'},
+                                    function(){
+                                        $('#follow_toggle').remove();
+                                    }
+			                    );
+			                }
+			            );
+			        });
+                }
+            );
+        });
+        $(function(){
+            $("body").on("click",".cancel_follow", 
+                function(){
+                    $('.check_follow').fadeOut('slow');
+                }
+            );
+        });
+        $(function(){
+            $("body").on("click","#unfollow_toggle", 
+                function(){
+                	followee_id = $(this).attr('class');
+                    $('.check_unfollow').fadeToggle('slow');
+			        $(function(){
+			            $("body").on("click",".yes_unfollow", 
+			                function(){
+            					$('.check_unfollow').fadeOut('slow');
+			                    $('.unfollow_box').fadeOut('slow',
+			                    	function(){
+			                    		$('.follow_box').fadeIn('slow');
+			                    	}
+			                    );
+			                    $.post(
+			                        '/follow/',
+			                        {'followee_id': followee_id, 'unfollow': 'unfollow'},
+                                    function(){
+                                        $('#unfollow_toggle').remove();
+                                    }
+			                    );
+			                }
+			            );
+			        });
+                }
+            );
+        });
+        $(function(){
+            $("body").on("click",".cancel_unblock", 
+                function(){
+                    $('.check_unblock').fadeOut('slow');
+                }
+            );
+        });
+    }
+);
+//end of line

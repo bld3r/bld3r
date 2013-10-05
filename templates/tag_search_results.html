@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r Tag Search | {{search_term}}
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<link type="text/css" rel="stylesheet" href="/css/storepage.css" />
+	<script type="text/javascript" src="/js/jquery1.7.1min.js"></script>
+	<script type="text/javascript" src="/js/jquery.masonry.min.js"></script>
+	<script type="text/javascript" src="/js/masonry_front.js"></script>
+	<script type= "text/javascript" src="/js/vote.js"></script>
+
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+		text-align: left;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+
+	input {
+		width:350px;
+		height:40px;
+		font-size:30px;
+		//margin-left: 325px;
+	}
+
+	.top {
+		float:left;
+	}
+	
+	.tag {
+		float:left;
+		margin-left: 0px;
+	}
+
+	.tag a{
+		color: #4a6b82;
+		font-size: 40px;
+		background: #E0EAF1;
+		padding: 5px;
+		margin-bottom: 10px;
+		border-left: 1px solid white;	
+		border-top: 1px solid white;			
+		border-right: 1px solid #b3cee1;	
+		border-bottom: 1px solid #b3cee1;		
+		border-radius: 4px;
+	}
+
+	/*	.tag:hover a{
+		background: #b3cee1;
+		border-left: 1px solid #b3cee1;	
+		border-top: 1px solid #b3cee1;	
+		border-right: 1px solid white;	
+		border-bottom: 1px solid white;					
+	}*/
+
+	.tag_info {
+		float:left;
+		width:400px;
+		margin-left: 50px;
+		//padding-top: 25px;
+		font-size: 14px; 
+		color:#666;
+	}
+	</style>
+</head>
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		text-align:center;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<!--
+				<img src="/img/glasses_white.ico" width="100px" height="auto" />
+				-->
+				<span class = "tag">										
+					<a href="/tag/{{search_term}}">
+						{{search_term}}
+					</a>
+				</span>						
+				
+				<span class="tag_info">	
+					{% if wiki_entry_first_lines %}
+						{{ wiki_entry_first_lines | safe }}...
+					{% endif %}
+					<br>
+					<span>
+						<a href="/w/{{search_term}}">
+							tag community
+						</a>
+					</span>
+					| similar tags
+				</span>						
+			</div>		  	
+		</div>
+
+		<div style="padding-top:10px;clear:both;">
+			<hr>
+		</div>
+		<br>
+		{% if has_rated_objects %}
+			{% if has_rated_and_unrated %}
+				<div class='unrated_div'>
+					<h3 style="margin-bottom: 5px;">
+					Objects without ratings:
+					</h3>
+					<div id="masonry_division">
+						{% for object in unrated_dict %}
+
+							<div class="masonry_object">
+								{% if object.obj_type == 'upload' %}
+									{% include 'tag_search_results_type_upload.html' %}
+								{% else %}
+									{% include 'tag_search_results_type_else.html' %}
+								{% endif %}
+								<div class="index">
+									<a href="/obj/{{object.id}}">
+										{{ object.index }} <!-- pageination numbering -->
+									</a>
+								</div>
+
+							</div>
+
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+			<div class='rated_div'>
+				<div id="masonry_division">
+					{% for object in rated_dict %}
+
+						<div class="masonry_object">
+							{% if object.obj_type == 'upload' %}
+								{% include 'tag_search_results_type_upload.html' %}
+							{% else %}
+								{% include 'tag_search_results_type_else.html' %}
+							{% endif %}
+							<div class="index">
+								<a href="/obj/{{object.id}}">
+									{{ object.index }} <!-- pageination numbering -->
+								</a>
+							</div>
+
+						</div>
+
+					{% endfor %}
+				</div>
+			</div>
+		{% else %}
+			<div id="masonry_division">
+				{% for object in the_dict %}
+
+					<div class="masonry_object">
+						{% if object.obj_type == 'upload' %}
+							{% include 'tag_search_results_type_upload.html' %}
+						{% else %}
+							{% include 'tag_search_results_type_else.html' %}
+						{% endif %}
+						<div class="index">
+							<a href="/obj/{{object.id}}">
+								{{ object.index }} <!-- pageination numbering -->
+							</a>
+						</div>
+
+					</div>
+
+				{% endfor %}
+			</div>	
+		{% endif %}
+		<br clear="all">
+	</div>
+</body>
+</html>

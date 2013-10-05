@@ -1,0 +1,318 @@
+<div class="masonry_object">
+	{% if object.obj_type == "upload" or object.obj_type == "link" or object.obj_type == "tor" %}
+		{% if object.main_img_link %}
+			<div class="masonry_img">
+				{% if object.obj_link %}
+					<a class="masonry_img_link" href="{{object.obj_link}}" target="_blank" >
+						<span class="front_link_img_hover_text" >
+							&nbsp;{{object.short_url}}&nbsp;
+						</span>
+				{% else %}
+					<a href="/obj/{{object.id}}">
+				{% endif %}
+					<img src="{{object.main_img_link}}">
+				</a>
+			</div>
+		{% endif %}
+	{% else %}
+		{% if object.main_img_link %}
+			<div class="masonry_img">
+				{% if object.obj_link %}
+					<a class="masonry_img_link" href="{{object.obj_link}}" target="_blank">
+						<span class="front_link_img_hover_text" >
+							&nbsp;{{object.short_url}}&nbsp;
+						</span>
+				{% else %}
+					<a href="/obj/{{object.id}}">
+				{% endif %}
+					<img src="{{object.main_img_link}}">
+				</a>
+			</div>
+		{% elif object.short_url == 'www.youtube.com' or object.short_url == 'youtu.be' %}
+			<div style="
+				margin: 5px 0px 5px 0px;
+				overflow: none;
+				height:253;
+				width:181;
+				">
+				<link href="/css/video-js.css" rel="stylesheet" />
+				<video id="example_video_{{object.obj_id}}" 
+					class="video-js vjs-default-skin" 
+					controls
+					preload="metadata" 
+					width="253"
+					height="181"
+					data-setup='{"techOrder":["youtube"], "src":"{{object.obj_link}}"}'>
+				</video>				
+			</div>
+			<br>
+			<br>
+		{% endif %}
+	{% endif %}
+
+	{% if object.db_type == "Objects" %}
+		{% if object.obj_type == "link" %}
+			<div style="
+				color: #ccc;
+				font-size: 12px;
+				float: right;
+				{% if object.main_img_link %}
+					margin-right: 7px;
+					margin-top: -11px;
+				{% else %}
+					margin-right: 3px;
+					margin-top: -2px;
+				{% endif %}
+				">
+				→
+			</div>
+		{% elif object.obj_type == "tor" %}
+			<div style="
+				color: #ccc;
+				font-size: 12px;
+				float: right;
+				{% if object.main_img_link %}
+					margin-right: 6px;
+					margin-top: -7px;
+				{% else %}
+					margin-right: 3px;
+					margin-top: 0px;
+				{% endif %}
+				">
+				↕
+			</div>
+		{% elif object.obj_type == "learn" %}
+			<div style="
+				color: #ccc;
+				font-size: 12px;
+				float: right;
+				{% if object.main_img_link %}
+					margin-right: 6px;
+					margin-top: -7px;
+				{% else %}
+					margin-right: 3px;
+					margin-top: 0px;
+				{% endif %}
+				">
+				tutorial
+			</div>
+		{% elif object.obj_type == "ask" %}
+			<div style="
+				color: #ccc;
+				font-size: 12px;
+				float: right;
+				{% if object.main_img_link %}
+					margin-right: 6px;
+					margin-top: -7px;
+				{% else %}
+					margin-right: 3px;
+					margin-top: 0px;
+				{% endif %}
+				">
+				question
+			</div>
+		{% elif object.obj_type == "news" %}
+			<div style="
+				color: #ccc;
+				font-size: 12px;
+				float: right;
+				{% if object.main_img_link %}
+					margin-right: 6px;
+					margin-top: -7px;
+				{% else %}
+					margin-right: 3px;
+					margin-top: 0px;
+				{% endif %}
+				">
+				news
+			</div>
+		{% endif %}
+	{% endif %}
+
+
+	<div class="under_masonry_img">
+		{% if user %}
+			<div class="voteholder">	
+				<span>
+					<span class="no_decoration">
+						{% if object.voted == 1 %}
+							<span class= "{{object.obj_id}}" id="votedup" >
+								<span class='voteup' id="vu{{object.obj_id}}"  style="
+									color:#0077cc;
+									cursor:pointer;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd; 
+									">
+									▲
+								</span>
+							</span>										
+						{% elif object.voted == -1 %}
+							<span class= "{{object.obj_id}}" id="voteup2" >
+								<span class='voteup' id="vu{{object.obj_id}}" style="
+									color:#999;
+	  					  			cursor: pointer;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+									">
+									▲
+								</span>
+							</span>
+						{% else %}
+							<span class= "{{object.obj_id}}" id="voteup" >
+								<span class='voteup' id="vu{{object.obj_id}}" style="
+									color:#999;
+	  					  			cursor: pointer;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+									">
+									▲
+								</span>
+							</span>
+						{% endif %}
+					</span>
+					<br>
+					<div style="
+						color:black; 
+						text-align:center;
+						">
+						<span id="votesum{{object.obj_id}}">{{object.votesum}}</span>
+					</div>
+					
+					<span class="no_decoration">
+						{% if object.voted == -1 %}
+							<span class= "{{object.obj_id}}" id="voteddown" >
+							  	<span class='votedown' id="vd{{object.obj_id}}"  style="
+							  		color:#d45e6a;
+	  					  			cursor: pointer;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;">
+									▼
+								</span>
+							</span>
+						{% elif object.voted == 1 %}
+							<span class= "{{object.obj_id}}" id="votedown2" >
+							  	<span class='votedown' id="vd{{object.obj_id}}" style="
+									color:#999;
+	  					  			cursor: pointer;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+									">
+									▼
+								</span>
+							</span>
+						{% else %}
+							<span class= "{{object.obj_id}}" id="votedown" >
+						  		<span class='votedown' id="vd{{object.obj_id}}" style="
+									color:#999;
+	  					  			cursor: pointer;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+									">
+									▼
+								</span>
+							</span>	
+						{% endif %} 
+					</span>
+				</span>
+			</div>		
+		{% else %}		
+			<div class="voteholder">
+				<span class= "not_signed_in">
+					<span style="
+						color: #eee;
+			  			cursor: pointer;
+						">
+						▲
+					</span>
+				</span>
+				<br>
+				<div style="color:black; text-align:center;" title="score">
+					{{object.votesum}}
+				</div>
+				<span class= "not_signed_in">
+			  		<span style="
+			  			color: #eee;
+			  			cursor: pointer;
+			  			">
+			  			▼
+					</span>
+				</span>	
+			</div>
+		{% endif %}
+		<div class="masonry_text">
+			{% if object.db_type == "Comments" %}
+				<span style="color: #999;">
+					{{object.markdown | safe}}
+				</span>
+			{% else %}
+
+
+				<span class="no_decoration" style="font-size:18px;">
+					{% if object.obj_link %}
+						<a href="{{object.obj_link}}" target="_blank">
+					{% else %}
+						<a href="/obj/{{object.obj_id}}">
+					{% endif %}
+						{{object.title}}
+					</a>
+				</span>
+				{% if object.short_url %}
+					<br>
+					<span class="short_url">
+						{{object.short_url}}
+					</span>
+				{% endif %}
+				<br>
+			{% endif %}
+
+			<a href="/user/{{object.author_id}}">
+				<span style="color:#0077cc;">
+					{{object.author_name}}
+				</span>
+			</a>
+			
+			<br>
+			<span style="color: #999;">
+				{{object.time_since}} ago
+			</span>
+			<br>
+			{% if object.db_type == "Comments" %}
+				{% if object.com_parent %}
+					<a href="/com/{{object.com_parent}}">
+				{% else %}
+					<a href="/obj/{{object.obj_ref_id}}">
+				{% endif %}
+					<span style="color:#0077cc;">
+						context
+					</span>
+				</a>
+
+			{% else %}
+				<a href="/obj/{{object.id}}">
+					{% if object.obj_type == 'ask' %}
+						<span style="color:#0077cc;">
+							answers {{object.num_comments}}
+						</span>
+					{% else %}
+						<span style="color:#0077cc;">
+							comments {{object.num_comments}}
+						</span>
+					{% endif %}
+				</a>
+			{% endif %}
+			<br>
+			{% if object.num_ratings %}
+				{% if object.num_ratings >= 3 %}
+					{% if (object.rate_avg >= 1) and (object.rate_avg < 1.5) %}
+						{% include "rate1_for_masonry.html" %}
+					{% elif (object.rate_avg >= 1.5) and (object.rate_avg < 2.5) %}
+						{% include "rate2_for_masonry.html" %}
+					{% elif (object.rate_avg >= 2.5) and (object.rate_avg < 3.5) %}
+						{% include "rate3_for_masonry.html" %}
+					{% elif (object.rate_avg >= 3.5) and (object.rate_avg < 4.5) %}
+						{% include "rate4_for_masonry.html" %}
+					{% elif (object.rate_avg >= 4.5) and (object.rate_avg <= 5) %}
+						{% include "rate5_for_masonry.html" %}
+					{% else %}
+						{% include "rate0_for_masonry.html" %}
+					{% endif %}
+				{% endif %}
+			{% endif %}
+
+		</div>
+	</div>
+</div>

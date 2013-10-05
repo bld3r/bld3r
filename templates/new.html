@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Contribute
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<link type="text/css" rel="stylesheet" href="/css/new.css" />
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	/** a:visited{
+		color:#4a6b82;
+	}*/
+
+	</style>
+</head>
+
+<body>
+	{% include "header3.html" %}
+
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">
+		  	<!--
+		  	<div class="top" style="margin-top:20px;">		
+				<h1 style="text-align:center;">
+					<a class="title" href="/">Bld3r</a>
+				</h1>
+			</div>
+			-->
+			<br>
+			<h1>
+				How would you like to share? 
+			</h1>
+			<br>
+			<br>
+		<!-- 	<div class="top_note">
+				There are many ways you can contribute to Bld3r, each has benefits and drawbacks.
+				Please consider these when submitting and object.
+			</div> -->
+
+			<div class="box_container" style="text-align:center;">
+				<div class="upload_div">
+					<div style="text-align:center;">
+						<a href="/newobject">	
+							<img src="/img/up.ico" width="100" height="auto"/>
+						</a> 
+					</div>
+					<h3>
+						<a href="/newobject">Upload</a>
+					</h3>
+					<br>
+					<p>
+						Uploading an .STL file is the best way to add your object to Bld3r.
+						<!-- It is improtant however that the following conditions are met:
+						<ul>
+							<li>
+								The model you want to upload is not too large.
+								<ul>
+									<li>
+										This site is run by two normal guys, not a big corp.
+										Hosting objects costs us money, and while we want to 
+										provide hosting service for as many objects as possible,
+										we have to ask that large objects are submitted via other
+										means.
+									</li>
+								</ul>
+							<li>
+								You are the rights holder of the object
+								<ul>
+									<li>
+										This is also important. If you are not the proper
+										rights holder, we will be forced to take down the
+										object if we recieve a DMCA takedown notice. This
+										creates holes in the network for others who to help
+										create a great network of objects. If you do not hold
+										the rights to an freely available object, we suggest 
+										you contact the author and ask that he submit it to
+										Bld3r or link to a site where the author has
+										uploaded the model already.
+									</li>
+								</ul>
+							</li>
+							<li>
+								You understand that we may stop hosting your object if it is
+								very unpopular for many months.
+								<ul>
+									<li>
+										We totaly understand if you want to upload something
+										obscure and interesting that may not be popular.
+										We are really only worried about the expense of hosting
+										unpopular/orphaned objects.
+
+										We are modelers ourselves and we know that given a
+										social network, others may not appeciate legitimate
+										contributions.
+
+										Again, however, hosting large files costs money. We
+										cannot afford to be an unlimited repository for models 
+										to download.
+
+										If you feel your object has been over looked, and
+										many will be, we endorse resubmitting the object to try
+										get the attention of others, but please remember that 
+										it's important you delete your origional submission.
+
+										If you feel your object is continuiously overlooked,
+										however, consider hosting it on your blog or website,
+										and linking to your own hosting.
+									</li>
+								</ul>
+							</li> -->	
+					</p>
+				</div>
+				<div class="link_div" style="text-align:center;">
+					<div>
+						<a href="/newlink">	
+							<img src="/img/link.ico" width="100" height="auto" />
+						</a> 
+					</div>
+					<h3>
+						<a href="/newlink">Link to an Object</a>
+					</h3>
+					<br>
+					<p>
+						Link to an model that is freely available for download.
+						<!--  Please try and
+						follow a few guidelines:
+						<ul>
+							<li>
+								The model must be FREELY available.
+								<ul>
+									<li>
+										Freely means the model can be downloaded readily.
+										Preferably, with one click. An example of a site 
+										that is great to link to: thingiverse.com. An 
+										example of a site to never link to: shapeways.com.
+										Both are great sites, but for sharing, stick to free.
+									</li>
+									<li>
+										Again, Bld3r is for sharing, not for selling.
+										Any link to models for sale will be
+										removed. If one does this continuously, we may
+										restrict that person's ability to submit links. We aren't
+										trying to be jerks, it's important to the whole
+										community.
+									</li>
+								</ul>
+							</li>
+						</ul> -->
+					</p>
+				</div>
+				<div class="tor_div" style="text-align:center;">
+					<div>
+						<a href="/newtor">	
+							<img src="/img/tor.ico" width="100" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/newtor">Torrent</a>
+					</h3>
+					<br>
+					<p>
+						Link to BitTorrent files for larger 3D models. <!--It diversifies the hosting on peer computers
+						and is, thus, not expensive for websites like ours to host.
+						It also speeds up download times, as downloading from multiple hosts
+						speeds up is one reason torrents are so popular.
+						Unfortunately, we do not currently have the capibilities to safely,
+						securely, and make sure we are legal when hosting torrent files.
+						So, we can only, currently, host links sites that host these torrents.
+						Many torrent sites are deamonized for hosting copyright infringing
+						content, but for models with licenses that allow free sharing they are 
+						perfectly legitimate. Some things, however, should still be considered
+						if you are submitting a link to a torrent file: 
+						<ul>
+							<li>
+								The content of the torrent must be clear, and as advertised.
+								<ul>
+									<li>
+										Any flagged torrent links will be removed.
+										The safety of our users computers is paramount.
+										Torrents should contain only the advertised 
+										model. We will ban any user submitting anything 
+										that may harm a user's computer. We will report
+										this to authorities. We will call you a jerk behind
+										your back.
+									</li>
+								</ul>
+							</li>
+							<li>
+								Please do not link to any torrent sites that host malware.
+								<ul>
+									<li>
+										Unfortunately, due to the controvecial nature of 
+										many torrent sites. They are often hosted under
+										shady conditions. 
+										Legitimate torrents may be hosted on sites
+										and a submitter may be unaware that the site 
+										is trying to install questionable material.
+										If the site is endangering our
+										users' browsers, we will have to remove the torrent
+										link.
+									</li>
+								</ul>
+							</li>
+							<li>
+								Please do not link to any copyright infringing material.
+								<ul>
+									<li>
+										Any links to infringing material will be removed.
+									</li>
+									<li>
+										Anyone who repeatedly links to copyrighted material
+										will have his or her ability to submit torrent links
+										restricted. 
+									</li>
+								</ul>
+							</li>
+								
+						</ul> -->
+					</p>
+				</div>
+				<div class="learn_div" style="text-align:center;">
+					<div>
+						<a href="/newlesson">	
+							<img src="/img/uni_seal.ico" width="100" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/newlesson">Teach</a>
+					</h3>
+					<br>
+					<p>
+						Learning about 3d printing can be tricky. Share a lesson.
+						<!--  Some areas we need are free
+						and opensource:
+						<ul>
+							<li>
+								OpenSCAD
+							</li>
+							<li>
+								Blender
+							</li>
+							<li>
+								Sketchup
+							</li>
+							<li>
+								Meshmixer
+							</li>
+							<li>
+								Meshlab
+							</li>
+						</ul> 
+						We also welcome tutorials for more proprietary sofware such as:
+						<ul>
+							<li>
+								Solidworks
+							</li>
+							<li>
+								Maya
+							</li>
+						</ul>
+						Finally, we also need tutorials for various models of printers reguarding:
+						<ul>
+							<li>
+								Improving print quality
+							</li>
+							<li>
+								Maintinance
+							</li>
+						</ul> -->
+					</p>
+				</div>
+				<div class="news_div" style="text-align:center;">
+					<div>
+						<a href="/newarticle">	
+							<img src="/img/empty_white_favicon.png" width="100" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/newarticle">News</a>
+					</h3>
+					<br>
+					<p>
+						Keep everyone up to date on 3d printing news. Share an article.
+						<!--  Some areas we need are free
+						and opensource:
+						<ul>
+							<li>
+								OpenSCAD
+							</li>
+							<li>
+								Blender
+							</li>
+							<li>
+								Sketchup
+							</li>
+							<li>
+								Meshmixer
+							</li>
+							<li>
+								Meshlab
+							</li>
+						</ul> 
+						We also welcome tutorials for more proprietary sofware such as:
+						<ul>
+							<li>
+								Solidworks
+							</li>
+							<li>
+								Maya
+							</li>
+						</ul>
+						Finally, we also need tutorials for various models of printers reguarding:
+						<ul>
+							<li>
+								Improving print quality
+							</li>
+							<li>
+								Maintinance
+							</li>
+						</ul> -->
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

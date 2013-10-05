@@ -1,0 +1,194 @@
+<link href="/css/video-js.css" rel="stylesheet" />
+<style>
+	.vertical_list_block:nth-child(odd) {
+		background-color: white;
+		border: solid 1px #dfdfdf;
+		float: left; 
+		clear: left; 
+		width: 100%; 
+		padding:5px 0px 6px 2px;
+		margin-bottom:3px;
+	}
+	.vertical_list_block:nth-child(even) {
+		background-color: #f5f5f5;
+		border: solid 1px #dfdfdf;
+		float: left; 
+		clear: left; 
+		width: 100%; 
+		padding:5px 0px 6px 2px;
+		margin-bottom:3px;
+	}
+</style>
+{% for object in the_dict %}
+	<div class="vertical_list_block">
+		{% if user %}
+			<div class="voteholder">	
+				<span>
+					<span class="no_decoration">
+						{% if object.voted == 1 %}
+							<span class= "{{object.obj_id}}" id="votedup" >
+								<span class='voteup' id="vu{{object.obj_id}}"  style="
+									color:#0077cc;
+									text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd; "title="You upvoted this object. (Click to undo.)"
+									>
+									▲
+								</span>
+							</span>			
+						{% elif object.voted == -1 %}
+							<span class= "{{object.obj_id}}" id="voteup2" >
+								<span class='voteup' id="vu{{object.obj_id}}">▲</span>
+							</span>
+						{% else %}
+							<span class= "{{object.obj_id}}" id="voteup" >
+								<span class='voteup' id="vu{{object.obj_id}}">▲</span>
+							</span>
+						{% endif %}
+					</span>
+					<br>
+					<span style="color:black;">
+						&nbsp;<span id="votesum{{object.obj_id}}">{{object.votesum}}</span>
+					</span>
+					<br>
+					<span class="no_decoration">
+						{% if object.voted == -1 %}
+					<span class= "{{object.obj_id}}" id="voteddown" >
+					  		<span class='votedown' id="vd{{object.obj_id}}"  style="
+					  			color:#d45e6a;
+								text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;" title="You downvoted this object. (Click to undo.)"
+								>
+								▼
+							</span>
+						</span>
+							</span>
+						{% elif object.voted == 1 %}
+							<span class= "{{object.obj_id}}" id="votedown2" >
+							  	<span class='votedown' id="vd{{object.obj_id}}">▼</span>
+							</span>
+						{% else %}
+						  <span class= "{{object.obj_id}}" id="votedown" >
+						  	<span class='votedown' id="vd{{object.obj_id}}">▼</span>
+						  </span>	
+						{% endif %} 
+					</span>
+				</span>
+			</div>		
+		{% else %}		
+			<div class="voteholder" style="height: 55px;">
+				<span class= "not_signed_in">
+					<span style="
+						color: #eee;
+			  			cursor: pointer;
+						">
+						▲
+					</span>
+				</span>
+				<br>
+				<div style="color:black; text-align:center;" title="score">
+					{{object.votesum}}
+				</div>
+				<span class= "not_signed_in">
+			  		<span style="
+			  			color: #eee;
+			  			cursor: pointer;
+			  			">
+			  			▼
+					</span>
+				</span>	
+			</div>
+		{% endif %}
+		<span style="float: left;">
+			<div style="font-size: 20px;">
+				<a href="{{object.obj_link}}">
+					{{object.title}} 
+				</a>
+				<br>
+				{% if object.short_url == 'www.youtube.com' or object.short_url == 'youtu.be' %}
+					<video id="example_video_{{object.obj_id}}" 
+						class="video-js vjs-default-skin" 
+						controls
+						preload="metadata" 
+						width="260"
+						height="200"
+						data-setup='{"techOrder":["youtube"], "src":"{{object.obj_link}}"}'>
+					</video>
+					<br>
+				{% endif %} 				
+			</div>
+			<div style="font-size: 10px;">
+				{% if object.short_url %}
+					<span class="short_url">{{object.short_url}}</span>
+					<br>
+				{% endif %}
+				by
+				<a href="/user/{{object.author_id}}">
+					{{object.author_name}}
+				</a>
+				<span style="color: #999">
+					{{object.time_since}} ago
+				<span>
+				<br>
+				{% if object.learn_skill %}
+					Skill level: {{object.learn_skill}}
+					<br>
+				{% endif %}
+				<a href="/obj/{{object.id}}">
+					{% if object.obj_type == 'ask' %}
+						answers {{object.num_comments}}
+					{% else %}
+						comments {{object.num_comments}}
+					{% endif %}
+				</a>
+				<span>
+					{% if object.flagged_by_user == 1 %}
+						<span class= "{{object.obj_id}}" id="flagged">
+							<a href='javascript:;' class='flag' id="flagup{{object.obj_id}}">⚑</a>
+						</span>
+					{% else %}
+						<span class= "{{object.obj_id}}" id="flag">
+							<a href='javascript:;' class='flag' id="flagup{{object.obj_id}}">⚐</a>
+						</span>
+					{% endif %}
+				</span>	
+			</div>
+		</span>
+	</div>
+{% endfor %}
+
+{% if end_of_content %}
+	<div style="
+		float: left;
+		margin-top: 20px;
+		margin-bottom: 10px; 
+		margin-left:0 auto; 
+		margin-right:0 auto; 
+		width: 200px; 
+		text-align:center; 
+		padding:20px; 
+		font-size:18px; 
+		background:white;
+		border-radius:5px;
+		">
+		end of content
+	</div>
+{% else %}
+	<div style="
+		float: 			left;
+		margin-top:		20px;
+		margin-bottom:	10px; 
+		width: 			200px; 
+		text-align:		center; 
+		padding:		20px; 
+		font-size:		18px; 
+		background:		white;
+		border: solid 1px #999;
+		border-radius:	5px;
+		">
+		<a href="{{cursor_url}}{{cursor}}">
+			Next Page
+		</a>
+	</div>
+{% endif %}
+<div>
+	<br>
+</div>
+

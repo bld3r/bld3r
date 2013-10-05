@@ -1,0 +1,329 @@
+<li> 
+	<div class="comment_{{node[0].key().id()}}" style="
+		color:#999; 
+		padding-left: 5px;
+		width:auto;
+		margin-top:15px;
+		float:left; 
+		clear:left;	
+		">
+		<table>
+			<tr>
+				<td>
+					{% if node[0].washed == False %}
+						<div class="comment_data_{{node[0].key().id()}}" style="
+							float:left;
+							clear:left;
+							width:20px;
+							margin-right:20px;
+							">
+							{% if has_cookie %}
+								<span style="comment_vote_box" style="
+									float: left;
+									">
+									<span class="no_decoration">
+										{% if node[1] == 1 %}
+											<span class= "{{node[0].key().id()}}" id="votedupcom">
+												<span class='voteupcom' id="vucom{{node[0].key().id()}}" style="
+													color:#42a2ba;
+													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+													cursor: pointer;
+													">
+													
+													▲
+												</span>
+											</span>
+										{% elif node[1] == -1 %}
+											<span class= "{{node[0].key().id()}}" id="voteup2com">
+												<span class='voteupcom' id="vucom{{node[0].key().id()}}">▲</span>
+											</span>
+										{% else %}
+											<span class= "{{node[0].key().id()}}" id="voteupcom">
+												<span class='voteupcom' id="vucom{{node[0].key().id()}}">▲</span>
+											</span>
+										{% endif %}
+									</span>
+									<br>
+									<span style="
+										color:black;
+										">
+										&nbsp;<span id="votesumcom{{node[0].key().id()}}">{{node[0].votesum}}</span>
+									</span>
+									<br>
+									<span class="no_decoration">
+										{% if node[1] == -1 %}
+											<span class= "{{node[0].key().id()}}" id="voteddowncom">
+											  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}" style="
+													color:#d45e6a;
+													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+													cursor: pointer;
+													">
+													▼
+											  	</span>
+											</span>
+										{% elif node[1] == 1 %}
+											<span class= "{{node[0].key().id()}}" id="votedown2com">
+											  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}">▼</span>
+											</span>
+										{% else %}
+										  <span class= "{{node[0].key().id()}}" id="votedowncom">
+										  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}">▼</span>
+										  </span>	
+										{% endif %} 
+									</span>
+								</span>
+
+							{% else %}
+
+								<div style="
+									margin:5px;
+									color:#eee;
+									float:left;
+									text-align:center;
+									">
+									▲
+									<br>
+									<div style="
+										text-align:center;
+										color: black;
+										">
+										{{node[0].votesum}}
+									</div>
+									▼
+								</div>
+								<br>
+
+							{% endif %}
+						</div>
+					{% endif %}
+				</td>
+				<td>
+					{% if node[0].washed == False %}
+						<div class="comment_data_{{node[0].key().id()}}" style="
+							float:left;
+							color: #ccc;
+							">				 
+							<a href="/user/{{node[0].author_id}}"  style="
+							float:left;
+							color:#4a6b82;
+							background: #E0EAF1;
+							padding:2px;
+							border-radius: 4px;
+							">
+								{{node[0].author_name}}
+							</a>
+							&nbsp;
+							<span style="
+								float: left;
+								margin-left: 15px;
+								padding-top: 3px;
+								">
+								{{node[0].time_since}} ago
+							</span>
+						</div>
+					{% endif %}
+
+					<br>
+					<div class="comment_text_{{node[0].key().id()}}" style="
+						color: black;
+						padding-top:10px;
+						float:left;
+						clear:left;
+						">
+						{{node[0].markdown | safe }}
+					</div>
+					<div class="comment_textbox_lower_text" style="
+						float:left;
+						clear:left;
+						">
+						<div class="comment_edit_textbox_{{node[0].key().id()}}" style="
+							display:none;
+							float:left;
+							clear: all;
+							color:#444; 
+							background-color: #eee;
+							margin-top:5px; 
+							margin-right:130px; 
+							margin-bottom: 10px;
+							border:solid #ddd 3px; 
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							padding-bottom:4px;
+							border-radius:5px;			
+							" >
+							<pre><textarea class="text_changes_to_{{node[0].key().id()}}" style=" 
+											width:600px; 
+											height:100px;">{{node[0].text}}</textarea></pre>
+							
+							<span class="save_edit" id="{{node[0].key().id()}}" style="
+								color:blue; 
+								cursor:pointer;
+								float:right;
+								clear:left;
+								">
+								save
+							</span>
+							<br>
+							<br>
+						</div>
+						<br>
+						<br>		
+						{% if node[0].washed == False %}
+							{% if has_cookie %}
+								<span class="showsubcombox" id="{{node[0].key().id()}}" style="
+									color:#777;
+									float:left;
+									padding-right:5px;
+									margin-right:10px; 
+									cursor: pointer;
+									">
+									reply
+								</span>
+							{% endif %}
+						{% endif %}	
+						
+						<a href="/com/{{node[0].key().id()}}" style="
+							float:left; 
+							color: #777;
+							cursor: pointer;
+							">
+							permalink
+						</a>	
+
+						{% if node[0].washed == False %}
+							{% if has_cookie %}
+								<span class="comment_flag_box" style="
+									float:left;
+									margin-left:10px;
+									color: #777;
+									cursor: pointer;
+									">
+									{% if node[2] == 1 %}
+										<span class= "{{node[0].key().id()}}" id="flaggedcom">
+											<a href='javascript:;' class='flagcom' id="flagupcom{{node[0].key().id()}}" style="color: #777;">⚑</a>
+										</span>
+									{% else %}
+										<span class= "{{node[0].key().id()}}" id="flagcom">
+											<a href='javascript:;' class='flagcom' id="flagupcom{{node[0].key().id()}}" style="color: #777;">flag</a>
+										</span>
+									{% endif %}
+								</span>
+							{% endif %}
+						{% endif %}
+
+						{% if node[0].washed == False %}
+							<div class="comment_data_{{node[0].key().id()}}" style="
+								float:left;
+								margin-left:10px;
+								">				 
+
+								{% if node[0].author_id == user_id %}
+									
+									<span class="edit_comment" id="{{node[0].key().id()}}" style="
+										float:left; 
+										margin-right:10px; 
+										color: #777;
+										cursor:pointer;
+										" >
+										edit
+									</span>
+
+
+									<span class="section_for_deleting_comment_{{node[0].key().id()}}">
+										<span class="delete" id="{{node[0].key().id()}}" style="
+											float:left; 
+											color: #777;
+											cursor:pointer;
+											">
+											delete
+										</span>
+										<span class="check_delete_{{node[0].key().id()}}" style="
+											display:none;
+											float:right; 
+											clear:left;	
+											">
+											&nbsp;
+											Are you sure?
+											&nbsp;
+											<span class="yes_delete_{{node[0].key().id()}}" id="{{node[0].key().id()}}" style="
+												color:red;
+												float:right; 
+												clear:left;	
+												cursor:pointer;
+												">
+												Yes
+											</span>
+											&nbsp;
+											<span class="cancel_delete" id="{{node[0].key().id()}}" style="
+												color:black;
+												float:left; 
+												clear:left;	
+												cursor:pointer;
+												">
+												Cancel
+											</span>
+										</span>
+									</span>
+									&nbsp;
+								{% endif %}
+							</div>
+						{% endif %}	
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td>
+					<div class="subcomment_form" style="
+						float:left; 
+						clear:left;
+						">
+						{% if node[0].washed == False %}
+							<div class="comment_data_{{node[0].key().id()}}">	
+								{% if has_cookie %}
+									<form method='post'>
+										<label>
+											<input type = "hidden" name = "verify" value = "{{user_hash}}">
+											<span class="showsubcombox" id="{{node[0].key().id()}}" style="
+												color:red;
+												float:left;
+												">
+
+											</span>
+											<br>
+											<span class="subcombox" id="subcombox{{node[0].key().id()}}">
+												<br>
+												<textarea name="subcomment_form{{node[0].key().id()}}" style="
+													width:600px; 
+													height:100px;"></textarea>
+												<br>
+												<input type="submit" value = "reply">
+											</span>
+										</label>
+									</form>
+								{% endif %}
+							</div>
+						{% else %}
+						{% endif %}			
+					</div>	
+					<br>
+				</td>	
+			</tr>
+		</table>
+	</div>
+	{% if node[0].has_children == True %}
+		{% for ch_id in node[0].ranked_children %}
+			{% for child in comment_triplet_list %}
+				<ul>
+					{% if child[0].key().id() == ch_id %}	
+						{% with node=child, template_name="sub.html" %}
+							{% include template_name %}
+						{% endwith %}
+					{% endif %}
+				 </ul>
+			{% endfor %}
+		{% endfor %}
+	{% endif %}
+</li>

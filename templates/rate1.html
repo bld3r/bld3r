@@ -1,0 +1,59 @@
+			<span class="rating_span" style="cursor=pointer">
+				<!-- all spans must be in reverse order here because the css uses rtl (right to left) to make the ratings look good. Totally understandable if you're confused, check the css -->
+				
+				<span
+					{% if user_rate == 5 %}
+						class = "user_rated" 
+					{% else %}
+					{% endif %}
+					id="star5"
+				>
+					<span id="five_star" class= "{{obj_id}}">
+						<a href='javascript:;' class='five_star' id="fivestar{{obj_id}}">☆</a>
+					</span>
+				</span>
+				<span
+					{% if user_rate >= 4 %}
+						class = "user_rated" 
+					{% else %}
+					{% endif %}
+					id="star4"
+				>
+					<span id="four_star" class= "{{obj_id}}">
+						<a href='javascript:;' class='four_star' id="fourstar{{obj_id}}">☆</a>
+					</span>
+				</span>
+				<span
+					{% if user_rate >= 3 %}
+						class = "user_rated" 
+					{% else %}
+					{% endif %}
+					id="star3"
+				>			
+					<span id="three_star" class= "{{obj_id}}">
+						<a href='javascript:;' class='three_star' id="threestar{{obj_id}}">☆</a>
+					</span>
+				</span>
+				<span
+					{% if user_rate >= 2 %}
+						class = "user_rated" 
+					{% else %}
+					{% endif %}
+					id="star2"
+				>				
+					<span id="two_star" class= "{{obj_id}}" >
+						<a href='javascript:;' class='two_star' id="twostar{{obj_id}}">☆</a>
+					</span>
+				</span>
+				<span
+					{% if user_rate >= 1 %}
+						class = "user_rated"
+					{% else %}
+					{% endif %}
+					id="star1"
+				>
+					<span id="one_star" class= "{{obj_id}}">
+						<a href='javascript:;' class='one_star' id="onestar{{obj_id}}">★</a>
+					</span>
+				</span>
+			</span> 

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r
+	</title>
+	<link type="text/css" rel="stylesheet" href="/css/front.css" />
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+	.header3 {
+		margin:0px;
+		padding-top: 3px;
+		//border-bottom: 1px #999 solid;
+		vertical-align: top;
+		color:#4a6b82;		
+	}
+	.header3 a {
+		text-decoration: none;
+		color:#4a6b82;
+		vertical-align: top;
+	}	
+	</style>
+	<script type= "text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.masonry.min.js"></script>
+	<script type="text/javascript" src="/js/masonry_front.js"></script>
+</head>
+
+<body style="text-align:right;">
+	{% include "header3.html" %}
+	<h1>
+		<a href="/">Bld3r</a>
+	</h1>
+
+	<h1>
+		User:
+	</h1>	
+	<h2>
+		{{username}}
+	</h2>
+	<hr>
+
+	<form method="post">
+		<input type="checkbox" name="delete" value="True"> 
+		Are you sure you want to delete this account? 
+		<br>
+		<span style="color:red;">
+			This may take a while if you've uploaded a lot of data...
+		</span>
+		<input type="hidden" name="verify" value="{{user_hash}}">
+		<input type="submit" value="Confirm and Delete">
+	</form>
+	
+	<hr>
+	<div>
+		user joined: {{created}}
+	</div>
+
+	<hr>
+	History:
+	<br>
+	<div id="masonry_division">
+		{% for thing in the_list %}
+			{% if thing.db_type == "Objects" %}
+				{% if thing.obj_type == 0 %}
+					<div class="masonry_object">
+						<a href="/obj/{{thing.key().id()}}">
+							{{thing.title}}
+						</a>
+						,
+						<br>
+						created by {{thing.author_name}},
+						<br>
+						{{thing.created}}
+					</div>
+				{% else %}
+					<div class="masonry_object">
+						<a href="{{thing.obj_link}}">
+							{{thing.title}}
+						</a>
+						,
+						<br>
+						created by {{thing.author_name}},
+						<br>
+						{{thing.created}}
+						<br>
+						<a href="/obj/{{thing.key().id()}}">
+							comments
+						</a>
+					</div>
+				{% endif %}
+			{% elif thing.db_type == "Comments" %}
+				<div class="masonry_object">
+					{{thing.the_comment}}
+					<br>
+					<a href="/obj/{{thing.obj_ref_id}}">
+						context
+					</a>
+					,
+					<br>
+					created by {{thing.author_name}},
+					<br>
+					{{thing.created}}
+					<br>
+				</div>
+			{% else %}
+			{% endif %}
+		{% endfor %}
+	</div>
+	<div class="masonry_base_div">
+	</div>
+</body>
+</html>

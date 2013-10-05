@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r
+	</title>
+	{% include "scripts.html" %}
+	<script type= "text/javascript" src="/js/admin_del.js"></script>
+
+</head>
+
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+	.header3 {
+		margin:0px;
+		padding-top: 3px;
+		//border-bottom: 1px #999 solid;
+		vertical-align: top;
+		color:#4a6b82;		
+	}
+	.header3 a {
+		text-decoration: none;
+		color:#4a6b82;
+		vertical-align: top;
+	}	
+
+	.clear {
+		clear: both;
+	}
+	.img_box {
+		float:left;
+		width:auto;
+	}
+	.no_decoration a {
+		text-decoration: none;
+		color:black;
+	}
+	.voteup{
+		color:black;
+	}
+	.votedup{
+		color:red;
+	}
+	.voteup2{
+		color:black;
+	}
+	.votedown{
+		color:black;
+	}
+	.voteddown{
+		color:red;
+	}
+	.votedown2{
+		color:black;
+	}
+	.one_star {
+		color:black;
+	}
+	.two_star {
+		color:black;
+	}
+	.three_star {
+		color:black;
+	}
+	.four_star {
+		color:black;
+	}
+	.five_star {
+		color:black;
+	}
+	.star_highlighted{
+		color:Gold;
+	}
+	.flag{
+		color:black;
+	}
+	.flagged{
+		color:red;
+	}
+	.user_rated a{
+		color:#C7A317;
+	}
+	.rating_span {
+	  unicode-bidi: bidi-override;
+	  direction: rtl;
+	}
+	.rating_span > span {
+	  display: inline-block;
+	  position: relative;
+	  width: 1.1em;
+	}
+	.rating_span > span:hover:before,
+	.rating_span > span:hover ~ span:before {
+	   content: "\2605";
+	   position: absolute;
+	   color: Gold;
+	}
+
+
+	.img1 {
+		float:left;
+		padding: 15px;
+	}
+	.data1 {
+		float:left;
+		clear:left;
+		padding:15px;
+	}
+	.link {
+		float:left;
+		clear:left;
+		padding: 15px;
+	}
+	.combox {
+		display: none;
+	}
+	.subcombox {
+		display: none;
+		cursor:pointer;
+	}	
+</style>
+
+<body>
+	{% include "header3.html" %}
+	<h1>
+		<a class="title" href="/">Bld3r</a>
+	</h1>
+
+	{% if deleted == False %}
+		
+		<div class="object_section">
+			<div class="top_group">
+				<div style="margin-left:20px;font-size:50px;">
+					Object: {{title}}
+				</div>
+				<div style=" clear:left; color:#999; margin-left:179px;position:relative;top:-4px">
+					created {{time_since_made}} ago
+				</div>
+				<div style=" clear:left; color:#999; margin-left:179px;position:relative;top:-4px">
+					{% if obj_type == 'upload' %}
+						uploaded by
+					{% else %}
+						submitted by
+					{% endif %}
+					<a href="/user/{{author_id}}">
+						{{author_name}}
+					</a>
+					{% if obj_type == 'upload' %}
+					<br>
+					license: {{license}}
+					{% else %}
+					{% endif %}
+				</div>
+
+				<div class="img_box">
+					{% if img1 %}
+					<div class="img1">
+						<img src="{{img1}}" height="150">
+					</div>
+					{% else %}
+					{% endif %}
+
+					{% if obj_type == 'upload' %}
+						<span class='data1'>
+							<form>
+								<input type="button" onClick="window.location.href='{{file1}}'" value="Download {{file1_filename}}">
+							</form>
+						</span>
+					{% else %}
+						<span class='link'>
+							<a href="{{obj_link}}">{{obj_link}}</a>
+						</span>
+					{% endif %}
+				</div>
+
+				<div style="text-align:right; border:solid 1px; float:right; padding:5px; text-align:center;">
+					<div class="delete" style="color:red;cursor:pointer;">
+						delete this object
+					</div>
+					<div class="check" style="display:none;">
+						<br>
+						<div>
+							Are you absolutely sure?
+						</div>
+						<br>
+						<span class="del_yes" id="{{obj_id}}" style="color:red;cursor:pointer;">
+							Yes
+						</span>
+						&nbsp; &nbsp; | &nbsp; &nbsp;
+						<span class="cancel" style="cursor:pointer;">
+							Cancel
+						</span>
+					</div>
+				</div>
+
+				<span>
+					<span class="no_decoration">
+						{% if voted == 1 %}
+							<span class="votedup" id= "{{obj_id}}">
+								<a href='javascript:;' class='voteup' id="vu{{obj_id}}">☺</a>
+							</span>
+						{% elif voted == -1 %}
+							<span class="voteup2" id= "{{obj_id}}">
+								<a href='javascript:;' class='voteup' id="vu{{obj_id}}">⬆</a>
+							</span>
+						{% else %}
+							<span class="voteup" id= "{{obj_id}}">
+								<a href='javascript:;' class='voteup' id="vu{{obj_id}}">⬆</a>
+							</span>
+						{% endif %}
+					</span>
+					<br>
+					<span style="color:black;">
+						&nbsp;<span id="votesum{{obj_id}}">{{votesum}}</span>
+					</span>
+					<br>
+					<span class="no_decoration">
+						{% if voted == -1 %}
+							<span class="voteddown" id= "{{obj_id}}">
+							  	<a href='javascript:;' class='votedown' id="vd{{obj_id}}">☹</a>
+							</span>
+						{% elif voted == 1 %}
+							<span class="votedown2" id= "{{obj_id}}">
+							  	<a href='javascript:;' class='votedown' id="vd{{obj_id}}">⬇</a>
+							</span>
+						{% else %}
+						  <span class="votedown" id= "{{obj_id}}">
+						  	<a href='javascript:;' class='votedown' id="vd{{obj_id}}">⬇</a>
+						  </span>	
+						{% endif %} 
+					</span>
+				</span>
+
+				<br>
+
+				{% if (rate_avg >= 1) and (rate_avg < 1.5) %}
+					{% include "rate1.html" %}
+				{% elif (rate_avg >= 1.5) and (rate_avg < 2.5) %}
+					{% include "rate2.html" %}
+				{% elif (rate_avg >= 2.5) and (rate_avg < 3.5) %}
+					{% include "rate3.html" %}
+				{% elif (rate_avg >= 3.5) and (rate_avg < 4.5) %}
+					{% include "rate4.html" %}
+				{% elif (rate_avg >= 4.5) and (rate_avg <= 5) %}
+					{% include "rate5.html" %}
+				{% else %}
+					{% include "rate0.html" %}
+				{% endif %}
+
+				<br>
+				<br>
+				<div>
+					You rated this:
+					{{user_rate}}
+				</div>
+				<br>
+
+				{% if flagged_by_user == 1 %}
+					<span class="flagged" id= "{{obj_id}}">
+						<a href='javascript:;' class='flag' id="flagup{{obj_id}}">⚑</a>
+					</span>
+				{% else %}
+					<span class="flag" id= "{{obj_id}}">
+						<a href='javascript:;' class='flag' id="flagup{{obj_id}}">⚐</a>
+					</span>
+				{% endif %}
+
+				<br>
+				<span style="color:black;">
+					flagsum = <span id="flagsum{{obj_id}}">{{flagsum}}</span>
+					<br>
+					users flag value = {{flagged_by_user}}
+				</span>
+
+			
+				<br>
+			</div>
+			<div class="clear">
+				<hr>
+			</div>
+
+			<div>
+				Description:
+				<hr>
+				{{description}}
+			</div>
+			<hr>
+			<div>
+				tags:
+				{% for tag in tags %}
+					{% if tag != tags[-1] %}
+						{{tag}},
+					{% else %}
+						{{tag}}.
+					{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="comment_section">
+			<hr>
+			<div>
+				<form method='post'>
+					<label>
+						<span class="showcombox">Click to comment:</span>
+						<br>
+						<span class="combox">
+							<textarea name="obj_comment_form"></textarea>
+						</span>
+						<div style="color:red;">
+							{{error}}
+						</div>
+						<input class="combox" type="submit">
+					</label>
+				</form>
+			</div>	
+
+			<hr>
+			<hr>
+
+			<ul>
+				{% for node in comment_triplet_list %} 
+					{% if node %}
+						{% if node[0].obj_parent != None %}
+							{% include "sub.html" %}
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			</ul>
+
+		</div>
+	{% else %}
+		<h1>
+			This object has been deleted.
+		</h1>
+	{% endif %}
+
+
+</body>
+</html>

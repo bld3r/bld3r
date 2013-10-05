@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Tag Search
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<link type="text/css" rel="stylesheet" href="/css/store.css" />
+	<style>
+		* {
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+			text-align: left;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			max-width: 800px;
+			margin-left: 15px;
+		}
+
+		.tag_list {
+			float:left;
+			width:730px;
+			//background: #333;
+			margin-top:20px;
+			margin-left: 15px;
+		}
+		.tag_item {
+			float: left;
+			width: 230px;
+			height: 160px;
+			margin-right:10px;
+			margin-bottom:10px;
+		}
+
+		.tag_color {
+			float:left;
+			clear:right;
+		}
+
+		.tag_color a{
+			color: #4a6b82;
+			background: #E0EAF1;
+			padding: 5px;
+			line-height: 200%;
+			margin-right: 5px;
+			border-left: 1px solid white;	
+			border-top: 1px solid white;			
+			border-right: 1px solid #b3cee1;	
+			border-bottom: 1px solid #b3cee1;		
+			border-radius: 4px;
+		}
+
+		.tag_color:hover a{
+			background: #b3cee1;
+			border-left: 1px solid #b3cee1;	
+			border-top: 1px solid #b3cee1;	
+			border-right: 1px solid white;	
+			border-bottom: 1px solid white;					
+		}
+
+		.tag_total {
+			float:left;
+			color: #666;
+			padding: 5px;
+			margin-right: 5px;
+		}	
+
+		.tag_description {
+			color:#666;
+			//font-size: 12px;
+		}
+
+	</style>
+</head>
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		text-align:center;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<img src="/img/glasses_white.ico" width="100px" height="auto" />
+				<div style="height:100px;">
+					<span style="float:left; margin-left: 30px;">
+						Tag Search
+					</span>
+				</div>
+			</div>		  	
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+				{% if error %}
+					<div class='error' style="
+						font-size: 25px; 
+						float:left; 
+						clear:left; 
+						color:red; 
+						margin: 20px 0px 20px 20px;
+						//width: 450px;
+						">
+						{{error}}
+					</div>
+					<div style="float: left; clear: left; width: 100%">
+						<hr>
+					</div>
+				{% endif %}
+			</div>
+			<div class="bottom">
+
+				<div class="tag_list">
+					{% for item in tag_list %}
+						<div class="tag_item">
+							<span class="tag_color">
+								<a href="/tag/{{item[0]}}">
+									{{item[0]}}
+								</a>
+							</span>
+							<span class="tag_total">
+								x {{item[1]}}
+							</span>
+							<br><br>
+							<span class="tag_description">
+								{% if item[2] %}
+									{{item[2] | safe}}...
+								{% endif %}
+							</span>
+							<br>
+							<span>
+								<a href="/w/{{item[0]}}">
+									community
+								</a>
+							</span>
+						</div>
+					{% endfor %}
+				</div>
+
+				<div style="float:right; margin-top:30px; width:260px; height: 340px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+					<span style="font-size:30px; color:#d45e6a;">
+						Tag Communities
+					</span>
+					<br>
+					<span style="font-size:12px; color:#999;">
+						Not just labels
+					</span>
+					<br>
+					<br>
+					<span style="font-size:14px;">									
+						Tags categorize objects with other, similar objects.
+						<br>
+						<br>
+						Members of tag communities define what a tag means through an open, editable wiki page.
+						<br>
+						<br>
+						Well-defined tags make it easier for you and others to find relevant objects. 
+						<br>
+						<br>					
+						Tag communities decide what objects belong, determine who makes the best objects, and discover tag news.
+					</span>
+				</div>				
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

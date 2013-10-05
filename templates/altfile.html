@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Upload Step 1
+	</title>
+	{% include "scripts.html" %}
+		
+</head>
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+
+	* td {
+		padding-bottom: 20px;
+		padding-right: 50px;
+		vertical-align:text-top;
+		color:#333;
+		font-size:18px;
+		min-width: 90px;
+	}
+
+	.error {
+		color:red;
+	}
+	.all {
+		float:left;
+		margin-top: 10px;
+		margin-left: 20px;
+	}
+	.top {
+		float:left;
+	}
+	.top * {
+		float:left;
+		font-size: 40px;
+		font-weight: bold;
+		max-width: 800px;
+		margin-left: 15px;
+	}
+	form {
+		clear:both;
+		margin-top: 20px;
+		max-width: 800px;
+	}
+
+</style>
+<body>
+	{% include "header3.html" %}
+
+	<div class="backspace"style="
+		width:100%;
+		">
+		<div class="center_container" style="
+			width:1100px;   
+			display: block;
+	  		margin-left: auto;
+	  		margin-right: auto;
+	  		">	
+
+			<div class="top" style="width:1000px; margin-top:20px;">
+				<img src="/img/up.ico" width="100px" height="auto" />
+				<div>
+					Alternate file for {{obj.title}}	
+				</div>
+			</div>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+			{% if not (obj.file_link_2 and obj.file_link_3 and obj.file_link_4 and obj.file_link_5) %}
+				<div class="input_container" style="float:left; width:600px;  height:auto;">
+					<form method="post" action="{{file_upload_url}}" enctype="multipart/form-data">
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<input type="hidden" name="obj_id" value="{{obj.key().id()}}">
+						<table>
+							{% if error %}
+								<tr>
+									<td>
+									</td>
+									<td>
+										<span style="color:red;">
+											{{error}}
+										</span>
+									</td>
+								</tr>
+							{% endif %}
+							<tr>
+								<td>		
+									Object:
+								</td>
+								<td>
+									{{obj.title}}
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Alternate File:
+
+								</td>
+								<td>
+									Please try and use a descriptive filename
+									<br>
+									<input type="file" name="file" value="{{main_file}}">
+									{% if file_error %}
+										<br>
+										<div class="error" style="padding-top:5px;">
+											{{file_error}}
+										</div>
+									{% endif %}
+									{% if file_type_error %}
+										<div style='color:red;padding-top:5px;'>
+											{{file_type_error}}						
+										</div>
+									{% endif %}
+									<br>
+									.stl or .openscad (currently) &lt; 5mb only
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Copyright
+								</td>
+								<td>
+									By submitting this file, you submit it with the same license as the main submission:
+									<br>
+									<br>
+									<span style="color: red;">
+										{{obj.license}}
+									</span>
+									<br>
+									<br>
+									<input type="checkbox" name="rights" value="yes" {% if rights %} checked {% endif %}>
+									Sharing this file complies with the <a href="/tos" target="_blank">terms of service</a>, and I am submitting it with the license above.
+									{% if error_3 %}
+										{% if not file_error %}
+											<br>
+											<div class="error" style='padding-top:5px;padding-left:25px;'>
+												{{error_3}}
+											</div>
+										{% endif %}
+									{% endif %}
+								</td>
+							</tr>
+						</table>
+
+
+						<div style="padding-bottom:20px; float:left; clear:left; margin-left:130px;">
+							<br>
+							<input type="submit" value="Upload" style="
+								width:200px;
+								height:30px;
+								cursor: pointer;
+								padding: 0.3em 0.6em;
+								box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+								background-color: #333;
+								font-size: 18px;
+								color: #fff;
+								border: 1px solid #000;
+								border-radius: 3px;
+								text-decoration: none;
+								" />
+						</div>
+					</form>
+				</div>
+			{% endif %}
+			{% if obj.file_link_2 or obj.file_link_3 or obj.file_link_4 or obj.file_link_5 %}
+				<div style="
+					float:left; 
+					margin-top:30px; 
+					margin-left:50px; 
+					width: 260px; 
+					height: 340px; 
+					border-radius: 5px; 
+					padding:40px; 
+					padding-top:20px; 
+					padding-bottom:20px; 
+					background:#FFEFC6; 
+					color:#735005; 
+					text-align: left;
+					">
+					<span class="delete_section">
+						Delete one of the additional files. 
+						<br>
+						<span style="font-size: 10px;">
+							To remove the primary file, you must delete the object.
+						</span>
+					</span>
+					<form method="post">
+						{% if obj.file_link_2 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_2" value="2">
+								{{obj.file_blob_filename_2}}
+							</span>
+							<br>
+							<br>
+						{% endif %}
+						{% if obj.file_link_3 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_3" value="3">
+								{{obj.file_blob_filename_3}}
+							</span>
+							<br>
+							<br>
+						{% endif %}
+						{% if obj.file_link_4 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_4" value="4">
+								{{obj.file_blob_filename_4}}
+							</span>
+							<br>
+							<br>
+						{% endif %}
+						{% if obj.file_link_5 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_5" value="5">
+								{{obj.file_blob_filename_5}}
+							</span>
+							<br>
+							<br>
+						{% endif %}
+						<input type="submit" value="delete">
+					</form>
+				</div>
+			{% endif %}
+
+		</div>
+	</div>
+</body>
+</html>

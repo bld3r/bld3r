@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Welcome Page
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			text-decoration: none;
+			color:#4a6b82;
+		}		
+
+		h1 {
+			color:#4a6b82;
+		}
+
+		td {
+			padding-left:40px;
+			padding-bottom:10px;
+			width:250px;
+		}
+		.box_container {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.tag_color {
+			color: #4a6b82;
+			background: #E0EAF1;
+			padding: 5px;
+			line-height: 200%;
+			margin-right: 5px;
+			border-left: 1px solid white;	
+			border-top: 1px solid white;			
+			border-right: 1px solid #b3cee1;	
+			border-bottom: 1px solid #b3cee1;		
+			border-radius: 4px;
+		}	
+
+		.rep_color {
+			color: white;
+			background: #333;
+			padding: 5px;
+			line-height: 200%;
+			margin-right: 5px;
+			border-left: 1px solid white;	
+			border-top: 1px solid white;			
+			border-right: 1px solid #000;	
+			border-bottom: 1px solid #000;		
+			border-radius: 4px;
+		}		
+
+		.sub_div {
+			max-width: 22%;
+			float: left;
+			//border: solid #999 1px;
+			margin: 1px;
+			padding: 5px;
+			margin-bottom:30px;
+		}			
+		
+	</style>	
+</head>
+
+
+	
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">
+		  	<br>
+			<h1 name="welcome" style="color:black; text-align:center; margin-top:20px;">
+				Welcome to Bld3r
+				<br>
+				<img src="/img/bld3r_alt_logo.png" height="150">
+			</h1>	
+			<div style="text-align:center; font-size:18px;">
+				Bld3r is a community for 3D printing tinkerers and enthusiasts.  
+				<br>You might love sharing your creations with others or you might simply want to print cool, quality designs. 
+				<br>In any case, everyone here wants the best objects.
+				<br>
+				<br>
+				Print freely and responsibly.
+			</div>			
+			<br>
+			<br>
+			<hr>
+			<br>
+			<br>
+			<h1 name="welcome" style="color:black; text-align:center; margin-top:20px;">
+			How It Works
+			</h1>
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				<a href="/new">
+					Submit a 3D Print File	
+				</a>
+			</h1>
+			<h3 style="text-align:center;">
+				How would you like to share?
+			</h3>			
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">			
+				<div class="sub_div" style="max-width: 32%;">
+					<div style="text-align:center;">
+						<a href="/newobject">	
+							<img src="/img/up.ico" width="50" height="auto"/>
+						</a> 
+					</div>
+					<h3>
+						<a href="/newobject">Upload</a>
+					</h3>
+					<br>
+					<p>
+						Uploading an .STL file to add your object to Bld3r.
+				</div>
+
+				<div class="sub_div" style="max-width: 32%;">
+					<div>
+						<a href="/newlink">	
+							<img src="/img/link.ico" width="50" height="auto" />
+						</a> 
+					</div>
+					<h3>
+						<a href="/newlink">Link</a>
+					</h3>
+					<br>
+					<p>
+						Link to an object submitted elsewhere that is freely available for download.
+				</div>	
+				<div class="sub_div" style="max-width: 32%;">
+					<div>
+						<a href="/newtor">	
+							<img src="/img/tor.ico" width="50" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/newtor">Torrent</a>
+					</h3>
+					<br>
+					<p>
+						Link to a torrent for files of larger 3D models.
+				</div>							
+			</div>
+			<br>
+			<div style="float:left; margin-top:30px; margin-bottom:30px; margin-left:240px; width:620px; height: 150px; border-radius: 5px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005; text-align: left;">
+				<h2 style="text-align:center; color:#d45e6a;">
+					Share freely and responsibly
+				</h2>
+				<br>
+				<span style="font-size:14px;">
+					<table>
+						<tr>
+							<td>
+								Bld3r is for sharing, not for selling. All models must be free. 
+							</td>
+							<td>
+								You must be the rights holder of print uploads or respect the creator's rights
+							</td>
+						</tr>
+						<tr>
+							<td>
+								File uploads cannot be over 5mb. Link to larger files instead.
+							</td>
+							<td>
+								Weapons and dangerous prints are prohibited.
+							</td>
+						</tr>
+					</table>						
+<!-- 					<span style="float:right; margin-right:20px;">
+						<a>More details</a>
+					</span> -->
+				</span>
+			</div>			
+			<br>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>			
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				<a href="/">
+					Find a 3D Print File
+				</a>
+			</h1>
+			<h3 style="text-align:center;">
+				Discover great prints.
+			</h3>			
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">				
+				<div class="sub_div" style="min-width: 46%;">
+					<div>
+						<a href="/">	
+							<img src="/img/glassesprint.png" width="50px" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/">Front Page</a>
+					</h3>
+					<br>
+					<p>
+						Find the hottest objects on the front page.
+						<br>
+						The most recent and voted on objects rise to the top.
+						<br>
+						Print things you never imagined you could print!
+					</p>
+					<br>
+									
+				</div>	
+				<div class="sub_div" style="min-width: 46%;">
+					<div>
+						<a href="/tag">	
+							<img src="/img/glasses_white.ico" width="50px" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/tag">Tag Search</a>
+					</h3>
+					<br>
+					<p>
+						Search for 3D models by <span class="tag_color">tag</span>.
+						<br>Tags categorize objects with other, similar objects. 
+					</p>
+					<br>						
+				</div>	
+			</div>
+			<br>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>			
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				Vote, Rate, and Flag
+			</h1>
+			<h3 style="text-align:center;">
+				Be an active member of the community. 
+			</h3>			
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">
+				<div class="sub_div" style="min-width: 32%;">
+					<div>
+						<span style="
+							font-size:40px;
+							color:#42a2ba;
+							text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd; "
+							>
+							▲
+						</span>
+					</div>			
+					<h3>
+						Vote
+					</h3>
+					<br>
+					<p>
+						Vote for objects you like.
+						Let the community know what’s awesome.  
+					</p>
+					<br>
+					<div style="text-align:left; float:left; display:block; margin-left:15px; margin-top:10px; margin-bottom:30px; width:180px; height: 280px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+						<h2 style="text-align:center; color:#d45e6a;">
+							Popularity
+						</h2>
+						<br>
+						<span style="font-size:14px;">									
+							The most popular objects will appear on the front page.
+							<br>
+							<br>
+							Search results will display the most popular objects first. 
+							<br>
+							<br>				
+							Designers will earn rep points, feel happy, and keep creating great designs.
+							<br>
+							<br>
+							<br>
+<!-- 							<span style="float:right;">
+								<a>More details</a>
+							</span> -->
+						</span>
+					</div>							
+				</div>
+				<div class="sub_div" style="min-width: 32%;">
+					<div>
+						<span style="
+							font-size:40px;
+							color: #FBB917;
+							text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd; "
+							>
+							★&nbsp;★&nbsp;★&nbsp;★&nbsp;★
+						</span>
+					</div>			
+					<h3>
+						Rate
+					</h3>
+					<br>
+					<p>
+						Rate the quality of objects.
+						<br>Not all designs are equal. 
+					</p>
+					<br>
+					<div style="text-align:left; float:left; display:block; margin-left:15px; margin-top:10px; margin-bottom:30px; width:180px; height: 280px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+						<h2 style="text-align:center; color:#d45e6a;">
+							Quality
+						</h2>
+						<br>
+						<span style="font-size:14px;">									
+							Ratings help the community know which designs work. 
+							<br>
+							<br>
+							Printing can take forever.  Save others the frustration of wasting time on bad prints. 
+							<br>
+							<br>				
+							You can rate after you've printed an object and placed it on your Printshelf.
+							<br>
+							<br>
+<!-- 							<span style="float:right;">
+								<a>More details</a>
+							</span> -->
+						</span>
+					</div>							
+				</div>	
+				<div class="sub_div" style="min-width: 32%;">
+					<div>
+						<span style="
+							font-size:50px;
+							color: red;
+							text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd; "
+							>
+							⚑
+						</span>
+					</div>			
+					<h3>
+						Flag
+					</h3>
+					<br>
+					<p>
+						Report objects that violate terms of service.
+					</p>
+					<br>
+					<div style="text-align:left; float:left; display:block; margin-left:15px; margin-top:10px; margin-bottom:30px; width:180px; height: 280px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+						<h2 style="text-align:center; color:#d45e6a;">
+							Integrity
+						</h2>
+						<br>
+						<span style="font-size:14px;">									
+							Flagging preserves the integrity of the community.
+							<br>
+							<br>
+							Objects with misleading titles and pictures will be taken down.
+							<br>
+							<br>				
+							Weapons and dangerous objects are prohibited.		
+							<br>
+							<br>
+							<br>
+							<br>
+<!-- 							<span style="float:right;">
+								<a>More details</a>
+							</span> -->
+						</span>
+					</div>							
+				</div>														
+			</div>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>					
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				Comment and Tag
+			</h1>
+			<h3 style="text-align:center;">
+				Improve objects with comments and tag edits.
+			</h3>
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">
+				<div class="sub_div" style="min-width: 46%;">
+					<div>
+						<a href="/">	
+							<img src="/img/comment.png" width="50px" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						Comment
+					</h3>
+					<br>
+					<p>
+						Tell others what is good and bad about an object.
+						<br>
+						The top-voted comments rise to the top.
+					</p>
+					<br>					
+				</div>	
+				<div class="sub_div" style="min-width: 46%;">
+					<div>
+						<span class="tag_color" style="font-size:27px;">Tag</span>
+					</div>			
+					<h3>
+						Edits
+					</h3>
+					<br>
+					<p>
+						Well-defined tags make it easier for you and others to find relevant objects. 
+					</p>
+					<br>					
+				</div>	
+			</div>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>					
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				Create <span class="tag_color">Tag Communities</span>
+			</h1>
+			<h3 style="text-align:center;">
+				Give objects social value.
+			</h3>
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">	
+					<br>
+					<p>
+						At Bld3r, tags aren't just labels, they're communities. Tag communities define tags through an open, editable wiki.
+						<br>
+						The first 140 characters are short summaries for the search pages. Communities are free to define everything else.
+					</p>
+					<br>						
+			</div>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>				
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				Learn and Teach
+			</h1>
+			<h3 style="text-align:center;">
+				3D printing can be tricky. Help each other.
+			</h3>
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">
+				<div class="sub_div" style="min-width: 46%;">
+					<div>
+						<a href="/university">	
+							<img src="/img/uni_learn_blue.png" width="50px" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/university">Learn</a>
+					</h3>
+					<br>
+					<p>
+						Go to Bld3r University for 3D printing lessons.
+						<br>
+						Questions about 3D printing? <a href="/ask">Ask Bld3r</a>.
+					</p>
+					<br>					
+				</div>	
+				<div class="sub_div" style="min-width: 46%;">
+					<div>
+						<a href="/tag">	
+							<img src="/img/uni_seal.ico" width="50px" height="auto" />
+						</a> 
+					</div>			
+					<h3>
+						<a href="/newlesson">Teach</a>
+					</h3>
+					<br>
+					<p>
+						Give the 3D printing community lessons.
+						<br>
+						Share a lesson or answer questions.
+					</p>
+					<br>					
+				</div>	
+			</div>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>					
+			<br>
+			<br>
+			<h1 name="welcome" style="text-align:center;">
+				Earn <span class="rep_color">Reputation</span>
+			</h1>
+			<h3 style="text-align:center;">
+				Gain influence.
+			</h3>
+			<br>
+			<div class="box_container" style="width:900px; height:auto;text-align:center;">	
+					<br>
+					<p>
+						Bld3r values active members of the community. Earn reputation when users rate your objects or when others vote on your objects or comments. Reputation unlocks special privileges such as the downvote and the powervote.
+					</p>
+					<br>						
+			</div>
+			<br>
+			<div style="padding-top:10px;clear:both;">
+			</div>				
+			<br>
+			<br>
+		</div>
+	</div>
+</body>
+</html>

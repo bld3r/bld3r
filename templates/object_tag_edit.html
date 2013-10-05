@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r
+	</title>
+	<script type="text/javascript" src="/js/jquery1.7.1min.js"></script>
+	<script type= "text/javascript" src="/js/vote.js"></script>
+	<script type= "text/javascript" src="/js/rate.js"></script>	
+	<script type= "text/javascript" src="/js/flag.js"></script>
+	<script type= "text/javascript" src="/js/show_hide_com_form.js"></script>	
+	<script type= "text/javascript" src="/js/show_hide_subcom_form.js"></script>	
+	<script type= "text/javascript" src="/js/show_hide_obj_edit.js"></script>		
+	<script type= "text/javascript" src="/js/votecom.js"></script>
+	<script type= "text/javascript" src="/js/flagcom.js"></script>
+</head>
+
+<style>
+	* a{
+		text-decoration: none;
+	}
+	.clear {
+		clear: both;
+	}
+	.img_box {
+		float:left;
+		width:auto;
+	}
+	.no_decoration a {
+		text-decoration: none;
+		color:black;
+	}
+	.voteup{
+		color:black;
+	}
+	.votedup{
+		color:red;
+	}
+	.voteup2{
+		color:black;
+	}
+	.votedown{
+		color:black;
+	}
+	.voteddown{
+		color:red;
+	}
+	.votedown2{
+		color:black;
+	}
+	.one_star {
+		color:black;
+	}
+	.two_star {
+		color:black;
+	}
+	.three_star {
+		color:black;
+	}
+	.four_star {
+		color:black;
+	}
+	.five_star {
+		color:black;
+	}
+	.star_highlighted{
+		color:Gold;
+	}
+	.flag{
+		color:black;
+	}
+	.flagged{
+		color:red;
+	}
+	.user_rated a{
+		color:#C7A317;
+	}
+	.rating_span {
+	  unicode-bidi: bidi-override;
+	  direction: rtl;
+	}
+	.rating_span > span {
+	  display: inline-block;
+	  position: relative;
+	  width: 1.1em;
+	}
+	.rating_span > span:hover:before,
+	.rating_span > span:hover ~ span:before {
+	   content: "\2605";
+	   position: absolute;
+	   color: Gold;
+	}
+
+
+	.img1 {
+		float:left;
+		padding: 15px;
+	}
+	.data1 {
+		float:left;
+		clear:left;
+		padding:15px;
+	}
+	.link {
+		float:left;
+		clear:left;
+		padding: 15px;
+	}
+	.combox {
+		display: none;
+	}
+	.subcombox {
+		display: none;
+	}	
+	.description_edit {
+		display: none;
+	}
+	.tags_edit {
+		display: none;
+	}
+</style>
+
+<body>
+	<h1>
+		<a class="title" href="/">Bld3r</a>
+	</h1>
+
+	{% if deleted == False %}
+		
+		<div class="object_section">
+			<div class="top_group">
+				<h1>
+					Object: {{title}}
+				</h1>
+
+				<div class="img_box">
+					{% if img1 %}
+					<div class="img1">
+						<img src="{{img1}}" height="150">
+					</div>
+					{% else %}
+					{% endif %}
+				</div>
+
+				{% if user_is_author == True %}
+					<div style="text-align:right; border:solid 1px; float:right; padding:5px; text-align:center;">
+						<a href="/obj/del/{{obj_id}}">
+							delete this object
+						</a>
+					</div>
+				{% else %}
+				{% endif %}
+				<br>
+			</div>
+			<div class="clear">
+				<hr>
+			</div>
+
+			<div name="obj_id">
+				Object id:
+				{{obj_id}}
+			</div>
+			<hr>
+			<div>
+				Licence:
+				{{license}}
+				<br>
+				This cannot be edited, if you want to change your license preference, please delete and resubmit your object.
+			</div>
+			<hr>
+			<div>
+				Description:
+				<div class="description_current">
+					<br>
+					{{description}}
+				</div>
+			</div>
+			<hr>
+			<div>
+				Tags:
+				<div class="tags_current">
+					<br>
+					{{tag_str}}
+				</div>
+				<hr>
+				{% if has_cookie %}
+					{% if user_is_author == True %}
+						<div class="author_tags_edit">
+							Your tags:
+							<br>
+							<form method="post">
+								<input type="text" name='author_tags' value='{{author_tag_str}}'>
+								<br>
+								<br>
+								<input type="submit" value="update">
+							</form>
+							<br>
+							<br>
+						</div>
+					{% else %}
+					{% endif %}
+					<hr>
+					<div class="public_tags_edit">
+						Public tags:
+						<br>
+						<form method="post">
+							<input type="text" name='public_tags' value='{{public_tag_str}}'>
+							<br>
+							<br>
+							<input type="submit" value="update">
+						</form>
+						<br>
+						<br>
+					</div>
+				{% else %}
+				{% endif %}
+			</div>
+			<hr>
+		</div>
+
+	{% else %}
+		<h1>
+			This object has been deleted.
+		</h1>
+	{% endif %}
+
+
+</body>
+</html>

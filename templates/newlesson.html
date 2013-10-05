@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Lesson Link
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+
+	* td {
+		padding-bottom: 20px;
+		padding-right: 15px;
+		vertical-align:text-top;
+		color:#333;
+		font-size:18px;
+	}
+
+	.header3 {
+		margin:0px;
+		padding-top: 3px;
+		//border-bottom: 1px #999 solid;
+		vertical-align: top;
+		color:#4a6b82;		
+	}
+	.header3 a {
+		text-decoration: none;
+		color:#4a6b82;
+		vertical-align: top;
+	}	
+	.error {
+		color:red;
+		float:left; 
+		clear:left;
+		margin-top:15px;
+		padding-left: 8px;
+
+	}
+	.all {
+		float:left;
+		margin-top: 10px;
+		margin-left: 20px;
+	}
+	.top {
+		float:left;
+	}
+	.top * {
+		float:left;
+		font-size: 40px;
+		font-weight: bold;
+		max-width: 500px;
+		margin-left: 15px;
+	}
+	form {
+		clear:both;
+		margin-top: 20px;
+		max-width: 800px;
+	}
+/*	.form_entry {
+
+		float:left;
+		clear:left;
+		padding-left: 5px;
+		margin-top:15px;
+		//text-align: right;
+	}*/
+	textarea {
+		width: 450px;
+		height: 40px;
+	}
+
+	.tag_input {
+		width: 450px;
+	}
+	.link {
+	width: 450px;
+	}
+	.title {
+	width: 450px;
+	}
+
+	</style>		
+</head>
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">		
+			<div class="top" style="width:1000px; margin-top:20px;">
+				<img src="/img/uni_seal.ico" width="100" height="auto" />
+				<span>
+					<br>
+					Submit a lesson
+				</span>
+			</div>
+
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>			
+
+			<div class="input_container" style="float:left; width:600px;  height:auto;">
+				<form method="post">
+					<div name="error" style="color: red;">
+					{{error}}
+					</div>
+
+					<table>
+						<tr>
+							<td>
+								Title
+							</td>
+							<td>
+								<input type="text" name="title" value="{{title}}" style="width: 450px; font-size:30px;">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Software used
+								<!-- this needs to become a dropdown -->
+							</td>
+							<td>
+								<input type="text" name="subject" value="{{subject}}" style="width: 450px;">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Link
+							</td>
+							<td>
+								<input type="text" name="link" value="{{link}}" style="width: 450px;">
+							</td>
+						</tr>
+						<!-- SFW and NSFW lessons??? is this really something that we need to offer						
+						{% if over18 == True %}						
+						<tr>
+							<td>
+								Audience
+							</td>							
+							<td>								
+						<input type="radio" name="audience" value="kids" checked>okay for everyone<br>
+						
+
+
+						<input type="radio" name="audience" value="sfw">This lesson is sfw, but contains material not okay for kids (i.e. it refers to subjects realated to alcohol/tabacco).<br>
+						<input type="radio" name="audience" value="nsfw">This lesson involves material that is nsfw.
+						
+							</td>
+						</tr>
+						{% else %}
+						{% endif %}
+						-->
+						<tr>
+							<td>
+								Skill level
+							</td>
+							<td>
+								<input type="radio" name="skill" value="None" checked> All levels<br>
+								<input type="radio" name="skill" value="beginner"> Beginner<br>
+								<input type="radio" name="skill" value="intermediate"> Intermediate<br>
+								<input type="radio" name="skill" value="advanced"> Advanced															
+							</td>
+						</tr>																								
+						<tr>
+							<td>
+								Description
+							</td>
+							<td>
+								<textarea name="description">{{description}}</textarea>
+							</td>
+						</tr>		
+						<tr>
+							<td>
+								Tags
+							</td>
+							<td>
+								<input class="tag_input"  type="text" name="tags" value="{{tags}}">
+							</td>
+						</tr>
+					</table>
+
+					<div style="
+						margin-left:125px;
+						padding-bottom:20px; 
+						float:left; 
+						clear:left;
+						">
+						<input type="submit" value="Submit" />
+					</div>
+				</form>
+			</div>
+			<div style="float:left; margin-top:10px; margin-left:50px; width:260px; height: 455px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; margin-bottom:10px; background:#FFEFC6; color:#735005;">
+				<span style="font-size:30px; color:#d45e6a;">
+					How to Teach
+				</span>
+				<br>
+				<span style="font-size:12px; color:#999;">
+					Submit lessons freely and responsibly
+				</span>
+				<br>
+				<br>
+				<span style="font-size:14px;">
+					The lesson must be freely available. Any link to lessons for sale will be removed.
+					<br>
+					<br>
+					Categorize lessons for the right audience. 
+					<br>
+					<br>
+					Dangerous and violent lessons are prohibited.
+					<br>
+					<br>
+					Descriptions and tags are <span style="font-weight:bold;">optional</span>, but strongly encouraged (+ repution points).
+					<br>
+					<br>
+					Separate tags with commas.
+					<br>
+					<br>
+					You can edit the description and tags in the future.
+					<br>
+					<br>
+					Misleading descriptions and tags are frowned upon by the community.
+				</span>
+			</div>
+
+
+		</div>
+	</div>
+</body>
+</html>

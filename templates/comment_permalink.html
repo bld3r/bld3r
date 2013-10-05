@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r
+	</title>
+	{% include "scripts.html" %}
+</head>
+
+<style>
+	* {
+	}
+	* a{
+		text-decoration: none;
+	}
+	.clear {
+		clear: both;
+	}
+	.img_box {
+		float:left;
+		width:auto;
+	}
+	.no_decoration a {
+		text-decoration: none;
+		color:black;
+	}
+	.voteup{
+		color:black;
+	}
+	.votedup{
+		color:red;
+	}
+	.voteup2{
+		color:black;
+	}
+	.votedown{
+		color:black;
+	}
+	.voteddown{
+		color:red;
+	}
+	.votedown2{
+		color:black;
+	}
+	.one_star {
+		color:black;
+	}
+	.two_star {
+		color:black;
+	}
+	.three_star {
+		color:black;
+	}
+	.four_star {
+		color:black;
+	}
+	.five_star {
+		color:black;
+	}
+	.star_highlighted{
+		color:Gold;
+	}
+	.flag{
+		color:black;
+	}
+	.flagged{
+		color:red;
+	}
+	.user_rated a{
+		color:#C7A317;
+	}
+	.rating_span {
+	  unicode-bidi: bidi-override;
+	  direction: rtl;
+	}
+	.rating_span > span {
+	  display: inline-block;
+	  position: relative;
+	  width: 1.1em;
+	}
+	.rating_span > span:hover:before,
+	.rating_span > span:hover ~ span:before {
+	   content: "\2605";
+	   position: absolute;
+	   color: Gold;
+	}
+
+
+	.img1 {
+		float:left;
+		padding: 15px;
+	}
+	.data1 {
+		float:left;
+		clear:left;
+		padding:15px;
+	}
+	.link {
+		float:left;
+		clear:left;
+		padding: 15px;
+	}
+	.combox {
+		display: none;
+	}
+	.subcombox {
+		display: none;
+		cursor:pointer;
+	}	
+</style>
+
+<body>
+	{% include "header.html" %}
+
+	{% if com.deleted == False %}
+		<div>
+			<ul>
+				{% for node in top_comment_singleton %} 
+					{% if node %}
+						{% include "sub.html" %}
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	{% else %}
+		<h1>
+			This comment has been deleted.
+		</h1>
+	{% endif %}
+</body>
+</html>

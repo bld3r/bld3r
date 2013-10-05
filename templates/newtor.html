@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Submit Torrent Link Step 1
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />			
+</head>
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+
+	* td {
+		padding-bottom: 20px;
+		padding-right: 15px;
+		vertical-align:text-top;
+		color:#333;
+		font-size:18px;
+	}
+	
+	.error {
+		color:red;
+		float:left; 
+		clear:left;
+		margin-top:15px;
+		padding-left: 8px;
+
+	}
+	.all {
+		float:left;
+		margin-top: 10px;
+		margin-left: 20px;
+	}
+	.top {
+		float:left;
+	}
+	.top * {
+		float:left;
+		font-size: 40px;
+		font-weight: bold;
+		max-width: 500px;
+		margin-left: 15px;
+	}
+	form {
+		clear:both;
+		margin-top: 20px;
+		max-width: 800px;
+	}
+
+	textarea {
+		width: 450px;
+		height: 100px;
+	}
+	.tag_input {
+		width: 450px;
+	}
+	.link {
+	width: 450px;
+	}
+	.title {
+	width: 450px;
+	font-size: 18px;
+	}
+</style>
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">		
+			<div class="top" style="width:1000px; margin-top:20px;">
+				<img src="/img/tor.ico" width="100" height="auto" />
+				<span>
+					Step 1 of 2:
+					<br>
+					Submit a torrent link
+				</span>
+			</div>
+
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+
+			<div class="input_container" style="float:left; width:600px;  height:auto;">
+				<form method="post">
+					<table>
+						<tr>
+							<td>
+								Title
+							</td>
+							<td>
+								<input class="title" type="text" name="title" value="{{title}}" style="font-size:30px;">
+							</td>
+						</tr>		
+						<tr>
+							<td>
+								Torrent Link							
+							</td>
+							<td>
+								<input class="link" type="text" name="link" value="{{link}}">
+								{% if error %}
+								<div class="error">
+									{{error}}
+								</div>
+								{% endif %}									
+							</td>
+						</tr>			
+						{% if over18 == True %}
+						<tr>
+							<td>
+							Audience
+							</td>
+							<td>
+							<input type="radio" name="audience" value="kids" {% if audience == "kids" %}checked{% endif %}> okay for everyone<br>
+							<input type="radio" name="audience" value="sfw" {% if audience == "sfw" %}checked{% endif %}> sfw, but not okay for kids<br>
+							<input type="radio" name="audience" value="nsfw" {% if audience == "nsfw" %}checked{% endif %}> nsfw, but not dangerous (no weapons!) 
+							</td>
+						</tr>
+						{% endif %}								
+						<tr>
+							<td>
+								Safety
+							</td>
+							<td>
+								<input type="checkbox" name="food_related" value="True" {% if food_related == True %}checked{% endif %}>
+								Check if food/drink related	
+							</td>
+						</tr>	
+						<tr>
+							<td>
+								Description
+							</td>
+							<td>
+								<textarea name="description">{{description}}</textarea>
+							</td>
+						</tr>		
+						<tr>
+							<td>
+								Tags
+							</td>
+							<td>
+								<input class="tag_input"  type="text" name="tags" value="{{tags}}">
+							</td>
+						</tr>
+					</table>				
+
+					<div style="
+						margin-left:120px;
+						padding-bottom:20px; 
+						float:left; 
+						clear:left;
+						">
+						<input type="submit" value="Submit" >
+					</div>
+				</form>
+			</div>
+			<div style="float:left; margin-top:5px; margin-bottom:5px; margin-left:50px; width:260px; height: 470px; border-radius: 5px; padding:40px; padding-top:10px; padding-bottom:5px; background:#FFEFC6; color:#735005;">
+				<span style="font-size:30px; color:#d45e6a;">
+					How to Link
+				</span>
+				<br>
+				<span style="font-size:12px; color:#999;">
+					Link torrents freely and responsibly
+				</span>
+				<br>
+				<br>
+				<span style="font-size:14px;">
+					The link must be freely available. Any link to models for sale will be removed.
+					<br>
+					<br>
+					Categorize prints for the right audience. 
+					<br>
+					<br>
+					Weapons and dangerous prints are prohibited.
+					<br>
+					<br>
+					Alert users if the prints will contact food or drink. Such prints may not be safe. 
+					<br>
+					<br>
+					Descriptions and tags are <span style="font-weight:bold;">optional</span>, but strongly encouraged (+ reputation points). You can edit later.
+					<br>
+					<br>
+					Separate tags with commas.
+					<br>
+					<br>
+					Misleading information is frowned upon.
+				</span>
+			</div>
+
+
+		</div>
+	</div>
+</body>
+</html>

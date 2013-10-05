@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r
+	</title>
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+	
+	</style>		
+</head>
+
+<body>
+
+
+	{% include "header3.html" %}
+
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		text-align:right;
+		  		">	
+			<h1>
+				<a class="title" href="/">Bld3r</a>
+			</h1>
+
+			<h1>
+				Delete 
+			</h1>
+
+			<div>
+				{{title}}
+			</div>
+			<hr>
+			<br>
+			<form method="post">
+				<input type="checkbox" name="delete" value="True"> 
+				Are you sure you want to delete this object? 
+				<br>
+				<br>
+				<input type="submit" value="Delete" style="
+									width:200px;
+									height:30px;
+									padding: 0.3em 0.6em;
+									box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+									background-color: #333;
+									font-size: 18px;
+									color: #fff;
+									border: 1px solid #000;
+									border-radius: 3px;
+									text-decoration: none;		
+									">
+			</form>
+		
+			{% for comment in the_comments %}
+				<div style="color:#999;">
+					Comment:
+					<br>
+					{{comment.the_comment}}, 
+					<br>
+					<a href="/obj/{{comment.obj_ref_id}}">
+						context
+					</a>
+					,
+					<br>
+					by 
+					<a href="/user/{{comment.author_id}}">
+						{{comment.author_name}}
+					</a>
+					, 
+					<br>
+					created {{comment.created}}
+				</div>
+				<hr>
+			{% endfor %}
+		</div>
+	</div>
+</body>
+</html>

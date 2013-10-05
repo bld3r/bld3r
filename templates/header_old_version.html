@@ -1,0 +1,48 @@
+<span style="text-decoration:none;" class="header">
+	<span style="float:right; " class='user_info'>
+		{% if user %}
+			<a style="text-decoration:none;" href="/user/{{user.key().id()}}">
+				{{user.username}}
+			</a>
+			:
+			<a style="text-decoration:none;" href="/logout">log out</a>
+			
+		{% else %}
+			<a style="text-decoration:none;" href="/signup">sign up</a>
+			:
+			<a style="text-decoration:none;" href="/login">log in</a>
+			
+		{% endif %}
+	</span>
+	<span style='float:left'>
+		<img src="favicon.ico" width="40" height="auto" />
+		<a style="text-decoration:none;" href="/">
+			Bld3r
+		</a>
+	</span>
+	{% if user %}
+		{% if user.has_note == True %}
+			<span class="see_notes" style = "color:red;float:right;cursor:pointer;margin-right:5px;">
+				#
+			</span>
+			<div class="notes" style="display:none;float:right;clear:right;">
+				{% for note in user.new_note_list %}
+					<div>
+						{{note | safe}}
+					</div>
+				{% endfor %}
+				<a style = "float:right;" href="/user/note/{{user.key().id()}}">notification page</a>
+				<br>
+			</div>
+		{% else %}
+			<span class="no_notes" >
+				<a style = "color:black;float:right;text-decoration:none;margin-right:5px;" href="/user/note/{{user.key().id()}}">
+					#
+				</a> 
+			</span>
+		{% endif %}
+	{% endif %}
+	<div style="clear:both;">
+		<hr>
+	</div>
+</span>

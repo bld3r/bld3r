@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r Wiki
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<link type="text/css" rel="stylesheet" href="/css/store.css" />
+
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}
+
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			max-width: 800px;
+			margin-left: 15px;
+		}		
+	</style>
+	
+
+</head>
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<img src="/img/wiki.ico" width="100px" height="auto" />
+				<div style="width:700px; height:100px;">	
+					<a href="/">
+						Bld3r
+					</a>
+					<br>				
+					<span style="float:left;">
+						Welcome to the Wiki 
+					</span> 											
+				</div>
+			</div>		  	
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+
+			<div class="selected_wiki_list" style="float:left; width:720px; margin-top:20px; margin-bottom:20px;">
+				<ul>
+					<li>
+						Fully editable 
+						<a href="/w/table_of_contents">
+							Table of Contents
+						</a>
+					</li>
+					<br>
+					<li>
+						3D Modeling Software
+						<ul>
+							<li>
+								Open Source
+								<ul>
+									<li>
+										<a href="/w/openscad">
+											OpenSCAD
+										</a>
+									</li>
+									<li>
+										<a href="/w/blender">
+											Blender
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li>
+								Closed Source
+								<ul>
+									<li>
+										<a href="/w/solidworks">
+											SolidWorks
+										</a>
+									</li>
+									<li>
+										<a href="/w/autocad">
+											AutoCAD
+										</a>
+									</li>
+									<li>
+										<a href="/w/maya">
+											Maya
+										</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>
+						3D Printer Parts
+						<ul>
+							<li>
+								<a href="/w/reprap">
+									RepRap
+								</a>
+								<ul>
+									<li>
+										Mendle
+										<ul>
+											<li>
+												Original (Sells)
+											</li>
+											<li>
+												<a href="/w/mendle_prusa">
+													Prusa
+												</a>
+											</li>
+											<li>
+												Ocra
+											</li>
+											<li>
+												Huxley
+											</li>
+											<li>
+												<a href="/w/mendle_max">
+													Max
+												</a>
+											</li>
+										</ul>
+									</li>
+									<li>
+										Darwin
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a href="/w/makerbot">
+									MakerBot
+								</a>
+								<ul>
+									<li>
+										Replicator
+										<ul>
+											<li>
+												Original
+											</li>
+											<li>
+												2
+											</li>
+											<li>
+												2X
+											</li>
+										</ul>
+									</li>
+									<li>
+										Thing-o-matic
+									</li>
+									<li>
+										Cupcake
+									</li>
+								</ul>						
+							</li>
+							<li>
+								Other (this needs to be editable)
+							</li>
+						</ul>
+					</li>
+					<li>
+						Electronics
+						<ul>
+							<li>
+								Docking stations
+								<ul>
+									<li>
+										Smart Phones
+									</li>
+									<li>
+										Tablets
+									</li>
+									<li>
+										eReaders
+									</li>
+									<li>
+										MP3 Players
+									</li>
+									<li>
+										Other
+									</li>
+								</ul>
+							</li>
+							<li>
+								Electronics Cases
+								<ul>
+
+									<li>
+										Raspberry Pi
+									</li>
+									<li>
+										Arduino
+									</li>
+									<li>
+										MaKey MaKey
+									</li>
+									<li>
+										CD, DVD, Blueray, etc. 
+									</li>
+								</ul>
+							</li>
+							<li>
+								Robots
+							</li>
+							<li>
+								Toys
+							</li>
+							<li>
+								Videogames --
+							</li>
+						</ul>
+					</li>
+					<li>
+						Games
+						<ul>
+							<li>
+								Board Games
+							</li>
+							<li>
+								Video Games --
+							</li>
+							<li>
+								Other
+							</li>
+						</ul>
+					</li>
+					<li>
+						Music
+						<ul>
+							<li>
+								Insturments
+							</li>
+							<li>
+								Accessories
+							</li>
+							<li>
+								Cases
+							</li>
+							<li>
+								Other
+							</li>
+						</ul>
+					</li>
+					<li>
+						Home
+						<ul>
+							<li>
+								Living Room
+								<ul>
+									<li>
+										Book
+									</li>
+									<li>
+										Electronics --
+									</li>
+									<li>
+										Lighting
+									</li>
+									<li>
+										Containers
+									</li>
+								</ul>
+							</li>
+							<li>
+								Bedroom
+							</li>
+							<li>
+								Closet
+								<ul>
+									<li>
+										Clothing
+									</li>
+									<li>
+										Accessories
+									</li>
+								</ul>
+							</li>
+							<li>
+								Bathroom
+								<ul>
+									<li>
+										Beauty
+									</li>
+									<li>
+										Shaving
+									</li>
+									<li>
+										Bath &amp; Shower
+									</li>
+									<li>
+										Sink
+									</li>
+									<li>
+										Toilet
+									</li>
+								</ul>
+							</li>
+							<li>
+								Kitchen &amp; Dining
+								<br>
+								*food related warning
+								<ul>
+									<li>
+										Cooking
+									</li>
+									<li>
+										Dishes
+									</li>
+									<li>
+										Silverware
+									</li>
+								</ul>
+							</li>
+							<li>
+								Laundry
+							</li>
+							<li>
+								Garage
+								<ul>
+									<li>
+										Automotive
+									</li>
+									<li>
+										Cycling --
+									</li>
+									<li>
+										Tools --
+									</li>
+								</ul>
+							</li>
+							<li>
+								Patio, Lawn &amp; Garden
+							</li>
+							<li>
+								Home Improvement &amp; Hardware
+								<ul>
+									<li>
+										Nuts &amp; Bolts
+									</li>
+									<li>
+										Tools --
+									</li>
+									<li>
+										Electrical
+									</li>
+									<li>
+										Hooks, Fixtures, Covers, Etc.
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>
+						Sport
+						<ul>
+							<li>
+								Cycling --
+							</li>
+							<li>
+								Football
+							</li>
+							<li>
+								Basketball
+							</li>
+							<li>
+								Baseball
+							</li>
+							<li>
+								Hockey
+							</li>
+							<li>
+								Soccer
+							</li>
+							<li>
+								Golf
+							</li>
+							<li>
+								Other
+							</li>
+						</ul>				
+					</li>
+				</ul>
+			</div>
+
+			<div style="float:right; margin-top:30px; width:260px; height: 360px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+				<span style="font-size:30px; color:#d45e6a;">
+					What is a Wiki?
+				</span>
+				<br>
+				<span style="font-size:12px; color:#999;">
+					Anyone can edit, anyone can learn
+				</span>
+				<br>
+				<br>
+				<span style="font-size:14px;">									
+					Visit any page in the wiki and create or edit it. 
+					<br>
+					<br>
+					We have created a table of contents for what we believe will be frequently visited pages,
+					but if you visit /w/(anything) you can help create a community, for sorting and organization.
+					The goal of the wiki is to make great objects easy to find.
+					<br>
+					<br>
+					Help us organize millions of objects into an easy to navigate, easy to find, orginized list of 3D print topics.
+				</span>
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

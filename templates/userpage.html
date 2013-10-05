@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r | {{username}}
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<link type="text/css" rel="stylesheet" href="/css/masonry.css" />
+	{% include "scripts.html" %}
+</head>
+
+
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+
+	* td {
+		padding-right:35px;
+		padding-bottom:10px;		
+		vertical-align:text-top;
+	}		
+
+	.message_box{
+		float:right;
+		width:400px;
+		height:250px;
+		padding:10px;
+	}
+
+	#the_textarea{
+		width:395px;
+		height:200px;		
+	}
+
+	.message_submit {
+		margin-top:15px;
+		margin-right:15px;
+		float:right;
+		clear:right;
+	}
+	.block_box{
+		float:left;
+		width:auto;		
+	}
+	#block_toggle{
+		color:#0077cc;
+		cursor:pointer;
+	}
+	.check_block{
+		display:none;
+	}
+	.unblock_box{
+		float:left;		
+	}
+	#unblock_toggle{
+		color:#0077cc;
+		cursor:pointer;
+	}
+	.check_unblock{
+		display:none;
+	}
+
+	.follow_box{
+		float:left;		
+	}
+	#follow_toggle{
+		color:#0077cc;
+		cursor:pointer;
+	}
+	.check_follow{
+		display:none;
+	}
+	.unfollow_box{
+		float:left;		
+	}
+	#unfollow_toggle{
+		color:#0077cc;
+		cursor:pointer;
+	}
+	.check_unfollow{
+		display:none;
+	}
+	.right_column {
+		float:left;
+	}
+
+	.user_info {
+		color:#999;
+	}
+
+	.awards {
+		border:solid 1px;
+		clear:right;
+		float:left;
+		width:auto;
+		max-width: 100px;
+		padding:10px;
+		margin-top:5px;
+		clear:right;
+		text-align: center;
+	}
+	.rep {
+
+		float:left;
+
+	}
+	.is_user {
+		float:left;
+		width:250px;
+		clear:right;		
+	}
+	.error {
+		color:red;
+		float:left;
+	}
+	* {
+		
+	}
+</style>
+
+<body>
+	{% include "header3.html" %}
+
+
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">	
+
+	{% if the_user.deleted == False %}
+
+
+
+
+		<div class="left-column" style="width:250px; float:left;">
+			<div style="margin-left:20px;font-size:50px;">
+				{{username}}
+			</div>
+			<div style=" clear:left; color:#999; margin-left:20px;position:relative;top:-4px">
+				user for {{user_since}}
+			</div>
+
+			<div class="img" style="max-width:500px; float:left;">
+				{% if img %}
+					<img style="margin:10px;"src="{{img}}" width="200px" height="auto">
+					{% if user_is_user == True %}
+						<div>
+							<div style="
+								width:223px; 
+								height: 75px;
+								background:#fafafa; 
+								font-size: 10px;
+								border: solid 1px #999;
+								padding: 5px;
+								">
+								Would you like to change or delete this image?
+								<br>
+								<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+									<span style="
+										float: left;
+										margin-bottom: 5px;
+										morgin-top: 5px;
+										">
+										<input type="file" name="img" value="{{img_file}}">
+										delete and change image
+									</span>
+									<div style="
+										float: left;
+										width: 100%;
+										">									
+										<hr>
+									</div>
+									<span style="
+										float: left;
+										margin-top: 5px;
+										">
+										<input type="checkbox" name="delete" value="delete">
+										only delete
+									</span>
+									<input type="hidden" name="verify" value="{{user_hash}}">
+									<input type="submit" value="submit" style="float:right;">
+								</form>								
+							</div>
+							<br>
+						</div>
+					{% endif %}		
+				{% else %}
+					{% if user_is_user == True %}
+						<div>
+							<div style="
+								width:350px; 
+								height:160px; 
+								padding-top: 
+								40px; 
+								background:#fafafa; 
+								text-align:center;
+								float:left;">
+								Would you like to upload an image of yourself?
+								<br>
+								<br>
+								<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+									<span style="padding-left:50px;">
+										<input type="file" name="img" value="{{img_file}}">
+									</span>
+									<br>
+									<input type="hidden" name="verify" value="{{user_hash}}">
+									<br>
+									<input type="submit" value="upload"
+										style="
+										width:100px;
+										height:30px;
+										box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+										background-color: #333;
+										color: #fff;
+										border: 1px solid #000;
+										border-radius: 3px;
+										text-decoration: none;
+										font-size:18px;
+										">
+								</form>								
+							</div>
+							<br>
+						</div>
+					{% endif %}		
+				{% endif %}							
+			</div>			
+		</div>
+
+		<div class="top_row" style="float:left; width:800px; margin-top:20px; margin-bottom:20px;">
+			<span style="float:right;">
+				<span style="float:left;">
+					<a href="/user/printshelf/{{the_user.key().id()}}" style="color:#0077cc;;">
+						{{username}}'s printshelf
+					</a>
+					&nbsp;
+				</span>
+
+				{% if user_is_user == True %}
+
+					<span class="is_user">
+						<span class="mailbox" style="float:left; text-align:center;">
+							<a href="/user/messages/{{user_id}}">
+								<span>
+									| my messages
+								</span>
+							</a>
+						</span>
+						&nbsp;
+						<span style="float:left; text-align:center;">
+							<a href="/user/edit/{{user_id}}">
+								<span style="float:left; color:#4a6b82;; margin-left:5px;">
+									| edit account
+								</span>
+							</a>
+						</span>
+
+					</span>
+				{% elif logged_in %}
+					<div class="block_box"
+						style=
+						{% if is_blocked %}
+						"display:none;"
+						{% else %}
+						""
+						{% endif %}
+						>
+						<div class="{{the_user.key().id()}}" id="block_toggle">
+							| block
+						</div>
+						<br>
+						<div class="check_block">
+							are you sure?
+							<br>
+
+							<span class="yes_block" style="cursor:pointer;">
+								Yes
+							</span>
+							&nbsp;
+							&nbsp;
+							&nbsp;
+							<span class="cancel_block" style="cursor:pointer;">
+								Cancel
+							</span>
+						</div>
+					</div>
+					<div class="unblock_box"
+						style=
+						{% if is_blocked %}
+						""
+						{% else %}
+						"display:none;"
+						{% endif %}
+						>
+						<div class="{{the_user.key().id()}}" id="unblock_toggle">
+							| unblock 
+						</div>
+						<br>
+						<div class="check_unblock">
+							are you sure?
+							<br>
+
+							<span class="yes_unblock" style="cursor:pointer;">
+								Yes
+							</span>
+							&nbsp;
+							&nbsp;
+							&nbsp;
+							<span class="cancel_unblock" style="cursor:pointer;">
+								Cancel
+							</span>
+						</div>
+					</div>
+
+					<div class="follow_box"
+						style=
+						{% if is_followed %}
+						"display:none;"
+						{% else %}
+						""
+						{% endif %}
+						>
+						<div class="{{the_user.key().id()}}" id="follow_toggle">
+							| follow 
+						</div>
+						<br>
+						<div class="check_follow">
+							are you sure?
+							<br>
+
+							<span class="yes_follow" style="cursor:pointer;">
+								Yes
+							</span>
+							&nbsp;
+							&nbsp;
+							&nbsp;
+							<span class="cancel_follow" style="cursor:pointer;">
+								Cancel
+							</span>
+						</div>
+					</div>
+					<div class="unfollow_box"
+						style=
+						{% if is_followed %}
+						""
+						{% else %}
+						"display:none;"
+						{% endif %}
+						>
+						<div class="{{the_user.key().id()}}" id="unfollow_toggle">
+							| unfollow
+						</div>
+						<br>
+						<div class="check_unfollow">
+							are you sure?
+							<br>
+
+							<span class="yes_unfollow" style="cursor:pointer;">
+								Yes
+							</span>
+							&nbsp;
+							&nbsp;
+							&nbsp;
+							<span class="cancel_unfollow" style="cursor:pointer;">
+								Cancel
+							</span>
+						</div>
+					</div>
+				{% endif %}	
+			</span>
+		</div>
+			
+
+
+		<div class="right_column" style="
+			width:380px; 
+			margin-left: 20px;
+			margin-bottom:20px;
+			float:left;">
+
+			<div class="rep" style="text-align:center; width:100px; float:left;">
+				Rate
+				<br>
+				Reputation
+				<br>
+				<span style="font-size: 40px; color:#0077cc;">
+					{{the_user.rate_rep}}			
+				</span>		
+			</div>	
+			<div class="rep" style="text-align:center; width:100px; float:left;">
+				Object
+				<br>
+				Reputation
+				<br>
+				<span style="font-size: 40px; color:#0077cc;">
+					{{the_user.obj_rep}}			
+				</span>		
+			</div>
+			<div class="rep" style="text-align:center; width:100px; float:left;">
+				Comment
+				<br>
+				Reputation
+				<br>
+				<span style="font-size: 40px; color:#0077cc;">
+					{{the_user.com_rep}}			
+				</span>		
+			</div>
+				
+<!-- 					
+				<table>
+					<tr>
+						<td>
+							Comment Rep
+						</td>
+						<td>
+							{{the_user.com_rep}}
+						</td>						
+					</tr>
+					<tr>
+						<td>
+							Rate Rep
+						</td>
+						<td>
+							{{the_user.rate_rep}}
+						</td>						
+					</tr>
+					<tr>
+						<td>
+							Flagsum
+						</td>
+						<td>
+							{{the_user.flagsum}}
+						</td>						
+					</tr>	
+					<tr>
+						<td>
+							Flag Lists
+						</td>						
+					</tr>
+					<tr>
+						<td>
+							Objects
+						</td>
+						<td>
+							{% for i in the_user.flagged_obj %}
+								{% if i == the_user.flagged_obj[-1] %}
+									<span>{{i}}</span>. 
+								{% else %}
+									<span>{{i}}</span>, 
+									<br>
+								{% endif %}
+							{% endfor %}
+						</td>						
+					</tr>
+					<tr>
+						<td>
+							Comments
+						</td>
+						<td>
+							{% for i in the_user.flagged_com %}
+								{% if i == the_user.flagged_com[-1] %}
+									<span>{{i}}</span>. 
+								{% else %}
+									<span>{{i}}</span>, 
+									<br>
+								{% endif %}
+							{% endfor %}
+						</td>						
+					</tr> 
+				</table>
+				-->																																
+
+
+		
+			<div class="middle_column" style="font-size:12px; float:left; width:380px; margin-top:40px;">
+				<table>
+					<tr>
+						<td class="user_info">
+							Bio
+						</td>
+						<td>
+							<div style="text-align: justify;">
+								{% if summary %}
+									{{summary}}
+								{% endif %}
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="user_info">
+							Location 
+						</td>
+						<td>
+							{{location}}
+						</td>
+					</tr>
+					<tr>
+						<td class="user_info">
+							Printer
+						</td>
+						<td>
+							{{printer}}
+						</td>
+					</tr>	
+					<tr>
+						<td class="user_info">
+							Slicer
+						</td>
+						<td>
+							{{slicer}}
+						</td>
+					</tr>
+					<tr>
+						<td class="user_info">
+							Modeling software
+						</td>
+						<td>
+							{{software}}
+						</td>
+					</tr>												
+				</table>
+				<br>
+				{% if the_user.awards %}
+					<div class="awards">
+						Awards
+						<hr>
+						{% for award in the_user.awards %}
+							{% if award == "email" %}
+								<img src="/img/email_award.png" height="40px" width="auto" />
+								<br>
+								confirmed email
+							{% endif %}
+						{% endfor %}
+					</div>
+				{% endif %}						
+			</div>
+		</div>
+
+		{% if user_is_user == False and logged_in %}	
+				
+			<div style="height:100px;float:right; clear:right; border:;">
+				<div class="message_box">
+					<form method="post">
+						<span id="userpage_num" style="display:none;">
+							{{the_user.key().id()}}
+						</span>
+						<textarea id="the_textarea" name="message" value=""></textarea>
+						<br>
+						<!-- Removed submit button to prevent redirect replaced with div
+						<input class="message_submit" type="submit" value="Message {{username}}">
+						-->
+						<span class="message_submit">
+							<span style="
+								width:200px;
+								height:30px;
+								padding: 0.3em 0.6em;
+								box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+								background-color: #333;
+								color: #fff;
+								border: 1px solid #000;
+								border-radius: 3px;
+								text-decoration: none;
+							">
+								Message {{username}}
+							</span>
+						</span>
+						<br>
+						<span class="error">
+							{{error}}
+						</span>
+					</form>
+				</div>
+			</div>	
+		{% endif %}
+
+
+
+
+
+
+		<div style="clear:both">
+		<br>
+		<br>
+		<div>
+		History
+		<br>
+		<hr>
+		<br>
+		<div id="masonry_division">
+			{% for object in the_list %}
+				{% include 'masonry_for_userpage.html' %}
+			{% endfor %}
+		</div>
+		<div class="masonry_base_div">
+		</div>
+	{% else %}
+		<h1>
+			This user has been deleted.
+		</h1>
+	{% endif %}
+	</div>
+		</div>
+</body>
+</html>

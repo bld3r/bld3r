@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Blog Sign Up
+	</title>
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}	
+
+		form {
+			padding-top: 20px;
+			padding-left: 20px;
+			max-width: 300px;
+		}
+
+		.error {
+			color: red;
+		}
+		.sign_up {
+			font-size: 35px;
+		}
+		.lower_text {
+			margin-top: 10px;
+			padding-top: 10px;
+			text-align: center;
+			border-top: solid 1px #999;
+			height: 100px;
+		}
+	</style>	
+</head>
+	
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+		width:100%;
+		">
+		<div class="center_container" style="
+			//float: left;
+			width:1000px;   
+			display: block;
+	  		margin-left: auto;
+	  		margin-right: auto;
+	  		">
+
+		  	<div class="login_form_container">	
+				<form method="post">
+					<!--
+					action="{{photo_upload_url}}" enctype="multipart/form-data">
+					-->
+					<div class="sign_up">
+						Sign up
+					</div>
+					<br>
+					{% if error %}
+						<div class='error'>
+							{{error}}
+						</div>
+						<br>
+					{% endif %}
+					<input type="hidden" name="next_url" value='{{next_url}}'>
+					Name
+					<br>
+					<input onkeypress="return event.keyCode != 13;" type="text" name="username" value='{{username}}'
+						style="
+						color: #0077cc;
+						font-size: 20px;
+						">
+					<br>
+					<span style="font-size:8px; color: #666">
+						At least 4 chars long. Use only letters, numbers, "-" or "_".
+					</span>			
+					<br>
+					<br>
+					Password
+					<br>
+					<input onkeypress="return event.keyCode != 13;" type="password" name="password"
+						style="
+						color: #0077cc;
+						font-size: 20px;
+						">
+					<br>
+					<span style="font-size:8px; color: #666">
+						At least 6 chars long. Longer is obviously more secure.
+					</span>	
+					<br>
+					<br>
+					Verify password
+					<br>
+					<input onkeypress="return event.keyCode != 13;" type="password" name="verify"
+						style="
+						color: #0077cc;
+						font-size: 20px;
+						">
+					<br>
+					<br>
+					
+					<span style="float: left; clear: left;">
+						<input onkeypress="return event.keyCode != 13;" type="checkbox" name="tos" value="True" />
+					</span>
+					<span style="
+						float: left; 
+						width: 250px;
+						margin-left: 10px;
+						margin-bottom: 20px;
+						">
+						I am over 18 and agree to the 
+						<a href="/tos" target="_blank">terms of service</a>. (Required)
+					</span>
+					<br>
+					<br>
+					<br>
+
+					Email (optional)
+					<input onkeypress="return event.keyCode != 13;" type="text" name="email" value='{{email}}'
+						style="
+						color: #0077cc;
+						font-size: 20px;
+						">
+					<br>
+					<br>
+
+					<span style="float: left; clear: left;">
+						<input onkeypress="return event.keyCode != 13;" type="checkbox" checked name="infinite" value="True" />
+					</span>
+					<span style="
+						float: left; 
+						width: 250px;
+						margin-left: 10px;
+						margin-bottom: 20px;
+						">
+						I prefer infinite scroll
+						<br>
+						(you can edit this later).
+					</span>
+					<br>
+					<br>
+
+
+
+					<span style="float:left; clear: left;">
+						<input onkeypress="return event.keyCode != 13;" type="checkbox" name="over18" value="False" />
+					</span>
+					<span style="
+						float: left; 
+						width: 250px;
+						margin-left: 10px;
+						margin-bottom: 15px;
+						">
+						Optional: I want to filter content that may be inappropriate for children.
+					</span>
+					<br>
+					<br>
+
+					<!--
+					<hr>
+					Optional:
+					<br>
+					<label>
+						Would you like to upload an image of yourself? (You can do this later)
+						<br>
+						<input type="file" name="img" value="{{img_file}}">
+
+					</label>
+					<br> -->
+
+					<input type="submit" value="Sign up" >
+					<br>
+					<div class="lower_text">
+						<a href="/login">Log in</a>
+						or return to the
+						<a href="/">Main Page</a>.
+
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

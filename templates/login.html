@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r Login
+	</title>
+	<header>
+
+	</header>
+</head>
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}	
+		.error {
+			color: red;
+		}
+		form {
+			padding-top: 20px;
+			padding-left: 20px;
+			max-width: 300px;
+		}
+
+
+		.log_in_header {
+			font-size: 35px;
+		}
+		.lower_text {
+			margin-top: 10px;
+			padding-top: 10px;
+			text-align: center;
+			border-top: solid 1px #999;
+		}
+</style>
+<body>
+	{% include 'header3.html' %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">
+		  	<div class="login_form_container">	
+				<form method="post">
+					<div class="inner_form">
+						<div class="log_in_header">
+							Log in
+						</div>
+						
+						<input type="hidden" name="next_url" value='{{next_url}}'>
+							<br>
+							Username
+							<br>
+							<input type="text" name="username" value='{{name}}' style="width:250px;">
+							<br>
+							<br>
+							Password
+							<br>
+							<input type="password" name="password" style="width:250px;">
+							<br>
+							<br>
+							<input type="checkbox" name="remember" value="True"> Remember me?							
+							<br>
+							<br>
+							<input type="submit" value="Log in">
+						<br>
+						<br>
+						<a href="/password_reset_request">
+							Forgot password?
+						</a>					
+						<br>
+						<br>
+
+						<div class="lower_text">
+							<a href="/signup">Sign up</a>
+							or return to the
+							<a href="/">Main Page</a>.
+							<div class='error'>
+								{{error}}
+							</div>
+						</div>						
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r
+	</title>
+	{% include "scripts.html" %}
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}	
+
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			max-width: 800px;
+			margin-left: 15px;
+		}
+
+		.sent {
+			text-align:left;
+			background: #fafafa;
+		}
+		.received {
+			text-align:left;
+		}
+		.message_sent {
+		}
+		.message_received {
+		}
+
+		.time_sent {
+			float: right;
+			margin-right: 20px;
+		}
+
+	</style>
+</head>
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		text-align:center;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<img src="/img/frenvelope.png" width="100px" height="auto"/>
+				<div style="width:700px; height:100px;">
+					<a href="/user/{{user.key().id()}}">{{the_user.username}}</a>	
+					<br>
+					<span style="float:left;">
+						Messages
+					</span> 						
+				</div>
+			</div>		  	
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+			
+			<div class="bottom">
+				{% if are_messages %}
+					{% for message in message_list %}
+						{% if message.author_id == the_user.key().id() %}
+							<div class="sent">
+								<div>
+									<a href="/user/{{message.author_id}}">me</a>
+									<span class="time_sent">
+										 to <a href="/user/{{message.recipient_id}}">{{message.recipient_name}}</a> {{message.created}}
+									</span>
+								</div>
+								<span class="message_sent">
+									{{message.text}}
+								</span>
+								<br>
+								<hr>
+							</div>
+						{% else %}
+							<div class="received">
+								<div>
+									<a href="/user/{{message.author_id}}">{{message.author_name}}</a> 
+									<span class="time_sent">
+										to <a href="/user/{{message.recipient_id}}">me</a> {{message.created}}
+									</span>
+								</div>
+								<span class="message_received">
+									{{message.text}}
+								</span>
+								<br>
+								<hr>
+							</div>
+						{% endif %}
+
+
+					{% endfor %}
+				{% else %}
+					Sorry, you have no messages at this time.
+				{% endif %}
+			</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<div style="
+	float:left;
+	width:100%; 
+	">
+	<span style="
+		float:left;
+		">
+		<a href="/" style="
+			text-decoration:none; 
+			font-weight:bold; 
+			font-size:120%; 
+			">
+			<span style="
+				float: left;
+				margin-left: 10px;
+				margin-top: 3px;
+				">
+				<img src="/img/glassesprint.png" width="18px"/>
+			</span>
+			<span style="
+				float: left;
+				margin-left: 5px;
+				margin-top: 1px;
+				margin-right: 60px;
+				color:#0077cc;
+				">
+				Bld3r
+			</span>
+		</a>
+
+		<span style="
+			margin-top:4px; 
+			float:left
+			;">
+
+			{% if user %}
+				<span title="Upload or link to a 3d print file" style="
+					float: left;
+					margin-right:5px; 
+					margin-left:5px;
+					">
+					<a href="/new">	
+						<span style="color:#0077cc;">
+							share
+						</span>
+					</a> 
+				</span>
+				<span style="
+					float: left;
+					margin-top: -1px;
+					">
+					|
+				</span>
+			{% else %}
+				<span title="Upload or link to a 3d print file" style="
+					float: left;
+					margin-right:5px; 
+					margin-left:5px;
+					">
+					<a href="/signup">	
+						<span style="color:#0077cc;">
+							share
+						</span>
+					</a> 
+				</span>
+				<span style="
+					float: left;
+					margin-top: -1px;
+					">
+					|
+				</span>
+			{% endif %}
+			<span style="
+				float: left;
+				margin-right:5px;
+				margin-left:5px;
+				">
+				<a href="/objects">	
+					<span title="Download 3D models" style="color:#0077cc;">
+						objects
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: left;
+				margin-top: -1px;
+				">
+				|
+			</span>
+			<span style="
+				float: left;
+				margin-right:5px;
+				margin-left:5px;
+				">
+				<a href="/university">	
+					<span title="Learn, ask, and teach about 3D printing" style="color:#0077cc;">
+						tutorials
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: left;
+				margin-top: -1px;
+				">
+				|
+			</span>
+			<span title="News about 3d printing" style="
+				float: left;
+				margin-right:5px;
+				margin-left:5px;
+				">
+				<a href="/news">	
+					<span style="color:#0077cc;">
+						news
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: left;
+				margin-top: -1px;
+				">
+				|
+			</span>
+			<span style="
+				float: left;
+				margin-right:5px; 
+				margin-left:5px;
+				">
+				<a href="/w/home">
+					<span title="Bld3r's wiki page" style="color:#0077cc;">
+						wiki
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: left;
+				margin-top: -1px;
+				">
+				|
+			</span>
+			<span style="
+				float: left;
+				margin-right:5px; 
+				margin-left:5px;
+				">
+				<a href="/welcome">
+					<span title="We're a 3D printing social network" style="color:#0077cc;">
+						about
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: left;
+				margin-top: -1px;
+				">
+				|
+			</span>
+			<span style="
+				float: left;
+				margin-right:5px; 
+				margin-left:5px;
+				">
+				<a href="/contact">
+					<span title="Send us an email" style="color:#0077cc;">
+						contact
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: left;
+				margin-top: -1px;
+				">
+				|
+			</span>			
+			<span title="Search for an object" style="
+				float: left;
+				margin-right:5px; 
+				margin-left:5px;
+				">
+				<a href="/tag">
+					<span style="color:#0077cc;">
+						search
+					</span>
+				</a>
+			</span>
+			{% if not no_search_bar %}
+				<form method="post" action="/tag" style="
+					float:left; 
+					margin-left: 5px;
+					margin-top: -2px;
+					">
+					<input style="height: 10.5px;" type="text" name="search" />
+				</form>
+			{% endif %}
+		</span>
+
+	</span>
+	<span style="
+		float:right; 
+		margin-top:5px; 
+		padding-right:5px;
+		color: 0077cc;
+		">
+		{% if user %}
+
+			<span style="
+				float: right;
+				margin-right: 5px;
+				">
+				<a href="/logout">
+					<span style="color:#0077cc;">
+						log out
+					</span>
+				</a>
+			</span>
+			<span style="
+				float: right;
+				margin-right: 8px;
+				margin-top: 1px;
+				">
+				{% if user.has_note == True %}
+					<span class="see_notes">
+						
+						<a href="/user/note/{{user_id}}" title="You have notification(s)">
+							<img src="/img/frenvelope.png" height="18px" />
+						</a>
+					</span>
+				{% else %}
+					<span class="no_notes">
+						
+						<a href="/user/note/{{user_id}}" title="No new notifications.">
+							<img src="/img/frenvelope_empty.png" height="18px" />
+
+						</a> 
+					</span>
+				{% endif %}
+			</span>
+			<span style="
+				float: right;
+				margin-right: 9px;
+				">
+				<span style="
+					color: #aaa;
+					font-size: 14px;
+					font-weight: bold;
+					">
+					<span style="
+						float: right;
+						margin-left: 2px;
+						margin-top: 0px;
+						">
+						)
+					</span>
+					<span style="
+						float: right;
+						margin-top: 1px;
+						color: #555;
+						letter-spacing: -1px;
+						">
+						{{user.obj_rep}}
+					</span>
+					<span style="
+						float: right;
+						margin-right: 0px;
+						margin-top: 0px;
+						">
+						(
+					</span>
+				</span>
+			</span>
+
+			<span style="
+				float: right;
+				margin-right: 3px;
+				">
+				<a href="/user/{{user_id}}" title="Your userpage">
+					<span style="color:#0077cc;">
+						{{user.username}}
+					</span>
+				</a>
+			</span>
+		{% else %}
+			<a href="/signup">
+				<span style="color:#0077cc;">
+					register
+				</span>
+			</a>
+
+			|
+
+			<a href="/login">
+				<span style="color:#0077cc;">
+					log in
+				</span>
+			</a>
+		{% endif %}
+	</span>		
+</div>
+<div style="clear:both;height:1px">
+</div>

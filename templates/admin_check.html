@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r Login
+	</title>
+	<header>
+
+	</header>
+</head>
+<style>
+	.error {
+		color: red;
+	}
+</style>
+<body>
+	<form method="post">
+		<label>
+			Name:
+			<input type="text" name="username" value='{{name}}'>
+		</label>
+		<br>
+		<label>
+			Password:
+			<input type="password" name="password">
+		</label>
+		<br>
+
+		<input type="submit">
+		or return to the
+		<a href="/">Main Page</a>
+		.
+		<div class="error">
+			{{error}}
+		</div>
+	</form>
+	<br>
+	<br>
+	<a href="http://www.bld3r.com/_ah/stats/">
+		Stats
+	</a>
+
+</body>
+</html>

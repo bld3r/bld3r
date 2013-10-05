@@ -1,0 +1,123 @@
+<span style="	float:right; 
+				width:auto; 
+				text-decoration:none; 
+				border-left:solid 1px #999; 
+				border-bottom:solid 1px #999; 
+				padding-left:5px; 
+				padding-bottom:5px;" 
+	>
+	<span style="float:right; " class='user_info'>
+		{% if user %}
+			<a style="float:right;text-decoration:none;" href="/logout" title="Adios!">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #999 3px; 
+							background-color: #f0f0f0;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+
+					log out
+
+				</div>
+			</a>
+			<a style="text-decoration:none;" href="/user/{{user.key().id()}}" title="Me, me, me!">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #336699 3px; 
+							background-color: #f0f8ff;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+					
+					{{user.username}}
+					
+				</div>
+			</a>
+		{% else %}
+			<a style="text-decoration:none;" href="/login" title="We're gonna need to see some id ...">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #999 3px; 
+							background-color: #f0f0f0;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+					log in
+
+				</div>
+			</a>
+			<a style="text-decoration:none;" href="/signup" title="It's free! everything's free!">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #999 3px; 
+							background-color: #f0f0f0;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+					sign up
+
+				</div>
+			</a>			
+		{% endif %}
+	</span>
+
+	{% if user %}
+		{% if user.has_note == True %}
+			<span class="see_notes">
+				<a style = "padding-top:3px; float:right; margin-right:5px;" href="/user/note/{{user.key().id()}}" title="You have notification(s)!">
+					<img src="/img/frenvelope.png" height="30px" />
+				</a>
+			</span>
+		{% else %}
+			<span class="no_notes">
+				<a style = "padding-top:3px; float:right; margin-right:5px;" href="/user/note/{{user.key().id()}}" title="No new notifications.">
+					<img src="/img/frenvelope_empty.png" height="30px" />
+				</a> 
+			</span>
+		{% endif %}
+	{% endif %}
+	<!--
+	<a style="float:right;text-decoration:none;margin-right:5px;" href="/">
+		Bld3r
+	</a>
+	-->
+</span>
+<span style="	float:left; 
+				width:auto; 
+				text-decoration:none; 
+				border-left:solid 1px #999; 
+				border-right:solid 1px #999; 
+				border-bottom:solid 1px #999; 
+				margin-right:12px;
+				padding-left:5px;
+				padding-bottom:2px;" 
+	>
+
+	<a style="text-decoration:none;margin-right:5px;" href="/" title="bld3r home"><img src="/favicon.ico" height="36" width="auto" /></a>
+	<!--
+	<div style="clear:both;">
+		<hr>
+	</div>
+	-->
+</span>

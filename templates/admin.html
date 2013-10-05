@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r Admin
+	</title>
+	<link type="text/css" rel="stylesheet" href="/css/front.css" />
+	{% include "scripts.html" %}
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+	.header3 {
+		margin:0px;
+		padding-top: 3px;
+		//border-bottom: 1px #999 solid;
+		vertical-align: top;
+		color:#4a6b82;		
+	}
+	.header3 a {
+		text-decoration: none;
+		color:#4a6b82;
+		vertical-align: top;
+	}	
+	</style>
+</head>
+
+<body>
+	{% include "header3.html" %}
+	<h1>
+		Admins in the house!
+	</h1>
+	<hr>
+	<div id="masonry_division">
+		{% for object in the_dict %}
+
+			<div class="masonry_object">
+				<div>
+					<span class = "object.obj_id">
+						Object ID: {{object.id}}
+					</span>
+				</div>
+				{% if object.obj_type == 'upload' %}
+
+					{% if object.main_img_link %}
+						<div class="masonry_img">
+							<a href="/obj/{{object.id}}">
+
+								<img src="{{object.main_img_link}}">
+							</a>
+						</div>
+					{% else %}
+					{% endif %}
+
+					<div class="under_masonry_img">
+						{% if has_cookie %}
+						<div class="voteholder">	
+							<span>
+								<span class="no_decoration">
+									{% if object.voted == 1 %}
+										<span class="votedup" id= "{{object.obj_id}}">
+											<a href='javascript:;' class='voteup' id="vu{{object.obj_id}}">☺</a>
+										</span>
+									{% elif object.voted == -1 %}
+										<span class="voteup2" id= "{{object.obj_id}}">
+											<a href='javascript:;' class='voteup' id="vu{{object.obj_id}}">⬆</a>
+										</span>
+									{% else %}
+										<span class="voteup" id= "{{object.obj_id}}">
+											<a href='javascript:;' class='voteup' id="vu{{object.obj_id}}">⬆</a>
+										</span>
+									{% endif %}
+								</span>
+								<br>
+								<span style="color:black;">
+									&nbsp;<span id="votesum{{object.obj_id}}">{{object.votesum}}</span>
+								</span>
+								<br>
+								<span class="no_decoration">
+									{% if object.voted == -1 %}
+										<span class="voteddown" id= "{{object.obj_id}}">
+										  	<a href='javascript:;' class='votedown' id="vd{{object.obj_id}}">☹</a>
+										</span>
+									{% elif object.voted == 1 %}
+										<span class="votedown2" id= "{{object.obj_id}}">
+										  	<a href='javascript:;' class='votedown' id="vd{{object.obj_id}}">⬇</a>
+										</span>
+									{% else %}
+									  <span class="votedown" id= "{{object.obj_id}}">
+									  	<a href='javascript:;' class='votedown' id="vd{{object.obj_id}}">⬇</a>
+									  </span>	
+									{% endif %} 
+								</span>
+							</span>
+						</div>		
+						{% else %}		
+							<div class="voteholder">
+								<br>
+								<span style="color:black;">
+									Score: {{object.votesum}}
+								</span>
+								<br>
+								
+								Sign up<br>
+								to vote
+
+							</div>
+						{% endif %}
+
+						<div class="masonry_text">
+							<!-- This is different from obj_type 'link'&'tor' -->
+							<span class="no_decoration">
+								<a href="/obj/{{object.id}}">
+									{{object.title}}
+								</a>
+							</span>
+							<br>
+							created by 
+							<a href="/user/{{object.author_id}}">
+								{{object.author_name}}
+							</a>
+							
+							<br>
+							{{object.created}}
+							<br>
+							<a href="/obj/{{object.id}}">
+								comments 
+							</a>
+							&nbsp; &nbsp;
+							{% if object.num_ratings >= 5 %}
+								{% if (object.rate_avg >= 1) and (object.rate_avg < 1.5) %}
+									{% include "rate1_for_masonry.html" %}
+								{% elif (object.rate_avg >= 1.5) and (object.rate_avg < 2.5) %}
+									{% include "rate2_for_masonry.html" %}
+								{% elif (object.rate_avg >= 2.5) and (object.rate_avg < 3.5) %}
+									{% include "rate3_for_masonry.html" %}
+								{% elif (object.rate_avg >= 3.5) and (object.rate_avg < 4.5) %}
+									{% include "rate4_for_masonry.html" %}
+								{% elif (object.rate_avg >= 4.5) and (object.rate_avg <= 5) %}
+									{% include "rate5_for_masonry.html" %}
+								{% else %}
+									{% include "rate0_for_masonry.html" %}
+								{% endif %}
+							{% else %}
+							{% endif %}
+
+						</div>
+					</div>
+				{% else %}
+
+					{% if object.main_img_link %}
+						<div class="masonry_img">
+							<a href="{{object.obj_link}}">
+								<!-- This is different from obj_type 'upload' -->
+								<img src="{{object.main_img_link}}">
+							</a>
+						</div>
+					{% else %}
+					{% endif %}
+
+						<div class="under_masonry_img">
+							{% if has_cookie %}
+							<div class="voteholder">	
+								<span>
+									<span class="no_decoration">
+										{% if object.voted == 1 %}
+											<span class="votedup" id= "{{object.obj_id}}">
+												<a href='javascript:;' class='voteup' id="vu{{object.obj_id}}">☺</a>
+											</span>
+										{% elif object.voted == -1 %}
+											<span class="voteup2" id= "{{object.obj_id}}">
+												<a href='javascript:;' class='voteup' id="vu{{object.obj_id}}">⬆</a>
+											</span>
+										{% else %}
+											<span class="voteup" id= "{{object.obj_id}}">
+												<a href='javascript:;' class='voteup' id="vu{{object.obj_id}}">⬆</a>
+											</span>
+										{% endif %}
+									</span>
+									<br>
+									<span style="color:black;">
+										&nbsp;<span id="votesum{{object.obj_id}}">{{object.votesum}}</span>
+									</span>
+									<br>
+									<span class="no_decoration">
+										{% if object.voted == -1 %}
+											<span class="voteddown" id= "{{object.obj_id}}">
+											  	<a href='javascript:;' class='votedown' id="vd{{object.obj_id}}">☹</a>
+											</span>
+										{% elif object.voted == 1 %}
+											<span class="votedown2" id= "{{object.obj_id}}">
+											  	<a href='javascript:;' class='votedown' id="vd{{object.obj_id}}">⬇</a>
+											</span>
+										{% else %}
+										  <span class="votedown" id= "{{object.obj_id}}">
+										  	<a href='javascript:;' class='votedown' id="vd{{object.obj_id}}">⬇</a>
+										  </span>	
+										{% endif %} 
+									</span>
+								</span>
+							</div>		
+							{% else %}		
+								<div class="voteholder">
+									<br>
+									<span style="color:black;">
+										Score: {{object.votesum}}
+									</span>
+									<br>
+									
+									Sign up<br>
+									to vote
+
+								</div>
+							{% endif %}
+
+							<div class="masonry_text">
+								<a href="/obj/{{object.id}}">
+									{{object.title}}
+								</a>
+								<!-- This is different from obj_type 'upload' -->
+								<br>
+								<span class="short_url">{{object.short_url}}</span>
+								<!-- This is different from obj_type 'upload' -->
+								<br>
+								created by 
+								<a href="/user/{{object.author_id}}">
+									{{object.author_name}}
+								</a>
+								
+								<br>
+								{{object.created}}
+								<br>
+								<a href="/obj/{{object.id}}">
+									comments
+								</a>
+								&nbsp; &nbsp;
+								{% if object.num_ratings >= 5 %}
+									{% if (object.rate_avg >= 1) and (object.rate_avg < 1.5) %}
+										{% include "rate1_for_masonry.html" %}
+									{% elif (object.rate_avg >= 1.5) and (object.rate_avg < 2.5) %}
+										{% include "rate2_for_masonry.html" %}
+									{% elif (object.rate_avg >= 2.5) and (object.rate_avg < 3.5) %}
+										{% include "rate3_for_masonry.html" %}
+									{% elif (object.rate_avg >= 3.5) and (object.rate_avg < 4.5) %}
+										{% include "rate4_for_masonry.html" %}
+									{% elif (object.rate_avg >= 4.5) and (object.rate_avg <= 5) %}
+										{% include "rate5_for_masonry.html" %}
+									{% else %}
+										{% include "rate0_for_masonry.html" %}
+									{% endif %}
+								{% else %}
+								{% endif %}
+							</div>
+						</div>
+				{% endif %}
+				<div class="index">
+					<a href="/obj/{{object.id}}">
+						{{ object.index }} <!-- pageination numbering -->
+					</a>
+				</div>
+
+			</div>
+
+		{% endfor %}
+	</div>
+	<br clear="all">
+
+	<hr>
+	Objects: 
+	{% for object in the_objects %}
+		<div>
+
+			<a href="/obj/{{object.key().id()}}">
+				{{object.title}}
+			</a>
+			, {{object.description}}, created {{object.created}}
+		</div>
+	{% endfor %}
+	<hr>
+	Users: 
+	{% for user in the_users %}
+		<div>
+			<a href="/user/{{user.key().id()}}">
+				{{user.username}}
+			</a>
+			, created {{user.created}}
+		</div>
+	{% endfor %}
+	<hr>
+	Comments: 
+	{% for comment in the_comments %}
+		<div>
+			{{comment.text}}, by {{comment.author_name}}, created {{comment.created}}
+		</div>
+	{% endfor %}
+</body>
+</html>

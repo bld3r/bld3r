@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r {{page.title}} edit
+	</title>
+	{% include "scripts.html" %}
+
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+			text-align: left;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}	
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			max-width: 800px;
+			margin-left: 15px;
+		}	
+
+		textarea {
+			width: 700px;
+			height: 400px;
+			font-size: 16px;
+		}
+	</style>
+	
+
+</head>
+
+<body>
+
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		text-align:center;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<img src="/img/wiki.ico" width="100px" height="auto" />
+				<div style="width:700px; height:100px;">	
+					<a href="/w/{{page.title}}">
+						{{page.title}}
+					</a>
+					<br>				
+					<span style="float:left;">
+						Tag Community Edit
+					</span> 						
+				</div>
+			</div>		  	
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+	
+			<div class="bottom">
+				<div class="wikiform" style="float:left; width:720px; margin-top:20px; margin-bottom:20px;">
+					<form method="post">
+						<pre class="content"><textarea name="content" cols="90" rows="20">{{page.content}}</textarea></pre>
+						<input type="submit" value="Update" style="
+							width:200px;
+							height:30px;
+							font-size:18px;
+							padding: 0.3em 0.6em;
+							box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+							background-color: #333;
+							color: #fff;
+							border: 1px solid #000;
+							border-radius: 3px;
+							text-decoration: none;
+							text-align:center;
+							margin-left: 490px;
+							">
+					</form>
+				</div>
+				<div style="float:right; margin-top:30px; width:260px; height: 340px; border-radius: 5px; padding:40px; padding-top:20px; padding-bottom:20px; background:#FFEFC6; color:#735005;">
+					<span style="font-size:30px; color:#d45e6a;">
+						Tag Communities
+					</span>
+					<br>
+					<span style="font-size:12px; color:#999;">
+						Not just labels
+					</span>
+					<br>
+					<br>
+					<span style="font-size:14px;">									
+						Tags categorize objects with other, similar objects.
+						<br>
+						<br>
+						Members of tag communities define what a tag means through an open, editable wiki page.
+						<br>
+						<br>
+						Well-defined tags make it easier for you and others to find relevant objects. 
+						<br>
+						<br>					
+						Tag communities decide what objects belong, determine who makes the best objects, and discover tag news.
+					</span>
+				</div>						
+			</div>
+		</div>
+	</div>
+</body>
+</html>

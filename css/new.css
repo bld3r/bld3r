@@ -1,0 +1,51 @@
+* {
+}
+h1 {
+	text-align: center;
+}
+h3 {
+	text-align: center;
+}
+.top_note {
+	text-align: center;
+}
+.box_container {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+.upload_div {
+	max-width: 18%;
+	float: left;
+	//border: solid #999 1px;
+	margin: 1px;
+	padding: 5px;
+	}     
+.link_div {
+	max-width: 18%;
+	float: left;
+	//border: solid #999 1px;
+	margin: 1px;
+	padding: 5px;
+}
+.tor_div {
+	max-width: 18%;
+	float: left;
+	//border: solid #999 1px;
+	margin: 1px;
+	padding: 5px;
+}
+.learn_div {
+	max-width: 18%;
+	float: left;
+	//border: solid #999 1px;
+	margin: 1px;
+	padding: 5px;
+}
+.news_div {
+	max-width: 18%;
+	float: left;
+	//border: solid #999 1px;
+	margin: 1px;
+	padding: 5px;
+}

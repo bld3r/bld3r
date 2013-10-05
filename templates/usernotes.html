@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r
+	</title>
+	{% include 'scripts.html' %}
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}	
+
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			max-width: 800px;
+			margin-left: 15px;
+		}
+
+		.sent {
+			text-align:left;
+		}
+		.received {
+			text-align:left;
+		}
+		.note_text{
+			font-size:25px;
+		}
+	</style>
+</head>
+<body>
+	{% include 'header3.html' %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<img src="/img/frenvelope.png" width="100px" height="auto"/>
+				<div style="width:700px; height:100px;">
+					<a href="/user/{{user.key().id()}}">{{user.username}}</a>	
+					<br>
+					<span style="float:left;">
+					{% if has_new_note %}
+						New notifications
+					{% else %}
+						All notifications 
+					{% endif %}					</span> 						
+				</div>
+			</div>		  	
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>		  		
+			
+			<div class="bottom">
+				{% if notelist %}
+					{% if has_new_note %}
+						<div style="float:right;">
+							<img src="/img/frenvelope.ico" height="200px" width="auto" />
+						</div>
+					{% else %}	
+						<div style="float:right;">
+							<img src="/img/frenvelope_empty.ico" height="200px" width="auto" />
+						</div>
+					{% endif %}
+					{% for note in notelist %}
+						<div style="margin-bottom:2px;">
+							<div>
+								{{note[1] | safe}} {{note[0]}} ago
+							</div>
+							{% if note[3] == "NA" %}
+							{% elif note[3] == "Objects" %}
+								<div style="margin-bottom:15px">
+									{{note[2] | safe}}
+								</div>
+							{% else %}
+								<div style="margin-bottom:15px">
+									<br>
+									<span class = "note_text">
+										{{note[2].text}}
+									</span>
+									<br>
+								</div>
+								<div class="note_reply" id="{{note[2].key().id()}}" style="cursor:pointer;">
+									reply
+								</div>
+								<div class="{{note[2].key().id()}}" id="form" style="display:none;">
+									<form method="post">
+										<input type="hidden" name="type" style="display:;" value="{{note[3]}}">
+										<!-- if type is comment obj_id identifies the parent object -->
+										<input type="hidden" name="obj_id" style="display:;" value="{{note[2].obj_ref_id}}">
+										<input type="hidden" name="parent_id" style="display:;" value="{{note[2].key().id()}}">
+										<!-- if type is message 'recipient' identifies previous message author -->
+										<input type="hidden" name="recipient_id" style="display:;" value="{{note[2].author_id}}">
+										<input type="hidden" name="recipient_name" style="display:;" value="{{note[2].author_name}}">
+
+										<textarea name="text"></textarea>
+										<br>
+										<input type="submit">
+										&nbsp; &nbsp; &nbsp;
+										<span id="cancel" class="{{note[2].key().id()}}" style="cursor:pointer;">
+											cancel
+										</span>
+									</form>
+								</div>
+							{% endif %}
+						</div>
+						<br>
+					{% endfor %}
+				{% else %}
+					Sorry, you have no notifications at this time.
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</body>
+</html>

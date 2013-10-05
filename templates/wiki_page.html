@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r | {{page.title}} Wiki
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	{% include "scripts.html" %}
+
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+			text-align: left;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+
+		.header3 {
+			margin:0px;
+			padding-top: 3px;
+			//border-bottom: 1px #999 solid;
+			vertical-align: top;
+			color:#4a6b82;		
+		}
+		.header3 a {
+			text-decoration: none;
+			color:#4a6b82;
+			vertical-align: top;
+		}	
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			max-width: 800px;
+			margin-left: 15px;
+		}	
+	</style>
+	
+
+</head>
+
+<body>
+
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		text-align:center;
+		  		">
+			<div class="top" style="width:1000px;  margin-top:20px;">
+				<img src="/img/wiki.ico" width="100px" height="auto" />
+				<div style="width:700px; height:100px;">	
+					<a href="/w/{{page.title}}">
+						{{page.title}}&nbsp;
+					</a>
+					<br>
+					<div style="float:left; margin:0px;">
+						<span style="
+							float:left;
+							margin-left: 0px;
+							">
+							Tag Community
+						</span>
+						<span style="
+							margin-top: 3px;
+							font-size: 10px;
+							float: right;
+							clear: left;
+							">
+							You might also try the 
+							<a href="http://www.reprap.org/wiki/{{page.title}}" style="
+								font-size: 10px;
+								float:none;
+								margin: 0px;
+								">
+								RepRap wiki entry
+							</a>
+							for this term.
+						</span>
+					</div>
+
+				</div>
+			</div>		  	
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+	
+			<div class="bottom">
+				<div class="wikiform" style="width=800px; margin-top:20px; margin-bottom:20px;">
+					<div class="content" style="
+						float:left;
+						clear:left;
+						">
+						<div style="
+							max-width: 100%;
+							white-space: pre-wrap;
+							">
+							{{page.markdown | safe}}
+						</div>
+					</div>
+
+					<div class="menu" style="
+						float:left;
+						clear:left;
+						">
+						<hr>
+						{% if has_cookie %}
+							<a href="/_edit/{{page.title}}">
+								Edit
+							</a>
+							|
+						{% endif %}
+						<a href="/_history/{{page.title}}">
+							History
+						</a>
+						|
+						<a href="/w/index">
+							All
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

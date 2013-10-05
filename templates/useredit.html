@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r
+	</title>
+	<link type="text/css" rel="stylesheet" href="/css/front.css" />
+	<script type="text/javascript" src="/js/jquery1.7.1min.js"></script>
+	<script type="text/javascript" src="/js/jquery.masonry.min.js"></script>
+	<script type="text/javascript" src="/js/masonry_front.js"></script>
+	<script type= "text/javascript" src="/js/show_hide_user_edit.js"></script>		
+
+</head>
+
+
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}	
+
+	.top {
+		float:left;
+	}
+	.top * {
+		float:left;
+		font-size: 40px;
+		font-weight: bold;
+		max-width: 500px;
+		margin-left: 15px;
+	}
+	.message_box{
+		float:right;
+		border:solid 1px;
+		padding:10px;
+	}
+	.message {
+		float:right;
+		clear:right;
+	}
+
+	.is_user {
+		float:right;
+		width:auto;
+		margin:20px;
+	}
+	.error {
+		color:red;
+	}
+	.email_edit {
+		display:none;
+
+	}
+	.summary_edit {
+		display: none;
+	}
+	.location_edit {
+		display: none;
+	}
+	.printer_edit {
+		display: none;
+	}
+	.slicer_edit {
+		display: none;
+	}	
+	.software_edit {
+		display: none;
+	}	
+	#edit {
+		width: 35px;
+		border:solid 1px #999; 
+		border-radius:4px;
+		padding: 5px;
+		cursor:pointer;
+		margin-left:15px;
+		margin-bottom: 20px;
+
+	}	
+
+
+
+	textarea {
+		width:400px;
+		height: 80px;
+	}
+</style>
+
+<body>
+	{% include "header3.html" %}
+	<div class="backspace"style="
+			width:100%;
+			">
+		<div class="center_container" style="
+				width:1100px;   
+				display: block;
+		  		margin-left: auto;
+		  		margin-right: auto;
+		  		">		
+			<div class="top" style="width:1000px; margin-top:20px;">
+				<img src="/img/empty_white_favicon.png" width="100" height="auto" />
+				<span>
+					{{username}}
+					<br>
+					Edit Page
+				</span>
+			</div>
+			<div style="padding-top:10px;clear:both;">
+				<hr>
+			</div>
+			<br>
+
+			
+			{% if user_is_user == True %}
+				<div class="is_user">	
+					<div style="text-align:right;">
+						<a href="/user/del/{{user_id}}">
+							<div style="float:right; color:black; margin-right:5px; border:solid #999 3px; padding-top:6px;padding-left:5px;padding-right:5px; border-radius:5px; height: 24px;  width:auto;">
+								delete account
+							</div>
+						</a>
+					</div>
+				</div>
+			{% endif %}
+			
+
+
+
+			{% if img %}
+				<img src="{{img}}" height="150">
+				<br>
+			{% else %}
+				{% if user_is_user == True %}
+					<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+						<label>
+							Would you like to upload an image of yourself?
+							<br>
+							<br>
+							<input type="file" name="img" value="{{img_file}}">
+						</label>
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type="submit" value="upload">
+					</form>
+					<br>
+
+				{% else %}
+				{% endif %}		
+			{% endif %}
+			<hr>
+			<div>
+				Infinite scroll
+				<span class='error'>
+					{{error}}
+				</span>
+				<div class="infinite_scroll_edit">
+					<br>
+					<form method='post'>
+						<input type="checkbox" name="infinite_scroll" value="infinite"
+						{% if not user.no_infinite_scroll %}
+							checked
+						{% endif %}
+						>
+						&nbsp;
+						<span>
+							infinite scroll
+						</span>
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<input type="hidden" name="infinite_verify" value="editing_infinite_scroll">
+						<br>
+						<input type='submit' value="update">
+					</form>
+					<br>
+					<span class="email_cancel">
+							Cancel
+					</span>	
+				</div>
+			<hr>
+			<div>
+				Current email
+				<span class='error'>
+					{{error}}
+				</span>
+				<div class="email_current">
+					<br>
+					<span class="emailnote" style="color:red;">
+						{{emailnote}}
+					</span>
+					{{email}} 
+				</div>
+				<div class="email_edit">
+					<br>
+					<form method='post'>
+						<input onkeypress="return event.keyCode != 13;" name='email' value="{{email}}">
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type='submit' value="update email">
+					</form>
+					<br>
+					<span class="email_cancel">
+							Cancel
+					</span>	
+				</div>
+				<br>
+				<div class="email_current" id="edit">
+						edit
+				</div>	
+			</div>
+			<hr>
+			<div>
+				Summary
+				<div class="summary_current">
+					<br>
+					{{summary}}
+				</div>
+				<div class="summary_edit">
+					<br>
+					<form method='post'>
+						<pre><textarea name='summary'>{{summary}}</textarea></pre>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type='submit' value="update summary">
+					</form>
+					<br>
+					<br>
+					<span class="summary_cancel">
+						Cancel
+					</span>	
+				</div>					
+				<br>
+				<div class="summary_current" id="edit">
+						edit
+				</div>	
+			</div>
+			<hr>
+			<div>
+				Location
+				<div class="location_current">
+					<br>
+					{{location}}
+				</div>
+				<div class="location_edit">
+					<br>
+					<form method='post'>
+						<input onkeypress="return event.keyCode != 13;" name='location' value="{{location}}">
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type='submit' value = "update location">
+					</form>
+					<br>
+					<br>
+					<span class="location_cancel">
+						Cancel
+					</span>	
+				</div>	
+				<br>				
+				<div class="location_current" id="edit">
+					edit
+				</div>	
+			</div>
+
+			<hr>
+			<div>
+				Printer
+				<div class="printer_current">
+					<br>
+					{{printer}}
+				</div>
+				<div class="printer_edit">
+					<br>
+					<form method='post'>
+						<input onkeypress="return event.keyCode != 13;" name='printer' value="{{printer}}">
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type='submit' value = "update printer">
+					</form>
+					<br>
+					<br>
+					<span class="printer_cancel">
+						Cancel
+					</span>	
+				</div>					
+				<br>
+				<div class="printer_current" id = "edit">	
+					edit
+				</div>	
+			</div>
+
+			<hr>
+			<div>
+				Slicer
+				<div class="slicer_current">
+					<br>
+					{{slicer}}
+				</div>
+				<div class="slicer_edit">
+					<br>
+					<form method='post'>
+						<input onkeypress="return event.keyCode != 13;" name='slicer' value="{{slicer}}">
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type='submit' value = "update slicer">
+					</form>
+					<br>
+					<br>
+					<span class="slicer_cancel">
+						Cancel
+					</span>	
+				</div>					
+				<br>
+				<div class="slicer_current" id = "edit">
+						edit
+				</div>	
+			</div>
+
+			<hr>
+			<div>
+				Modeling Software
+				<div class="software_current">
+					<br>
+					{{software}}
+				</div>
+				<div class="software_edit">
+					<br>
+					<form method='post'>
+						<input onkeypress="return event.keyCode != 13;" name='software' value="{{software}}">
+						<br>
+						<input type="hidden" name="verify" value="{{user_hash}}">
+						<br>
+						<input type='submit' value = "update software">
+					</form>
+					<br>
+					<br>
+					<span class="software_cancel">
+						Cancel
+					</span>	
+				</div>	
+				<br>				
+				<div class="software_current" id = "edit">
+					edit
+				</div>	
+			</div>
+		</div>
+	</div>
+</body>
+</html>

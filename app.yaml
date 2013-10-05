@@ -1,0 +1,41 @@
+application: bld3r-app
+version: 1-0-4
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+- url: /img
+  static_dir: img
+
+# All static file must be listed above this url
+- url: .*
+  script: main.app
+
+
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
+- name: jinja2
+  version: latest
+- name: markupsafe
+  version: latest
+#- name: matplotlib
+#  version: latest
+
+# Below has to do with appstats (remove this comment if important, otherwise it can be deleted with no effect)
+builtins:
+  - admin_redirect: on
+  - appstats: on
+

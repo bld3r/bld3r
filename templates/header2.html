@@ -1,0 +1,151 @@
+<span style="	float:right; 
+				width:auto; 
+				text-decoration:none; 
+				padding-left:5px; 
+				padding-bottom:5px;"
+	>
+	<span style="float:right; " class='user_info'>
+		{% if user %}
+			<a style="float:right;text-decoration:none;" href="/logout" title="Adios!">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #999 3px; 
+							background-color: #f0f0f0;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+
+					log out
+
+				</div>
+			</a>
+			<a style="text-decoration:none;" href="/user/{{user.key().id()}}" title="Me, me, me!">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #336699 3px; 
+							background-color: #f0f8ff;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+					
+					{{user.username}}
+					
+				</div>
+			</a>
+		{% else %}
+			<a style="text-decoration:none;" href="/login" title="We're gonna need to see some id ...">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #999 3px; 
+							background-color: #f0f0f0;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+					log in
+
+				</div>
+			</a>
+			<a style="text-decoration:none;" href="/signup" title="It's free! Everything's free!">
+				<div style="float:right; 
+							color:black; 
+							margin-right:5px; 
+							border:solid #999 3px; 
+							background-color: #f0f0f0;
+							padding-top:6px;
+							padding-left:5px;
+							padding-right:5px; 
+							border-radius:5px; 
+							height: 24px;  
+							width:auto;"
+				>
+					sign up
+
+				</div>
+			</a>			
+		{% endif %}
+	</span>
+
+	{% if user %}
+		{% if user.has_note == True %}
+			<span class="see_notes">
+				<a style = "padding-top:3px; float:right; margin-right:5px;" href="/user/note/{{user.key().id()}}" title="You have notification(s)!">
+					<img src="/img/frenvelope.png" height="30px" />
+				</a>
+			</span>
+		{% else %}
+			<span class="no_notes">
+				<a style = "padding-top:3px; float:right; margin-right:5px;" href="/user/note/{{user.key().id()}}" title="No new notifications.">
+					<img src="/img/frenvelope_empty.png" height="30px" />
+				</a> 
+			</span>
+		{% endif %}
+	{% endif %}
+	<!--
+	<a style="float:right;text-decoration:none;margin-right:5px;" href="/">
+		Bld3r
+	</a>
+	-->
+</span>
+
+<span  style="float:right; margin-right:6px;" title="Search for an object.">
+	<a href="/tag">
+		<img src="/img/glasses_white.ico" width="43" height="auto" />
+	</a>
+</span>
+
+<span  style="float:right; margin-right:5px;" title="Go to bld3r's wiki.">
+	<a href="/w/home">	
+		<img src="/img/wiki.ico" width="43" height="auto" />
+	</a>
+</span>
+
+{% if has_cookie %}
+	<span  style="float:right; margin-right:5px;" title="Upload or link to a 3d print file!">
+		<a href="/new">	
+			<img src="/img/up.ico" width="43" height="auto" />
+		</a> 
+	</span>
+{% else %}
+{% endif %}
+
+<span  style="float:right; margin-right:5px;" title="New to 3d printing? Learn at bld3r university.">
+	<a href="/university">	
+		<img src="/img/uni_seal.ico" width="43" height="auto" />
+	</a>
+</span>
+
+
+
+
+<span style="	float:left; 
+				width:auto; 
+				text-decoration:none; 
+				margin-right:12px;
+				padding-left:5px;
+				padding-bottom:2px;" 
+	title="Home">
+
+	<a style="text-decoration:none;margin-right:5px;" href="/"><img src="/img/bld3r_alt_logo.png" height="100px" width="auto" /></a>
+	<!--
+	<div style="clear:both;">
+		<hr>
+	</div>
+	-->
+</span>
+
+

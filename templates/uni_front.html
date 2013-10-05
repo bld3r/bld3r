@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Bld3r | University
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
+	<link type="text/css" rel="stylesheet" href="/css/front.css" />
+	{% include "scripts.html" %}
+
+	<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+			text-align: left;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			color:#4a6b82;
+		}
+
+		.top {
+			float:left;
+		}
+		.top * {
+			float:left;
+			font-size: 40px;
+			font-weight: bold;
+			margin-left: 15px;
+		}	
+
+		.voteup{
+			color:#999;
+			cursor:pointer;
+			text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;				
+		}
+
+		.voteup2{
+			color:#999;
+			cursor:pointer;
+			text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;						
+		}
+		.votedown{
+			color:#999;
+			cursor:pointer;		
+			text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+		}
+		.voteddown{
+			color:red;
+			cursor:pointer;		
+			text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+		}
+		.votedown2{
+			color:#999;
+			cursor:pointer;		
+			text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+		}
+
+		.masonry_object:hover{
+			-webkit-box-shadow: 8px 8px 6px -6px black;
+			-moz-box-shadow: 8px 8px 6px -6px black;
+			box-shadow: 8px 8px 6px -6px black;
+		}	
+
+	</style>
+	
+
+</head>
+
+<body>
+
+	{% include "header3.html" %}	
+	<div class="backspace"style="
+		width:100%;
+		">
+		<div class="center_container" style="
+			width:1100px;   
+			display: block;
+	  		margin-left: auto;
+	  		margin-right: auto;
+	  		text-align:center;
+	  		padding: 2px;
+	  		">
+			<div class="top" style="margin-top:20px;">
+				<img src="/img/uni_learn_blue.png" width="100px" height="auto" />
+				<div style="height:100px;">	
+					<span style="float:left;">
+						Bld3r
+					<br>				
+						University
+					</span> 
+				</div>
+			</div>
+			<a href=
+				{% if user %}
+					"/newlesson"
+				{% else %} 
+					"/login"
+				{% endif %}
+				style="
+				float:right;
+				margin-top: 20px;
+				">
+				<div style="
+					width:200px;
+					font-size: 22px;
+					text-align:center;
+					margin: 5px 0px 5px 0px;
+					padding-top: 5px;
+					height:30px;
+					box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+					background-color: #333;
+					color: #fff;
+					border: 1px solid #000;
+					border-radius: 3px;
+					text-decoration: none;
+					cursor:pointer;
+					">
+					Share a Tutorial
+				</div>
+			</a>
+			<a href=
+				{% if user %}
+					"/ask"
+				{% else %} 
+					"/login"
+				{% endif %}
+				style="
+				float:right;
+				margin-top: 20px;
+				margin-right: 10px;
+				">
+				<div style="
+					width:200px;
+					font-size: 22px;
+					text-align:center;
+					float:right;
+					height:30px;
+					margin: 5px 0px 5px 0px;
+					padding-top: 5px;
+					box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+					background-color: #333;
+					color: #fff;
+					border: 1px solid #000;
+					border-radius: 3px;
+					text-decoration: none;
+					cursor:pointer;
+					">
+					Ask a Question
+				</div>
+			</a>
+			<div style="padding-top:10px;clear:both; margin-bottom: 3px;">
+				<hr>
+			</div>	
+	
+			<div class="vertical list">
+				{% include "masonry_for_front_vertical.html" %}
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>

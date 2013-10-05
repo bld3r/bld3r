@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>
+		Bld3r | {{the_obj.title}}
+	</title>
+	<meta name="description" content="{{the_obj.description}}" />
+	<meta property="og:image" content="{{img1}}" />		
+	{% include "scripts.html" %}
+
+
+</head>
+
+<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#0077cc;
+	}
+	* a:hover{
+		color:#0077cc;
+	}	
+	pre {
+		white-space: pre-wrap;       /* css-3 */
+		white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+		white-space: -pre-wrap;      /* Opera 4-6 */
+		white-space: -o-pre-wrap;    /* Opera 7 */
+		word-wrap: break-word;       /* Internet Explorer 5.5+ */
+	}
+
+	ul
+	{
+		list-style-type: none;
+	}
+
+
+	span:hover {
+	position: relative;
+	}
+	
+	span[title]:hover:after {
+	font-size: 14px;
+	content: attr(title);
+	margin-top: 10px;
+	padding: 4px 8px;
+	color: white;
+	background: #333;
+	position: absolute;
+	left: 0;
+	top: 100%;
+	white-space: nowrap;
+	z-index: 4;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow: 0px 0px 4px #222;
+	-webkit-box-shadow: 0px 0px 4px #222;
+	box-shadow: 0px 0px 4px #222;
+	}
+
+	a:hover {
+	position: relative;
+	}
+	
+	a[title]:hover:after {
+	font-size: 14px;
+	content: attr(title);
+	margin-top: 10px;
+	margin-left: -10px;
+	padding: 4px 8px;
+	color: white;
+	background: #333;
+	position: absolute;
+	left: 0;
+	top: 100%;
+	white-space: nowrap;
+	z-index: 4;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow: 0px 0px 4px #222;
+	-webkit-box-shadow: 0px 0px 4px #222;
+	box-shadow: 0px 0px 4px #222;
+	}	
+
+	.top_box {
+		float:left;
+		width:600px;
+		margin-left:15px;
+		//background:url("/img/dot2stripe.png") repeat scroll 0 0 transparent;		
+		//background: #fafafa;
+		//border: 1px #999 solid;
+		border-radius: 4px;
+	}
+	.clear {
+		clear: both;
+	}
+	.no_decoration a {
+		text-decoration: none;
+		color:black;
+	}
+	.voteup{
+		color:#999;
+		cursor:pointer;
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;				
+	}
+	.voteup2{
+		color:#999;
+		cursor:pointer;
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;						
+	}
+	.votedown{
+		color:#999;
+		cursor:pointer;		
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}
+	.voteddown{
+		color:red;
+		cursor:pointer;		
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}
+	.votedown2{
+		color:#999;
+		cursor:pointer;		
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}
+
+	.votedupcom{
+		color:red;
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+		cursor:pointer;		
+	}
+	.voteup2com{
+		color:#999;
+		cursor:pointer;		
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}
+	.votedowncom{
+		color:#999;
+		cursor:pointer;		
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}
+	.voteddowncom{
+		color:red;
+		cursor:pointer;		
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}
+	.votedown2com{
+		color:#999;
+		cursor:pointer;	
+		text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;		
+	}		
+	.one_star {
+		color:black;
+	}
+	.two_star {
+		color:black;
+	}
+	.three_star {
+		color:black;
+	}
+	.four_star {
+		color:black;
+	}
+	.five_star {
+		color:black;
+	}
+	.star_highlighted{
+		color:Gold;
+	}
+	.flag{
+		color:black;
+	}
+	.flagged{
+		color:red;
+	}
+	.user_rated a{
+		color:#FBB917;
+	}
+	.rating_span {
+		unicode-bidi: bidi-override;
+		direction: rtl;
+		cursor:pointer;
+	}
+	.rating_span > span {
+		display: inline-block;
+		position: relative;
+		width: 1.1em;
+		cursor:pointer;
+	}
+	.rating_span > span:hover:before,
+	.rating_span > span:hover ~ span:before {
+		content: "\2605";
+		position: absolute;
+		color: Gold;
+		cursor:pointer;
+	}
+
+	.img_box{
+		float:left;
+		clear:left;
+		margin-top: 10px;
+		margin-left: 15px;
+		width: 600px;
+		max-height: 450px;
+	}
+	.img_box img {
+		max-width:600px;
+		max-height:450px;
+		border-radius: 4px;
+	}
+	.img1 {
+		float:left;
+		clear:left;
+	}
+
+	.no_img {
+		width: 600px;
+		height: 200px;	
+		padding-top: 100px;
+		background: #fafafa;	
+		text-align: center;
+	}
+	.data1 {
+		float:left;
+		margin-right: 20px;
+		margin-bottom: 10px;
+		clear:left;
+	}
+	.link {
+		float:left;
+		clear:left;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.votebox {
+		float:left;
+		clear:left;
+		//margin-top: 20px;
+		margin-left:30px;
+		font-size: 30px;
+	}
+
+	.rating_and_printshelf {
+		height:50px;
+	}
+
+	.rating_area {
+		float:left;
+		{% if obj_id_str in user.has_printed_list %}
+		margin-left: 9px;
+		{% else %}
+		margin-left: 20px;
+		{% endif %}
+		margin-right: 5px;
+	}
+	.rating_area * {
+		font-size: 25px;
+		color:#999;
+	}
+	.refresh_to_rate {
+		display: none;
+		background: #FFEFC6;
+		color: #d45e6a;
+		border-radius: 5px;
+		padding:10px;
+		margin-top: 10px;
+		margin-left: 180px;
+		text-align: center;
+	}
+	.refresh_info {
+		margin-top: 40px;
+		font-size: 14px;
+		display: none;
+		clear:left;
+		background: #FFEFC6;
+		color: #735005;
+		border-radius: 5px;
+		padding:10px;
+		text-align: center;
+	}
+	.refresh_info a {
+		color:#0077cc;
+	}
+	.printshelf {
+		display:block;
+		float:left;
+		clear:right;
+		height: 50px;
+		width: 80px;
+		cursor:pointer; 
+		color:black; 
+		border-radius:5px; 
+		text-align: center;
+	}
+
+	.printshelf_select {
+		display:none;
+		float:right;
+		clear:right;
+		text-align: right;
+		padding-top: 10px;
+		margin-left: -30px;
+		position:absolute;
+		z-index: 3;
+	}
+
+	.add_img {
+		float:right;
+		margin-top: 5px;
+		margin-right: 5px;	
+		margin-left: 15px;	
+		color:#0077cc;
+		cursor: pointer;
+	}
+
+	.add_img_box {
+		display:none;
+		margin-left: -60px;
+		margin-bottom: 10px;
+		float:right;
+		width: 180px;
+		padding:10px;
+		background: #fafafa;
+	}
+	.delete_img {
+		color:#0077cc;
+		cursor: pointer;
+	}
+	.delete_img_box {
+		margin-left: 5px;
+		margin-right:10px;
+		display:none;
+		width: 120px;
+		font-size: 12px;
+		background: #fafafa;
+		float:left;
+	}
+	.flagbox {
+		{% if the_obj.learn == False %}
+			float:right;
+		{% else %}
+			float:left;
+			clear: left;
+		{% endif %}
+		margin-top: 5px;
+		margin-right: 5px;	
+		margin-left: 15px;	
+	}
+	.showcombox {
+		float:left;
+		margin-left: 3px;
+		margin-right: 3px;
+		cursor:pointer;
+	}
+
+	.comment_section {
+		width:700px;
+		padding-left: 60px;
+		float:left;
+	}
+
+	.showcombox_holder {
+		display:none;
+		color:#444; 
+		background-color: #eee;
+		background:url("/img/dot2stripe.png") repeat scroll 0 0 transparent;
+		margin-top:5px; 
+		margin-right:130px; 
+		margin-bottom: 10px;
+		border:solid #C4D1E2 3px; 
+		padding-top:6px;
+		padding-left:5px;
+		padding-right:5px; 
+		padding-bottom:4px;
+		border-radius:5px; 
+	}
+	.combox {
+		float:left;
+		clear:left;
+		margin-top: 8px;
+		margin-left: 30px;
+		margin-right: 5px;
+		color:#444; 
+		background-color: #fafafa;
+		//background:url("/img/dot2stripe.png") repeat scroll 0 0 transparent;
+		margin-bottom: 10px;
+		//border:solid #C4D1E2 3px; 
+		padding-top:6px;
+		padding-left:25px;
+		padding-right:25px; 
+		padding-bottom:4px;
+		border-radius:5px;		
+	}
+	.combox textarea {
+		width: 550px;
+		height: 70px;
+	}
+	.combox input {
+		//margin-left: 309px;
+	}
+	.subcombox {
+		display:none;
+		float:left;
+		clear: all;
+		color:#444; 
+		background:url("/img/dot2stripe.png") repeat scroll 0 0 transparent;
+		margin-top:5px; 
+		margin-right:130px; 
+		margin-bottom: 10px;
+		border:solid #C4D1E2 3px; 
+		padding-top:6px;
+		padding-left:5px;
+		padding-right:5px; 
+		padding-bottom:4px;
+		border-radius:5px;				
+	}	
+	.middle_group {
+		width:620px;
+		float:left;
+		margin-top: 15px;
+		padding-left:10px;	
+		padding-right:10px;	
+		padding-bottom:20px;
+		//border: 1px solid #999;
+		//display:block;
+		//width:1020px;
+	}
+
+	.top_buttons{
+		float:left; 
+		width:350px; 
+		margin-top:20px; 
+		margin-left:0px;
+	}	
+
+	.to_print {
+		font-size: 14px;
+		color:#444;
+		width: 158px;
+		text-align: center;
+		background: #f5f5f5;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		padding-right: 5px;
+		padding-left: 5px;
+		margin-top:-8px;
+		cursor:pointer;	
+		text-align: left;
+	}
+
+	.to_print:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.printed {
+		font-size: 14px;
+		color:#444;
+		width: 158px;
+		text-align: center;
+		background: #f5f5f5;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		padding-right: 5px;
+		padding-left: 5px;
+		cursor:pointer;
+		text-align: left;
+	
+	}	
+
+	.printed:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.gotoprintshelf {
+		font-size: 14px;
+		color:#444;
+		width: 158px;
+		text-align: center;
+		background: #f5f5f5;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		padding-right: 5px;
+		padding-left: 5px;
+		cursor:pointer;	
+		text-align: left;
+	}
+
+	.gotoprintshelf a{
+		color:#444;
+	}
+	.gotoprintshelf:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.obj_info_box {
+		float:left;
+		margin-top: 12px;
+		border:solid 1px #999;
+		border-radius: 4px;
+		width: 330px;
+	}
+
+	.obj_info_header {
+		width:330px;
+		height:20px;
+		padding-top:5px;
+		padding-bottom: 3px;
+		border-bottom: solid 1px #999;
+		text-align: center;	
+		background: #fafafa;
+		border-top-right-radius: 4px;
+		border-top-left-radius: 4px;			
+	}
+
+	.obj_info_body {
+		padding: 15px;
+		position:relative;
+		z-index: 1;		
+	}
+
+	.info_edit_slide {
+		width:137px;
+		height: 32px;
+		display: none;
+		position:absolute;
+		z-index: 2;
+		float:left;
+		margin-left: 190px;
+	}
+
+	.open_info_edit_slide {
+		color:#ccc; 
+		width:5px; 
+		float:left; 
+		margin-left:60px; 
+		cursor:pointer
+	}
+
+	.open_info_edit_slide:hover {
+		color:black;
+		font-size: 18px;
+	}
+
+	.open_description_edit_slide{
+		font-size:14px;
+		color:#444;
+		width: 100px;
+		text-align: left;
+		background: #f5f5f5;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		padding-right: 5px;
+		padding-left: 30px;
+		cursor:pointer;
+		float:left;
+		clear:left;		
+	}
+
+	.open_description_edit_slide:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.other_file_upload_link_slide{
+		font-size:14px;
+		color:#444;
+		width: 100px;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		padding-right: 5px;
+		padding-left: 30px;
+		cursor:pointer;
+		float:left;
+		clear:left;	
+		text-align: left;	
+	}
+	.other_file_upload_link_slide:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.delete_object_slide{
+		font-size:14px;
+		color:#444;
+		width: 100px;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		padding-right: 5px;
+		padding-left: 30px;
+		cursor:pointer;
+		float:left;
+		clear:left;	
+		text-align: left;	
+		margin-bottom: 5px;
+	}
+	.delete_object_slide:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.delete_object_slide a{
+		color:#444;
+	}
+	.open_description_edit{
+		font-size:14px;
+		color:#444;
+		width: 90px;
+		text-align: center;
+		background: #f5f5f5;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		border-radius:4px;
+		padding-right: 5px;
+		padding-left: 5px;
+		margin:15px 15px 15px 15px;
+		cursor:pointer;
+		float:right;
+		clear:left;		
+	}
+
+	.open_description_edit:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.other_file_upload_link{
+		font-size:14px;
+		color:#444;
+		width: 90px;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		border-radius:4px;
+		padding-right: 5px;
+		padding-left: 5px;
+		margin:0px 15px 15px 15px;
+		cursor:pointer;
+		float:right;
+		clear:right;	
+		text-align: center;	
+	}
+	.other_file_upload_link:hover{
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+	.submit_edits {
+		font-size:14px;
+		color:#444;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		border-radius:4px;
+		padding: 5px;
+		cursor:pointer;
+		float:left;
+		clear:left;
+		margin-right:15px;		
+	}
+
+	.submit_edits:hover {
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 		
+	}
+
+	.printed_by_list {
+		float:left;
+		clear:right;
+		margin-top: 10px;
+		border:solid 1px #999;
+		border-radius: 4px;
+		width: 330px;
+		text-align: center;
+	}
+	.printed_by_header {
+		padding-top:5px;
+		padding-bottom: 3px;
+		border-bottom: solid 1px #999;
+		background: #fafafa;
+		border-top-right-radius: 4px;
+		border-top-left-radius: 4px;					
+	}
+	.printed_by_list_item {
+		display:inline-block;
+		width: 90px;
+		text-align: center;
+		margin-top:5px;
+		margin-bottom:5px;
+		margin-left:50% auto;
+		margin-right:50% auto;
+	}
+
+	.tag_box {
+		float:left;
+		clear:right;
+		margin-top: 10px;
+		border:solid 1px #999;
+		border-radius: 4px;
+		width: 330px;
+	}
+
+	.tag_box_header {
+		width:330px;
+		height:20px;		
+		padding-top:5px;
+		padding-bottom: 3px;
+		border-bottom: solid 1px #999;
+		text-align: center;		
+		background: #fafafa;	
+		border-top-right-radius: 4px;
+		border-top-left-radius: 4px;
+	}
+
+	.open_tags_edit {
+		color:#ccc; 
+		width:5px; 
+		float:left; 
+		margin-left:60px; 
+		cursor:pointer
+	}
+
+	.open_tags_edit:hover {
+		color:black;
+		font-size: 18px;
+	}
+
+	.tag_box_body {
+		padding: 15px;
+	}
+
+	.tag_color {
+		float:left;
+		clear:right;
+		margin-bottom: 5px;
+		margin-right: 5px;		
+	}
+
+	.tag_color a{
+		color: #0077cc;
+		background: #E0EAF1;
+		padding: 5px;
+		line-height: 200%;
+		border-left: 1px solid white;	
+		border-top: 1px solid white;			
+		border-right: 1px solid #b3cee1;	
+		border-bottom: 1px solid #b3cee1;		
+		border-radius: 4px;
+	}
+
+	.tag_color:hover a{
+		background: #b3cee1;
+		border-left: 1px solid #b3cee1;	
+		border-top: 1px solid #b3cee1;	
+		border-right: 1px solid white;	
+		border-bottom: 1px solid white;					
+	}
+
+
+	.tag_submit {
+		font-size: 14px;
+		color:#444;
+		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		border: 1px solid rgba(0,0,0,0.1);
+		border-radius:4px;
+		padding-right: 5px;
+		padding-left: 5px;
+	}
+
+	.tag_submit:hover {
+		color:#333;
+		background: #eee;
+		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		border:solid 1px #c6c6c6; 
+	}
+
+	.user_img {
+		max-width: 90px;
+		max-height: 45px;
+		border-radius: 4px;
+		margin-bottom: -5px;
+	}
+	/*	
+	#download_button {
+		float:right;	
+		font-size: 20px;
+	}*/
+	.ask_box{
+		float:left;
+		clear:left;
+		//border: solid 2px #999;
+		//border-radius:4px;		
+		margin-top: 10px;
+		margin-left: 40px;
+		width: 600px;
+		max-height: 450px;		
+	}
+</style>
+
+<body>
+	{% include "header3.html" %}
+	<span class="verify_user" id="{{user_hash}}">
+	</span>
+
+	<div class="backspace"style="
+		width:100%;
+		">
+		<div class="center_container" style="
+			width:1100px;   
+			display: block;
+	  		margin-left: auto;
+	  		margin-right: auto;
+	  		">	
+			{% if removed == False %}
+
+				{% if show_3d_model %}
+					<div class="floating_obj">
+						{% if the_obj.stl_file_link %}
+							<div id="floating_obj_here" style="
+								padding-top: 15px;
+								padding-left: 17%;
+								padding-right: 17%;
+								">
+							</div>
+							{% include "display_floating_obj.html" %}
+						{% endif %}
+					</div>
+					<div class="clear">
+					</div>
+				{% endif %}
+
+
+				{% if user %}
+					<div class="votebox">
+						<span class="no_decoration">
+							{% if voted == 1 %}
+								<span class= "{{obj_id}}" id="votedup" >
+									<span class='voteup' id="vu{{obj_id}}"  style="
+										color:#0077cc;
+										text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd; "title="You upvoted this object. (Click to undo.)"
+										>
+										▲
+									</span>
+								</span>
+							{% elif voted == -1 %}
+								<span class= "{{obj_id}}" id="voteup2" >
+									<span class='voteup' id="vu{{obj_id}}" title="This object is awesome! Upvote so others can see it. (Click again to undo.)">▲</span>
+								</span>
+							{% else %}
+								<span class= "{{obj_id}}" id="voteup" >
+									<span class='voteup' id="vu{{obj_id}}" title="This object is awesome! Upvote so others can see it. (Click again to undo.)">▲</span>
+								</span>
+							{% endif %}
+						</span>
+						<br>
+						<span style="color:#555;">
+							&nbsp;<span id="votesum{{obj_id}}" title="Score">{{votesum}}</span>
+						</span>
+						<br>
+						<span class="no_decoration">
+							{% if voted == -1 %}
+								<span class= "{{obj_id}}" id="voteddown" >
+								  	<span class='votedown' id="vd{{obj_id}}"  style="
+								  		color:#d45e6a;
+										text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;" title="You downvoted this object. (Click to undo.)"
+										>
+										▼
+									</span>
+								</span>
+							{% elif voted == 1 %}
+								<span class= "{{obj_id}}" id="votedown2" >
+								  	<span class='votedown' id="vd{{obj_id}}" title="This object is stupid! Downvote so others won't see it. (Click again to undo.)">▼</span>
+								</span>
+							{% else %}
+							  <span class= "{{obj_id}}" id="votedown" >
+							  	<span class='votedown' id="vd{{obj_id}}" title="This object is stupid! Downvote so others won't see it. (Click again to undo.)">▼</span>
+							  </span>	
+							{% endif %} 
+						</span>
+					</div>
+				{% else %}
+					<div class="votebox" style="color:#999;">
+						▲
+						<br>
+						<span style="color:black;" title="Score">
+							&nbsp;{{votesum}}
+						</span>
+						<br>
+						▼
+					</div>
+				{% endif %}		
+				<div class="middle_group">
+					<div class="top_box">
+						<div class = "vote_name_rate" style="
+							float: left; 
+							clear: left; 
+							margin-top: 10px;
+							">
+							<div class = "name_rate_box" style="float: left;">
+								<div class="name_and_since">
+									<div style="
+										margin-left:20px;
+										font-size:50px;
+										max-width:500px;
+										overflow: auto;
+										">
+										{{the_obj.title}}
+									</div>
+								</div>
+								{% if obj_id_str in user.has_printed_list %}
+									<span class="rating_area">									
+										{% if (rate_avg >= 1) and (rate_avg < 1.5) %}
+											{% include "rate1.html" %}
+										{% elif (rate_avg >= 1.5) and (rate_avg < 2.5) %}
+											{% include "rate2.html" %}
+										{% elif (rate_avg >= 2.5) and (rate_avg < 3.5) %}
+											{% include "rate3.html" %}
+										{% elif (rate_avg >= 3.5) and (rate_avg < 4.5) %}
+											{% include "rate4.html" %}
+										{% elif (rate_avg >= 4.5) and (rate_avg <= 5) %}
+											{% include "rate5.html" %}
+										{% else %}
+											{% include "rate0.html" %}
+										{% endif %}
+									</span>
+								{% elif the_obj.printable == True %}
+									<span title="You can rate objects after you have selected 'I've printed this' on your prinshelf." class="rating_area">
+										{% if (rate_avg >= 1) and (rate_avg < 1.5) %}
+											{% include "rate1_unprinted.html" %}
+										{% elif (rate_avg >= 1.5) and (rate_avg < 2.5) %}
+											{% include "rate2_unprinted.html" %}
+										{% elif (rate_avg >= 2.5) and (rate_avg < 3.5) %}
+											{% include "rate3_unprinted.html" %}
+										{% elif (rate_avg >= 3.5) and (rate_avg < 4.5) %}
+											{% include "rate4_unprinted.html" %}
+										{% elif (rate_avg >= 4.5) and (rate_avg <= 5) %}
+											{% include "rate5_unprinted.html" %}
+										{% else %}
+											{% include "rate0_unprinted.html" %}
+										{% endif %}
+									</span>
+								{% endif %}
+								<div class="refresh_to_rate">
+									Refresh page to rate print quality.
+								</div>
+							</div>
+						</div>
+					</div>
+					{% if obj_type in ['link', 'upload', 'tor'] %}
+						<div class="img_box">
+							{% if img1 %}
+								<div class="img1">
+									<img src="{{img1}}">
+								</div>
+							{% else %}
+								<div class="no_img">
+									No image :(
+									<br>
+									<br>
+									{% if obj_type == 'upload' %}
+										{% if not show_3d_model %}
+											<a href="/obj/{{obj_id}}?webgl=True" title="Larger objects might take a while">
+												<span style="text-decoration:none; text-align:center; font-size:10px;"><img src="/img/glassestiny.png" width="50px"/><br>View in 3D</span>
+											</a>
+										{% endif%}
+									{% endif%}
+								</div>
+							{% endif %}						
+						</div>
+					{% endif %}
+
+					{% if obj_type == 'upload' %}
+						<span class='data1'>
+							<span class='link' title="Empty">
+							</span>
+						</span>
+					{% endif %}
+					{% if obj_link %}
+						<br>
+						{% if short_url == 'www.youtube.com' or short_url == 'youtu.be' %}
+							<div style="margin-top: 100px;">
+								<link href="/css/video-js.css" rel="stylesheet" />
+								<video id="example_video_{{obj_id}}" 
+									class="video-js vjs-default-skin" 
+									controls
+									preload="metadata" 
+									width="600"
+									height="400"
+									data-setup='{"techOrder":["youtube"], "src":"{{obj_link}}"}'>
+								</video>
+								<br>
+							</div>
+						{% endif %} 						
+						<span class='link' title="Go to the host of this object."  style="
+							max-width:500px;
+							padding-left:15px;
+							">
+							<a href="{{obj_link}}">
+								{{obj_link}}
+							</a> 							
+						</span>
+					{% endif %}
+					{% if user %}
+						<span class="flagbox">
+							{% if flagged_by_user == 1 %}
+								<span class= "{{obj_id}}" id="flagged" title="This object has been flagged">
+									<a href='javascript:;' class='flag' id="flagup{{obj_id}}">
+										<span style="color:#0077cc;">
+											unflag
+										</span>
+									</a>
+								</span>
+							{% else %}
+								<span class= "{{obj_id}}" id="flag" title="Report a violation of terms of service" style="
+									font-size:10px;
+									color: #0077cc;
+									cursor: pointer;
+									float: right;
+									margin-top: 0px;
+									">
+									<a href='javascript:;' class='flag' id="flagup{{obj_id}}">
+										<img src="/img/flag.png" height="21px"/>
+										<span style="color:#ccc;">
+										<br>
+										Flag
+										</span>
+									</a>
+								</span>
+							{% endif %}
+						</span>
+						{% if the_obj.main_img_link %}
+							{% if user_is_author %}
+								<span class="delete_img" style="
+									font-size:10px;
+									color: #ccc;
+									cursor: pointer;
+									float: right;
+									margin-top: 5px;
+									margin-right: 5px;	
+									margin-left: 15px;	
+									">
+									<img src="/img/delete_pic.png" width="50px"/>
+									<br>									
+									delete picture
+								</span>
+								<div class="delete_img_box" >
+									<form method="post" action="/object_img_delete">
+
+										<span style="float:left; margin-right: 10px;">
+											<span style="vertical-align:text-top;">Delete this image?</span> 
+											<br>
+											<input type="checkbox" name="check" value="yes" style="float:left; margin-right: 5px; margin-top:3px;">
+											<span style="float:left; margin-right: 5px;">
+												Yes
+											</span> 
+											
+											<input type="hidden" name="obj_id" value="{{obj_id}}">
+											<input type="hidden" name="image_url" value="{{the_obj.main_img_link}}">
+											<input type="hidden" name="verify" value="{{user_hash}}">
+
+											<input type="submit" value="Delete">
+											
+										</span>
+										
+									</form>
+								</div>
+							{% endif %}
+						{% endif %}
+
+						{% if the_obj.printable == True %}
+							{% if user_is_author == True %}
+								{% if img_list_full == False %}
+									<span class="add_img" style="color:#ccc; font-size:10px; text-align:center;">
+										<img src="/img/add_pic.png" width="50px"/>
+										<br>
+										add picture
+									</span>		
+								{% endif %}	
+							{% else %}	
+								{% if visitor_has_added_img == True %}
+									<span class="add_img" style="color:#ccc; font-size:10px; text-align:center;">
+										<img src="/img/camera.png" width="50px"/>
+										<br>										
+										replace picture
+									</span>	
+								{% endif %}								
+								{% if visitor_has_added_img == False %}
+									<span class="add_img" style="color:#ccc; font-size:10px; text-align:center;">
+										<img src="/img/add_pic.png" width="50px"/>
+										<br>										
+										add picture
+									</span>	
+								{% endif %}
+							{% endif %}
+						{% endif %}
+					{% endif %}				
+					{% if user_is_author == True %}
+						{% if img_list_full == False %}
+							<div class="object_img_upload_form" style="float:left; width: 550px; clear:left; margin-left:100px;margin-bottom:10px;">
+								<div class="add_img_box">
+									Add an image
+									<br>
+									<br>								
+									<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+										<input type="hidden" name="obj_id" value="{{the_obj.key().id()}}">
+										<input type="hidden" name="verify" value="{{user_hash}}">
+										<input type="file" name="img" value="{{img_file}}">
+										<br>
+										<br>
+										<input type="checkbox" name="rights" value="yes"> 
+										Rights
+										<br>
+										<br>
+										<input type="submit" value="upload">
+									</form>
+								</div>
+							</div>
+						{% endif %}
+					{% elif user %}
+						{% if visitor_has_added_img == True %}
+							<div class="visitor_img_upload_form" style="float:left; width: 550px; clear:left; margin-left:100px;margin-bottom:10px;">
+								<div class="add_img_box">
+									Replace your image
+									<br>
+									<br>								
+									<form method="post" action="{{visitor_upload_url}}" enctype="multipart/form-data">
+										<input type="hidden" name="obj_id" value="{{the_obj.key().id()}}">
+										<input type="hidden" name="verify" value="{{user_hash}}">
+										<input type="file" name="img" value="{{img_file}}">
+										<br>
+										<br>
+										<input type="checkbox" name="rights" value="yes"> 
+										Rights
+										<br>
+										<br>
+										<input type="submit" value="upload">
+									</form>
+								</div>
+							</div>
+						{% else %}
+							<div class="visitor_img_upload_form" style="float:left; width: 550px; clear:left; margin-left:100px; margin-bottom:10px;">
+								<div class="add_img_box">
+									Add an image
+									<br>
+									<br>								
+									<form method="post" action="{{visitor_upload_url}}" enctype="multipart/form-data">
+										<input type="hidden" name="obj_id" value="{{the_obj.key().id()}}">
+										<input type="hidden" name="verify" value="{{user_hash}}">
+										<input type="file" name="img" value="{{img_file}}">
+										<br>
+										<br>
+										<input type="checkbox" name="rights" value="yes"> 
+										Rights
+										<br>
+										<br>
+										<input type="submit" value="upload">
+									</form>
+								</div>
+							</div>
+
+						{% endif %}
+					{% endif %}
+
+					{% if other_img_list %}
+						<div class="clear">
+						</div>
+						<div class="other_img_box"style="width:600px; margin-left:10px;">
+							{% for img in other_img_list %}
+								<span style="float:left; margin: 5px;">
+									<img src="{{img}}" width="120">
+									<br>
+									<!--Uncomment after we fix the js
+									<span style="float:left;">
+										flag
+									</span>
+									-->
+								</span>
+							{% endfor %}
+							<div style="clear:both;">
+							</div>
+							{% if user_is_author %}
+								<br>
+								{% for img in other_img_list %}
+									<div class="delete_img_box" >
+										<form method="post" action="/object_img_delete">
+
+											<span style="float:left; margin-right: 10px;">
+												<span style="vertical-align:text-top;">Delete this image?</span> 
+												<br>
+												<input type="checkbox" name="check" value="yes" style="float:left; margin-right: 5px; margin-top:3px;">
+												<span style="float:left; margin-right: 5px;">
+													Yes
+												</span> 
+												
+												<input type="hidden" name="obj_id" value="{{obj_id}}">
+												<input type="hidden" name="image_url" value="{{img}}">
+												<input type="hidden" name="verify" value="{{user_hash}}">
+
+												<input type="submit" value="Delete">
+												
+											</span>
+											
+										</form>
+									</div>								
+								{% endfor %}
+							{% endif %}
+							<div style="clear:both;">
+								 <br>
+							</div>						
+						</div>	
+					{% endif %}
+
+					{% if visitor_img_quad_list %}
+						<div class="clear">
+						</div>
+						<div class="other_img_box" style="width:600px; margin-left:10px;">
+							{% for the_quad in visitor_img_quad_list %}
+								<span style="float:left; margin: 5px;">
+									<img src="{{the_quad[2]}}" width="120">
+									<br>
+									by 
+									<a href="/user/{{the_quad[0]}}">
+										{{the_quad[1]}}
+									</a>
+									<br>
+									<!--Uncomment after we fix the js
+									<span style="float:right;">
+										flag
+									</span>
+									-->
+								</span>
+							{% endfor %}
+						</div>
+					{% endif %}				
+				</div>
+
+
+
+				<div class="top_right" style="float:right; width: 330px;">
+					<span class="right_group">
+						<div class="top_buttons">
+							{% if obj_type == 'upload' %}
+								<span class='data1'>
+									<table style="margin-top:10px;">
+										<tr>
+											<td style="padding-top:13px; padding-right:20px; padding-left:12px;">
+												<span class='data1' style="text-align:center;">
+														{% if not show_3d_model %}							
+															<a href="/obj/{{obj_id}}?webgl=True" title="Larger objects might take a while" style="text-decoration:none;">
+																<span style="font-size:10px; color:#444;"><img src="/img/glassestiny.png" height="30px"/><br>View in 3D</span>
+															</a>
+														{% endif %}
+												</span>												
+											</td>
+											<td style="padding-right:30px;">
+												{% if user and the_obj.printable == True %}
+													<span class="printshelf">
+														<span class="{{obj_id}}" id="printshelf_toggle">
+															<img src="/img/print_shelf.png" height="30px"/>
+															<br>
+															<span style="font-size:10px; color:#444;">
+																Printshelf
+															</span>
+														</span> <!-- the problem with expaning is the inline block quality of printshelf i think -->
+														<div class="printshelf_select">
+															<div class="to_print">
+																<span style="font-size: 18px;">
+																	&#9786;
+																</span> 
+																&nbsp;&nbsp;I want to print this
+															</div>
+															<div class="printed">
+																<span style="font-size: 18px;">
+																	&#10003; 
+																</span>
+																&nbsp;&nbsp;I've printed this
+															</div>
+															<div class="gotoprintshelf">
+																<a href="/user/printshelf/{{user_id}}">
+																<span style="font-size: 18px;">
+																	&#9758; 
+																</span>
+																&nbsp;&nbsp;Go to my printshelf
+																</a>
+															</div>
+														</div>
+													</span>
+												{% endif %}	
+											</td>
+
+											<td style="padding-top:11px; padding-right:20px;">
+												<form>
+														<input 
+														id="download_button" 
+														type="button" 
+														onClick="window.location.href='{{the_obj.stl_file_link}}'" 
+														value="Download" 
+														style="
+														float:left;
+														margin-top:-5px;
+														height:30px;
+														padding: 0.3em 0.6em;
+														box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+														background-color: #333;
+														color: #fff;
+														font-size:16px;
+														border: 1px solid #000;
+														border-radius: 3px;
+														text-decoration: none;
+														">
+												</form>
+												<br>
+												<span style="font-size:10px;">
+													{{the_obj.stl_filename}}	
+												</span>
+											</td>
+										</tr>
+									</table>
+									
+								</span>
+
+								{% if the_obj.file_link_2 %}
+									<span class='data1'>
+										<form>
+											<input 
+												id="download_button" 
+												type="button" 
+												onClick="window.location.href='{{the_obj.file_link_2}}'" 
+												value="Download {{the_obj.file_blob_filename_2}}" 
+												style="
+												float:left;
+												margin-top:-5px;
+												height:30px;
+												padding: 0.3em 0.6em;
+												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+												background-color: #333;
+												color: #fff;
+												font-size:16px;
+												border: 1px solid #000;
+												border-radius: 3px;
+												text-decoration: none;
+												">
+										</form>
+									</span>
+								{% endif %}
+								{% if the_obj.file_link_3 %}
+									<span class='data1'>
+										<form>
+											<input id="download_button" type="button" onClick="window.location.href='{{the_obj.file_link_3}}'" value="Download {{the_obj.file_blob_filename_3}}" style="
+												float:left;
+												margin-top:-5px;
+												height:30px;
+												padding: 0.3em 0.6em;
+												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+												background-color: #333;
+												color: #fff;
+												font-size:16px;
+												border: 1px solid #000;
+												border-radius: 3px;
+												text-decoration: none;
+											">
+										</form>
+									</span>
+								{% endif %}
+								{% if the_obj.file_link_4 %}
+									<span class='data1'>
+										<form>
+											<input id="download_button" type="button" onClick="window.location.href='{{the_obj.file_link_4}}'" value="Download {{the_obj.file_blob_filename_4}}" style="
+												float:left;
+												margin-top:-5px;
+												height:30px;
+												padding: 0.3em 0.6em;
+												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+												background-color: #333;
+												color: #fff;
+												font-size:16px;
+												border: 1px solid #000;
+												border-radius: 3px;
+												text-decoration: none;
+											">
+										</form>
+									</span>
+								{% endif %}
+								{% if the_obj.file_link_5 %}
+									<span class='data1'>
+										<form>
+											<input id="download_button" type="button" onClick="window.location.href='{{the_obj.file_link_5}}'" value="Download {{the_obj.file_blob_filename_5}}" style="
+												float:left;
+												margin-top:-5px;
+												height:30px;
+												padding: 0.3em 0.6em;
+												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+												background-color: #333;
+												color: #fff;
+												font-size:16px;
+												border: 1px solid #000;
+												border-radius: 3px;
+												text-decoration: none;
+											">
+										</form>
+									</span>
+								{% endif %}
+							{% elif the_obj.obj_link %}
+								<table style="margin-top:10px;">
+									<tr>
+										<td style="width: 80px; padding-top:13px; padding-right:20px; padding-left:12px;">
+											<span class='data1' style="text-align:center;">
+
+											</span>												
+										</td>
+										<td style="padding-right:30px;">
+											{% if user and the_obj.printable == True %}
+												<span class="printshelf">
+													<span class="{{obj_id}}" id="printshelf_toggle">
+														<img src="/img/print_shelf.png" height="30px"/>
+														<br>
+														<span style="font-size:10px; color:#444;">
+															Printshelf
+														</span>
+													</span> <!-- the problem with expaning is the inline block quality of printshelf i think -->
+													<div class="printshelf_select">
+														<div class="to_print" title="This will be placed on your printshelf.">
+															<span style="font-size: 18px;">
+																&#9786;
+															</span> 
+															&nbsp;&nbsp;I want to print this
+														</div>
+														<div class="printed">
+															<span style="font-size: 18px;" title="">
+																&#10003; 
+															</span>
+															&nbsp;&nbsp;I've printed this
+														</div>
+														<div class="gotoprintshelf">
+															<a href="/user/printshelf/{{user_id}}">
+															<span style="font-size: 18px;">
+																&#9758; 
+															</span>
+															&nbsp;&nbsp;Go to my printshelf
+															</a>
+														</div>
+													</div>
+												</span>
+											{% endif %}	
+										</td>
+
+										<td style="padding-top:11px; padding-right:20px; text-align:center;">
+											<a style="text-decoration:none; color:white;" href="{{obj_link}}">											
+												<span style="
+														width:92px;
+														text-align:center;								
+														float: right;
+														clear: right;
+														padding: 0.3em 0.6em;
+														box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
+														background-color: #333;
+														color: #fff;
+														border: 1px solid #000;
+														border-radius: 3px;
+														text-decoration: none;
+													">
+														&#10149; &nbsp; Link											
+												</span>
+												<br>
+												<span style="font-size:10px; color:#444;">
+													Go to this object's host
+												</span>												
+											</a>
+										</td>
+									</tr>
+								</table>							
+							{% endif %}
+						</div>
+
+						<div class="refresh_info">
+							This object has been added to your 
+							<a href="/user/printshelf/{{user_id}}">
+								printshelf
+							</a>.
+						</div>
+
+						<div class = "obj_info_box">
+							<div class="obj_info_header">
+									<div style="width: 130px; float:left; margin-left:100px">
+										Info
+									</div>
+									{% if user %}
+										{% if user_is_author == True and the_obj.obj_type != "ask"%}
+											<div class="open_info_edit_slide" title="Edit info">
+												&#9998;
+											</div>
+										{% endif %}
+									{% endif %}
+							</div>	
+							<div class="info_edit_slide">		
+								{% if the_obj.obj_type != "ask" %}
+									{% if user %}
+										{% if user_is_author == True %}
+											<span class="open_description_edit_slide">
+												edit
+											</span>
+											{% if not file_list_full %}
+												<a href="/altfile/{{obj_id}}">
+													<span class="other_file_upload_link_slide">
+														add a file
+													</span>
+												</a>
+											{% else %}
+												<a href="/altfile/{{obj_id}}">
+													<span class="other_file_upload_link_slide" style="color:black;">
+														remove a file
+													</span>
+												</a>
+											{% endif %}
+											<span class="delete_object_slide">
+												<a href="/obj/del/{{obj_id}}">
+													delete object
+												</a>
+											</span>		
+										{% endif %}
+									{% endif %}
+								{% endif %}
+							</div>
+
+
+							<div class = "obj_info_body">					
+								{% if author.main_img_link %}
+									<img src="{{author.main_img_link}}" style = "
+										margin-right: 15px;
+										margin-bottom: 15px;
+										float:left;
+										max-width: 90px;
+										max-height: 90px;
+										border-radius:4px; 
+										" />	
+								{% endif %}
+								<span style="
+									color:#999;
+									font-size:14px;
+									">
+									{% if obj_type == 'upload' %}
+										uploaded by
+									{% else %}
+										submitted by
+									{% endif %}
+									<a href="/user/{{author_id}}">
+										<span style="color:#0077cc;">
+											{{author.username}}
+										</span>
+									</a>
+									<br>
+									{{time_since_made}} ago
+									<br>
+									{% if obj_type == 'upload' %}
+										<br>
+										<span style="
+											font-size:14px;
+											float: left;
+											text-align: center;
+											border-top: solid 1px #999;
+											margin-top: 5px;
+											margin-left:-15px;
+											padding: 15px;
+											width:300px;
+											">										
+											<span style="color:black; font-weight:bold;">
+												License
+											</span>
+											<br>
+											<br>
+											{% if license == 'Public Domain Dedication'%}
+												<img src="/img/creative_commons_cc.png" width="30px"/>
+												<br>
+												<span style="font-size:10px;">
+													{{license}} 
+												</span>
+											{% elif license == 'Creative Commons: Attribution'%}
+												<img src="/img/creative_commons_cc.png" width="30px"/> <img src="/img/attribution_by.png" width="30px"/>
+												<br>
+												<span style="font-size:10px;">
+													{{license}} 
+												</span>
+											{% elif license == 'Creative Commons: Attribution, Share Alike'%}
+												<img src="/img/creative_commons_cc.png" width="30px"/> <img src="/img/attribution_by.png" width="30px"/> <img src="/img/attribution_sharealike_sa.png" width="30px"/>
+												<br>
+												<span style="font-size:10px;">
+													{{license}} 
+												</span>
+											{% elif license == 'Creative Commons: Attribution, Non-Commercial'%}
+												<img src="/img/creative_commons_cc.png" width="30px"/> <img src="/img/attribution_by.png" width="30px"/> <img src="/img/attribution_noncommercial_nc.png" width="30px"/>
+												<br>
+												<span style="font-size:10px;">
+													{{license}} 
+												</span>
+											{% elif license == 'Creative Commons: Attribution, Share Alike, Non-Commercial'%}
+												<img src="/img/creative_commons_cc.png" width="30px"/><img src="/img/attribution_by.png" width="30px"/> <img src="/img/attribution_noncommercial_nc.png" width="30px"/> <img src="/img/attribution_sharealike_sa.png" width="30px"/>
+												<br>
+												<span style="font-size:10px;">
+													{{license}} 
+												</span>
+											{% else %}
+												<span style="font-size:10px;">
+													{{license}} 
+												</span>
+											{%  endif %}
+										</span>
+
+									{% endif %}
+									{% if the_obj.original_creator %}
+										<br>
+										created by {{the_obj.original_creator}}
+									{% endif %}
+								</span>
+							</div>
+							{% if the_obj.obj_type != 'ask' %}
+								{% if description_exists == True %}
+									{% if long_description == False %}
+										<span style="
+											font-size:14px;
+											float: left;
+											border-top: solid 1px #999;
+											margin-top: 5px;
+											padding: 15px;
+											width:300px;
+											">
+											<span class="description_text_holder">
+												<div style="font-weight:bold; text-align: center;">
+													Description
+												</div>
+												<br>
+												<div style="text-align: justify;">
+													{{the_obj.description}}
+												</div>
+											</span>
+										</span>
+									{% else %}
+										<span style="
+											float: left;
+											text-align: justify;
+											margin-top: 5px;
+											padding: 15px;
+											color: #999;
+											">
+											description below
+										</span>
+									{% endif %}
+								{% endif %}
+
+								{% if description_exists == False %}
+									<span class = "description_none_default" style = "				
+										float: left; 
+										display: none;
+										text-align: justify;
+										border-top: solid 1px #999;
+										margin-top: 5px;
+										padding: 15px;
+										width:300px;	
+										">
+										Description: &nbsp;
+										<span class="description_text_holder">
+										</span>						
+									</span>
+							
+								{% endif %}
+
+								{% if long_description == False and the_obj.obj_type != "ask" %}
+
+									<div>
+										{% if user %}
+											{% if user_is_author == True %}
+												<div class="description_edit" style="margin:15px; display:none;">
+													<br>
+													<form method="post">
+														<pre><textarea name='description' id="description_text" style="width:300px; height:80px;">{{description}}</textarea></pre>
+														<input type="hidden" name="description_obj_id" value="{{obj_id}}" id="description_obj_id">
+														<input type="hidden" name="description_user_id" value="{{user_id}}" id="description_user_id">
+														<input type="hidden" name="verify" value="{{user_hash}}" id="description_verify">
+														<span class="description_submit">
+															<span class="submit_edits">
+																Submit edits
+															</span>
+															<br>
+															<br>
+														</span>
+													</form>
+													<br>
+													<br>
+													<span class="cancel_description_submit" style="float:right;clear:left;cursor:pointer;color:red;">
+														cancel
+													</span>	
+												</div>
+											{% endif %}
+										{% endif %}
+									</div>
+								{% endif %}
+							{% endif %}
+						</div>
+					</span>
+
+					<span class="right_group">
+						{% if printed_by_list %}
+							<div class="printed_by_list">
+								<div class="printed_by_header">
+									Printed by
+								</div>
+								{% for a_user in printed_by_list %}
+									<div class="printed_by_list_item">
+										<div class="user_{{a_user.key().id()}}">
+											<a href="/user/{{a_user.key().id()}}">
+												{% if a_user.main_img_link %}
+													<img class="user_img" src="{{a_user.main_img_link}}">
+													<br>
+												{% endif %}
+												{{a_user.username}}
+											</a>
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						{% else %}
+						{% endif %}
+						{% if tags or user %}
+							<div class = "tag_box">					
+								<div class = "tag_box_header">
+									<div style="width: 130px; float:left; margin-left:100px">
+										Tags
+									</div>
+									{% if user %}
+										<div class="open_tags_edit" title="Add/edit tags">
+											&#9998;
+										</div>
+									{% endif %}											
+
+								</div>
+								<div class = "tag_box_body">
+								{% if tags %}				
+									<span>
+										<span class="tag_list">
+											{% for tag in tags %}
+												<span class = "tag_color">										
+													<a href="/tag/{{tag}}">
+														{{tag}}
+													</a>
+												</span>											
+											{% endfor %}
+										</span>
+									</span>
+
+									<span class="refresh_to_see_tags_edit" style="
+										display:none;
+										color: red;">
+										refresh to see updated tag list
+									</span>
+
+									{% if user %}
+										<div class="tags_edit" style="display:none;">
+											<br>
+											<br>
+											<form method="post">
+												<hr>
+												{% if user_is_author == True %}
+													<span title="Other users cannot edit these">Author tags</span>
+													<br>
+													<input type="text" name='author_tags' value='{{author_tag_str}}' id="author_tag_edit_tags">
+													<br>
+													<br>
+												{% endif %}
+												<span title="Anyone can edit these">Public tags</span>
+												<br>
+												<input type="text" name='public_tags' value='{{public_tag_str}}' id="public_tag_edit_tags">
+												<br>
+												<br>
+												<!-- <input type="submit" value="update">
+												Removed submit button to prevent redirect 
+												-->
+												<input type="hidden" name="obj_id" value="{{obj_id}}" id="author_tag_edit_obj_id">
+												<input type="hidden" name="user_id" value="{{user_id}}" id="user_id_input">
+												
+												<span class="cancel_tag_submit" style="float:right;clear:left;cursor:pointer;color:red;">
+													cancel
+												</span>
+												<span class="tag_submit" title="Separate tags with commas">
+													Submit edits
+												</span>
+												<br>
+												<br>
+
+											</form>
+										</div>
+									{% endif %}
+								{% else %}
+									{% if user %}
+										<span class="tag_list" style="font-size:14px;">
+											Add some tags!
+											Help others find this object!
+										</span>
+										<span class="refresh_to_see_tags_edit" style="
+											display:none;
+											color: red;">
+											refresh to see updated tag list
+										</span>
+
+										<div class="tags_edit" style="display:none;" title="Separate tags with commas">
+											<br>
+											<br>
+											<form method="post">
+												<hr>
+												{% if user_is_author == True %}
+													<span title="Other users cannot edit these">Author tags</span>
+													<br>
+													<input type="text" name='author_tags' value='{{author_tag_str}}' id="author_tag_edit_tags">
+													<br>
+													<br>
+												{% endif %}
+												<span title="Anyone can edit these">Public tags</span>
+												<br>
+												<input type="text" name='public_tags' value='{{public_tag_str}}' id="public_tag_edit_tags">
+												<br>
+												<br>
+												<!-- <input type="submit" value="update">
+												Removed submit button to prevent redirect 
+												-->
+												<input type="hidden" name="obj_id" value="{{obj_id}}" id="author_tag_edit_obj_id">
+												<input type="hidden" name="user_id" value="{{user_id}}" id="user_id_input">
+												
+												<span class="cancel_tag_submit" style="float:right;clear:left;cursor:pointer;color:red;">
+													cancel
+												</span>
+												<span class="tag_submit">
+													Submit edits
+												</span>
+												<br>
+												<br>
+											</form>
+										</div>
+									{% endif %}
+								{% endif %}
+								</div>
+							</div>
+						{% endif %}				
+					</span>
+					<!-- Since we have ajax edits we don't need the edit link anymore
+					<span class="printshelf_and_edit_object" style = "
+						float:right;
+						clear:right;
+						display: block;
+						">
+
+						{% if user_is_author == True %}
+							<a href="/obj/edit/{{obj_id}}">
+								<div style="
+									float:right; 
+									clear:right; 
+									color:black; 
+									margin-top:5px; 
+									margin-right:109px; 
+									margin-bottom: 10px;
+									border:solid #999 3px; 
+									padding-top:6px;
+									padding-left:5px;
+									padding-right:5px; 
+									border-radius:5px; 
+									height: 24px;  
+									">
+					
+									edit this object
+
+								</div>
+							</a>
+						{% elif has_cookie %}
+						{% endif %}
+					</span> -->
+				</div>
+				{% if obj_type == 'ask' %}
+					<div class = "ask_box">
+						<span class="description_text_holder">
+							{{the_obj.description}}
+						</span>
+						<br>
+						<br>
+						<span class="open_description_edit_slide" style="float:left; border-radius:4px; padding-left:5px; text-align: center;">
+							edit
+						</span>	
+						<span class="delete_object_slide" style="width: 110px; float:right; border-radius:4px; padding-left:5px; text-align: center;">
+							<a href="/obj/del/{{obj_id}}">
+								delete question
+							</a>
+						</span>										
+					</div>
+					<div>
+						{% if user %}
+							{% if user_is_author == True %}
+								<div class="description_edit" style="margin:15px; display:none;">
+									<br>
+									<form method="post">
+										<pre><textarea name='description' id="description_text" style="margin-top: 10px; margin-bottom: 10px; width:300px; height:80px;">{{description}}</textarea></pre>
+										<input type="hidden" name="description_obj_id" value="{{obj_id}}" id="description_obj_id">
+										<input type="hidden" name="description_user_id" value="{{user_id}}" id="description_user_id">
+										<input type="hidden" name="verify" value="{{user_hash}}" id="description_verify">
+										<span class="description_submit">
+											<span class="submit_edits">
+												Submit edits
+											</span>
+											<br>
+											<br>
+										</span>
+									</form>
+									<br>
+									<br>
+									<span class="cancel_description_submit" style="float:right;clear:left;cursor:pointer;color:red;">
+										cancel
+									</span>	
+								</div>
+							{% endif %}
+						{% endif %}
+					</div>
+				{% endif %}
+
+
+
+
+
+
+
+				{% if long_description == True and the_obj.obj_type != "ask" %}
+					<div style="width: 630px; float:left;"> 
+						{% if user %}
+							{% if user_is_author == True %}
+								<div>
+									<div class="description_edit" style="display:none; margin-left:90px;">
+										<br>
+										<form method="post">
+											<pre><textarea name='description' id="description_text" style="width:630px; height:350px">{{description}}</textarea></pre>
+											<input type="hidden" name="description_obj_id" value="{{obj_id}}" id="description_obj_id">
+											<input type="hidden" name="description_user_id" value="{{user_id}}" id="description_user_id">
+											<input type="hidden" name="verify" value="{{user_hash}}" id="description_verify">
+											<span class="description_submit">
+												<span style="
+													background: white; 
+													border:solid 1px #999; 
+													border-radius:4px;
+													padding: 5px;
+													cursor:pointer;
+													float:left;
+													clear:left;
+													margin-right:15px">
+													Submit edits
+												</span>
+											</span>
+										</form>
+										<br>
+										<br>
+										<span class="cancel_description_submit" style="float:right;clear:left;cursor:pointer;color:red;">
+											cancel
+										</span>					
+									</div>
+								</div>
+							{% endif %}
+						{% endif %}
+						<div class="description_text_holder" style="
+							width: 600px;
+							margin-top:10px;
+							margin-bottom: 20px;
+							margin-left:90px;
+							">
+							Description
+							<br>
+							<pre>{{the_obj.description}}</pre>
+						</div>						
+					</div>
+				{% endif %}
+
+				<div class="comment_section">
+					{% if user %}
+						<form method='post'>
+							<div class="combox">
+								Comment
+								<br>
+								<br>
+								<textarea name="obj_comment_form"></textarea>
+								<div style="color:red;">
+									{{error}}
+								</div>
+								<input type="hidden" name="verify" value="{{user_hash}}">
+								<span style="float:right;">
+									<input type="submit" value="Post">
+								</span>
+							</div>
+						</form>
+					{% else %}
+						<div style="margin-left:35px;">
+							<br>
+							You must
+							<a href="/login">log in</a>
+							or
+							<a href="/signup">sign up</a>
+							to comment.
+						</div>
+					{% endif %}
+					<br>
+					<br style="clear:left">
+
+					<ul>
+						{% for node in comment_triplet_list %} 
+							{% if node %}
+								{% if node[0].obj_parent != None %}
+									{% include "sub.html" %}
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+					</ul>
+
+				</div>
+				<div class="bottom_white_space" style="
+					float: left;
+					clear: both;
+					height: 200px;
+					">
+
+				</div>
+
+
+			{% else %}
+				<div style="float: left; margin: 20px;">
+					<br>
+					<h1>
+						This item is unavailable.
+					</h1>
+					<br>
+					{% if the_obj.deleted %}
+						<h2>
+							It has been deleted.
+						</h2>
+					{% elif the_obj.under_review %}
+						<h2>
+							It is under review.
+						</h2>
+					{% endif %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+</body>
+</html>

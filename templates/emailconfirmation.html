@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Email Confirmation
+	</title>
+</head>
+	<style>
+	* {
+		margin:0px;
+		font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+		//border:solid #999 1px;
+	}
+	* a{
+		text-decoration: none;
+		color:#0077cc;
+	}
+
+	* a:visited{
+		color:#4a6b82;
+	}
+	.header3 {
+		margin:0px;
+		padding-top: 3px;
+		//border-bottom: 1px #999 solid;
+		vertical-align: top;
+		color:#4a6b82;		
+	}
+	.header3 a {
+		text-decoration: none;
+		color:#4a6b82;
+		vertical-align: top;
+	}	
+	</style>
+<body>
+	{% include "header3.html" %}	
+	{% if no_email %}
+		<div>
+			You must
+			<a href="/login">
+				log in
+			</a>
+			to confirm your email address.
+		</div>
+	{% else %}
+		<h1 name="message">
+			{{message}}
+		</h1>	
+		<hr>
+		<a href="/">home</a>
+	{% endif %}
+</body>
+</html>
