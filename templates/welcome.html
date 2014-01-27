@@ -83,6 +83,9 @@
 	<div class="backspace"style="
 			width:100%;
 			">
+		{% if not user %}
+			{% include "why_bld3r.html" %}
+		{% endif %}				
 		<div class="center_container" style="
 
 				width:1100px;   
@@ -94,7 +97,7 @@
 			<h1 name="welcome" style="color:black; text-align:center; margin-top:20px;">
 				Welcome to Bld3r
 				<br>
-				<img src="/img/bld3r_alt_logo.png" height="150">
+				<img src="/img/logo_white_square.png" height="150">
 			</h1>	
 			<div style="text-align:center; font-size:18px;">
 				Bld3r is a community for 3D printing tinkerers and enthusiasts.  
@@ -530,5 +533,6 @@
 			<br>
 		</div>
 	</div>
+	{% include "scripts.html" %}
 </body>
 </html>

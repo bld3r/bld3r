@@ -77,6 +77,9 @@
 	<div class="backspace"style="
 			width:100%;
 			">
+		{% if not user %}
+			{% include "why_bld3r.html" %}
+		{% endif %}				
 		<div class="center_container" style="
 				width:1100px;   
 				display: block;
@@ -102,10 +105,9 @@
 							float:right;
 							height:30px;
 							padding-bottom: 10px;
-							box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-							background-color: #333;
+							background-color: #009200;
 							color: #fff;
-							border: 1px solid #000;
+							border: 1px solid #fafafa;
 							border-radius: 3px;
 							text-decoration: none;
 							cursor:pointer;
@@ -123,5 +125,6 @@
 
 		</div>
 	</div>
+	{% include "scripts.html" %}
 </body>
 </html>

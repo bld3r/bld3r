@@ -22,6 +22,11 @@
 		* a:visited{
 			color:#4a6b82;
 		}
+
+		nav ul {
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
 		.top {
 			float:left;
 		}
@@ -37,7 +42,7 @@
 			float:left;
 			width:730px;
 			//background: #333;
-			margin-top:20px;
+			//margin-top:20px;
 			margin-left: 15px;
 		}
 		.tag_item {
@@ -46,6 +51,7 @@
 			height: 160px;
 			margin-right:10px;
 			margin-bottom:10px;
+			padding-top:30px;
 		}
 
 		.tag_color {
@@ -89,11 +95,14 @@
 	</style>
 </head>
 
-<body>
+<body style="margin:0px;">
 	{% include "header3.html" %}
 	<div class="backspace"style="
 			width:100%;
 			">
+		{% if not user %}
+			{% include "why_bld3r.html" %}
+		{% endif %}				
 		<div class="center_container" style="
 				width:1100px;   
 				display: block;
@@ -182,7 +191,7 @@
 			</div>
 		</div>
 	</div>
-
+	{% include "scripts.html" %}
 </body>
 </html>
 

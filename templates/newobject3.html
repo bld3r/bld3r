@@ -61,9 +61,6 @@
 		margin-left: 15px;
 	}
 	form {
-		float: left;
-		margin-top: 20px;
-		margin-left: 20px;
 		max-width: 800px;
 	}
 
@@ -110,7 +107,7 @@
 				<hr>
 			</div>
 
-			<div class="input_container" style="float:left; width:600px;  height:auto;">			
+			<div class="input_container" style="float:left; width:600px;  height:auto; margin-bottom:30px; margin-left:20px;">			
 				<div class="name">			
 					{{the_obj.title}}
 				</div>
@@ -121,7 +118,7 @@
 					{% else %}
 					{% endif %}
 				</div>				
-				<form method="post">
+				<form method="post" style="margin-top: 20px;">
 					<table>
 						<tr>
 							<td>
@@ -157,7 +154,18 @@
 						
 					<div style="padding-bottom:20px; float:left; clear:left; margin-left:110px;">
 						<br>
-						<input type="submit" value="Submit" >
+						<input type="submit" value="Submit" style="
+							width:200px;
+							height:30px;
+							padding: 0.3em 0.6em;
+							background-color: #009200;
+							font-size: 18px;
+							color: #fff;
+							border: 1px solid #fafafa;
+							border-radius: 3px;
+							text-decoration: none;	
+							cursor: pointer;		
+							">
 					</div>
 					<div>
 						<br>

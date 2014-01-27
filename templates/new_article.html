@@ -56,8 +56,6 @@
 		margin-left: 15px;
 	}
 	form {
-		clear:both;
-		margin-top: 20px;
 		max-width: 800px;
 	}
 /*	.form_entry {
@@ -105,7 +103,7 @@
 
 			<div class="input_container" style="float:left; width:600px;  height:auto; margin-bottom:30px; margin-left:20px;">	
 
-				<form method="post">
+				<form method="post" style="margin-top: 20px;">
 					<table>
 						<tr>
 							<td>
@@ -120,7 +118,7 @@
 								Link							
 							</td>
 							<td>
-								<input class="link" type="text" name="link" value="{{link}}">
+								<input class="link" type="text" name="link" value="{{link}}" style="font-size:30px;">
 								{% if error %}
 								<div class="error">
 									{{error}}
@@ -130,7 +128,7 @@
 						</tr>
 					</table>
 					<div style="
-						margin-left:115px;
+						margin-left:58px;
 						padding-bottom:10px; 
 						float:left; 
 						clear:left;
@@ -139,11 +137,10 @@
 							width:200px;
 							height:30px;
 							padding: 0.3em 0.6em;
-							box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-							background-color: #333;
+							background-color: #009200;
 							font-size: 18px;
 							color: #fff;
-							border: 1px solid #000;
+							border: 1px solid #fafafa;
 							border-radius: 3px;
 							text-decoration: none;		
 							">

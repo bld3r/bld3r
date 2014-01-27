@@ -1,3 +1,87 @@
+<style>
+	nav ul ul {
+		display: none;
+	}
+
+		nav ul li:hover > ul {
+			display: block;
+		}
+	nav ul {
+		background: #f5f5f5; 
+		background: linear-gradient(top, #f5f5f5 0%, #f1f1f1 100%);  
+		background: -moz-linear-gradient(top, #f5f5f5 0%, #f1f1f1 100%); 
+		background: -webkit-linear-gradient(top, #f5f5f5 0%,#f1f1f1 100%); 
+		//box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+		
+		border: 1px solid #dcdcdc;
+		border-radius: 3px; 
+		padding: 0px;
+		//padding-top: 5px;
+		//padding-bottom: 5px;
+		list-style: none;
+		position: relative;
+		display: inline-table;
+	}
+
+		nav ul:after {
+			content: ""; clear: both; display: block;
+		}
+
+	nav ul li {
+		float: left;
+	}
+
+	nav ul li a{
+		color:black;
+		border-right: 1px solid #dcdcdc;
+	}
+
+		nav ul li:hover {
+			background: #fafafa;
+/*			background: linear-gradient(top, #4f5964 0%, #5f6975 40%);
+			background: -moz-linear-gradient(top, #4f5964 0%, #5f6975 40%);
+			background: -webkit-linear-gradient(top, #4f5964 0%,#5f6975 40%);*/
+		}
+			nav ul li:hover a {
+				color: black;
+			}
+		
+		nav ul li a {
+			display: block; 
+			padding: 0px 15px;
+		}
+
+	nav ul ul {
+		background: #fff;
+		border: 1px solid #ccc;
+		border-color: rgba(0,0,0,.2);
+		box-shadow: 0 2px 10px rgba(0,0,0,.2);	
+
+		padding: 0;
+		position: absolute; 
+		//top: 100%;
+		z-index:4;
+	}
+		nav ul ul li {
+			float: none; 
+			border-top: 1px solid #fafafa;
+			border-bottom: 1px solid #f5f5f5;
+			position: relative;
+		}
+			nav ul ul li a {
+				padding: 4px 15px;
+			}	
+				nav ul ul li a:hover {
+					background: #f5f5f5;
+					//color: #0077cc;;
+				}
+
+	nav ul ul ul {
+		position: absolute; left: 100%; top:0;
+	}								
+
+</style>
+
 <div style="
 	float:left;
 	width:100%; 
@@ -32,175 +116,338 @@
 			margin-top:4px; 
 			float:left
 			;">
+			<nav>
+				<ul>
+					{% if user %}
+						<li>
+							<a href="/new" style="color:#444;">share</a>
+							<ul>
+								<li>
+									<a href="/newobject">upload</a>
+								</li>
+								<li>
+									<a href="/newlink">link</a>
+								</li>
+								<li>
+									<a href="/newtor">torrent</a>
+								</li>
+								<li>
+									<a href="/newlesson">lesson</a>
+								</li>		
+								<li>
+									<a href="/newarticle">news</a>
+								</li>								
+							</ul>
+						</li>
+					{% else %}
+						<li>
+							<a href="/signup" style="color:#444;">share</a>
+							<ul>
+								<li>
+									<a href="/signup">upload</a>
+								</li>
+								<li>
+									<a href="/signup">link</a>
+								</li>
+								<li>
+									<a href="/signup">torrent</a>
+								</li>
+								<li>
+									<a href="/signup">lesson</a>
+								</li>		
+								<li>
+									<a href="/signup">news</a>
+								</li>								
+							</ul>							
+						</li>
+					{% endif %}
 
-			{% if user %}
-				<span title="Upload or link to a 3d print file" style="
-					float: left;
-					margin-right:5px; 
-					margin-left:5px;
-					">
-					<a href="/new">	
-						<span style="color:#0077cc;">
-							share
-						</span>
-					</a> 
-				</span>
-				<span style="
-					float: left;
-					margin-top: -1px;
-					">
-					|
-				</span>
-			{% else %}
-				<span title="Upload or link to a 3d print file" style="
-					float: left;
-					margin-right:5px; 
-					margin-left:5px;
-					">
-					<a href="/signup">	
-						<span style="color:#0077cc;">
-							share
-						</span>
-					</a> 
-				</span>
-				<span style="
-					float: left;
-					margin-top: -1px;
-					">
-					|
-				</span>
-			{% endif %}
-			<span style="
-				float: left;
-				margin-right:5px;
-				margin-left:5px;
-				">
-				<a href="/objects">	
-					<span title="Download 3D models" style="color:#0077cc;">
-						objects
-					</span>
-				</a>
-			</span>
-			<span style="
-				float: left;
-				margin-top: -1px;
-				">
-				|
-			</span>
-			<span style="
-				float: left;
-				margin-right:5px;
-				margin-left:5px;
-				">
-				<a href="/university">	
-					<span title="Learn, ask, and teach about 3D printing" style="color:#0077cc;">
-						tutorials
-					</span>
-				</a>
-			</span>
-			<span style="
-				float: left;
-				margin-top: -1px;
-				">
-				|
-			</span>
-			<span title="News about 3d printing" style="
-				float: left;
-				margin-right:5px;
-				margin-left:5px;
-				">
-				<a href="/news">	
-					<span style="color:#0077cc;">
-						news
-					</span>
-				</a>
-			</span>
-			<span style="
-				float: left;
-				margin-top: -1px;
-				">
-				|
-			</span>
-			<span style="
-				float: left;
-				margin-right:5px; 
-				margin-left:5px;
-				">
-				<a href="/w/home">
-					<span title="Bld3r's wiki page" style="color:#0077cc;">
-						wiki
-					</span>
-				</a>
-			</span>
-			<span style="
-				float: left;
-				margin-top: -1px;
-				">
-				|
-			</span>
-			<span style="
-				float: left;
-				margin-right:5px; 
-				margin-left:5px;
-				">
-				<a href="/welcome">
-					<span title="We're a 3D printing social network" style="color:#0077cc;">
-						about
-					</span>
-				</a>
-			</span>
-			<span style="
-				float: left;
-				margin-top: -1px;
-				">
-				|
-			</span>
-			<span style="
-				float: left;
-				margin-right:5px; 
-				margin-left:5px;
-				">
-				<a href="/contact">
-					<span title="Send us an email" style="color:#0077cc;">
-						contact
-					</span>
-				</a>
-			</span>
-			<span style="
-				float: left;
-				margin-top: -1px;
-				">
-				|
-			</span>			
-			<span title="Search for an object" style="
-				float: left;
-				margin-right:5px; 
-				margin-left:5px;
-				">
-				<a href="/tag">
-					<span style="color:#0077cc;">
-						search
-					</span>
-				</a>
-			</span>
-			{% if not no_search_bar %}
-				<form method="post" action="/tag" style="
-					float:left; 
-					margin-left: 5px;
-					margin-top: -2px;
-					">
-					<input style="height: 10.5px;" type="text" name="search" />
-				</form>
-			{% endif %}
+					<li>
+						<a href="/objects" style="color:#444;">objects</a>
+						<ul>
+							<li>		
+								<a href="/">
+									<span>
+										hot
+									</span>
+								</a> 
+							</li>
+							<li>
+								<a href="/newmain">
+									<span>
+										new
+									</span>
+								</a> 
+							</li>
+							<li>
+								<a href="/topmain">
+									<span>
+										top
+									</span>
+								</a> 
+							</li>
+							<li>
+								<a href="/recentcommentsmain">
+									<span>
+										recent comments
+									</span>
+								</a>
+							</li>
+						</ul>						
+					</li>
+					<li>
+						<a href="/university" style="color:#444;">tutorials</a>
+						{% if user %}
+							<ul>
+								<li>		
+									<a href="/university">
+										<span>
+											hot
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/newuniversity">
+										<span>
+											new
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/topuniversity">
+										<span>
+											top
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/ask">
+										ask a question
+									</a>
+								</li>
+								<li>
+									<a href="/newlesson">
+										share a lesson
+									</a>
+								</li>
+							</ul>
+						{% else %}
+							<ul>
+								<li>		
+									<a href="/university">
+										<span>
+											hot
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/newuniversity">
+										<span>
+											new
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/topuniversity">
+										<span>
+											top
+										</span>
+									</a> 
+								</li>							
+								<li>
+									<a href="/signup" >
+										ask a question
+									</a>
+								</li>
+								<li>
+									<a href="/signup">
+										share a lesson
+									</a>
+								</li>
+							</ul>						
+						{% endif %}
+					</li>		
+					<li>
+						<a href="/news" style="color:#444;">news</a>
+						{% if user %}
+							<ul>
+								<li>		
+									<a href="/news">
+										<span>
+											hot
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/newnews">
+										<span>
+											new
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/topnews">
+										<span>
+											top
+										</span>
+									</a> 
+								</li>							
+								<li>
+									<a href="/newarticle">share an article</a>
+								</li>
+							</ul>
+						{% else %}
+							<ul>
+								<li>		
+									<a href="/news">
+										<span>
+											hot
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/newnews">
+										<span>
+											new
+										</span>
+									</a> 
+								</li>
+								<li>
+									<a href="/topnews">
+										<span>
+											top
+										</span>
+									</a> 
+								</li>								
+								<li>
+									<a href="/signup">share an article</a>
+								</li>
+							</ul>						
+						{% endif %}
+					</li>
+					<li>
+						<a href="/w/home" style="color:#444;">wiki</a>
+					</li>
+					<li>
+						<a href="/parts" style="color:#444;">parts</a>
+						<ul>
+							<li>
+								<a href="/tag/part_for_Adapto">Adapto</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Cartesio">Cartesio</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Darwin">Darwin</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Foldarap">Foldarap</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Eventorbot">Eventorbot</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_GolemD">GolemD</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Huxley">Huxley</a>
+							</li>	
+							<li>
+								<a href="/tag/part_for_Mendel">Mendel</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_MendelMax">Mendel Max</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_MendelMax_20">Mendel Max 2.0</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Mendel90">Mendel 90</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Morgan">Morgan</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Printrbot">Printrbot</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Prusa">Prusa</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Prusa_i3">Prusa i3</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Prusa_i3xl">Prusa i3xl</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_RepRapPro_Huxley">RepRapPro Huxley</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_RepRapPro_Mendel">RepRapPro Mendel</a>
+							</li>
+							<li>
+								<a href="/tag/part_for_Simpson">Simpson</a>
+							</li>							
+						</ul>
+					</li>
+					<li>
+						<a href="/welcome" style="color:#444;">about</a>
+						<ul>
+							<li>
+								<a href="/contact" style="color:#444;">contact</a>
+							</li>
+						</ul>
+					</li>				
+					<li>
+						<a href="/tag" style="color:#444;">tags</a>		
+					</li>				
+						{% if not no_search_bar %}
+							<li>
+								<form method="post" action="/tag" style="
+									float:left; 
+									margin-top:-2px;
+									margin-left:1px;
+									margin-right:1px;
+									">
+									<input style="height: 14px; width: 150px;" placeholder="Search by tag" type="text" name="search" />
+								</form>
+							</li>
+						{% endif %}			
+				</ul>
+						
+			</nav>
 		</span>
+		{% if not user %}
+			<div class="why_bld3r_button" style="
+				padding: 5px;
+				text-align: center;
+				border-top:1px solid #e8e8e8;
+				border-left:1px solid #e8e8e8;
+				border-right:1px solid #e8e8e8;
 
+				-webkit-box-shadow: 0 8px 6px -6px #888888;
+				-moz-box-shadow: 0 8px 6px -6px #888888;
+				box-shadow: 0 8px 6px -6px #888888;
+				
+				-moz-border-radius: 3px;
+				-webkit-border-radius: 3px;
+				
+				border-radius: 3px;        
+				float:left;
+				margin-left: 75px;
+				overflow: hidden;
+				cursor:pointer;
+				">
+				Why Bld3r?
+			</div>
+		{% endif %}	
 	</span>
 	<span style="
 		float:right; 
 		margin-top:5px; 
 		padding-right:5px;
 		color: 0077cc;
-		">
+		">	
 		{% if user %}
 
 			<span style="
@@ -256,7 +503,9 @@
 						margin-top: 1px;
 						color: #555;
 						letter-spacing: -1px;
-						">
+						" 
+						title="Reputation"
+						>
 						{{user.obj_rep}}
 					</span>
 					<span style="
@@ -273,11 +522,23 @@
 				float: right;
 				margin-right: 3px;
 				">
-				<a href="/user/{{user_id}}" title="Your userpage">
-					<span style="color:#0077cc;">
-						{{user.username}}
-					</span>
-				</a>
+				<nav>
+					<ul>
+						<li>
+							<a href="/user/{{user_id}}" style="color:#444;">
+								{{user.username}}
+							</a>
+							<ul>
+								<li>
+									<a href="/user/printshelf/{{user_id}}">printshelf</a>
+								</li>
+								<li>
+									<a href="/user/edit/{{user_id}}">edit account</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
 			</span>
 		{% else %}
 			<a href="/signup">
@@ -293,7 +554,7 @@
 					log in
 				</span>
 			</a>
-		{% endif %}
+		{% endif %}	
 	</span>		
 </div>
 <div style="clear:both;height:1px">

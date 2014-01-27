@@ -19,6 +19,7 @@ import uuid
 import json
 #import struct
 #import matplotlib # this breaks the dev tools
+from fake_names import fake_names
 #from pystltoolkit import stlparser
 from do_not_copy import data
 from urlparse import urlparse
@@ -251,8 +252,8 @@ DB_TYPE_LIST = ["Users",
 				"UserBlob", 
 				"ObjectBlob", 
 				"WikiEntry"]
-DAY_SCALE = 4 #also again below
-DAYS_TIL_DECLINE = 3 #also again below
+DAY_SCALE = 2 # 2 days
+DAYS_TIL_DECLINE = 4 #also again below
 class Users(db.Model):
 	db_type			= db.StringProperty(required = True, default = "Users")
 	username 		= db.StringProperty(required = True)
@@ -373,6 +374,7 @@ class Objects(db.Model):
 	time_since 		= db.StringProperty() # this var should stay empty, and is generated only on page load, but never put to db.
 
 	most_recent_comment_epoch = db.FloatProperty(default=0.00)
+	total_num_of_comments = db.IntegerProperty(default = 0)
 	
 	# someone else's work?
 	original_creator	= db.StringProperty()
@@ -577,6 +579,13 @@ class ObjectBlob(db.Model):
 	filename	= db.StringProperty()
 
 	deleted 	= db.BooleanProperty(default = False)
+#########################################################
+####################### Fake Names #######################
+ADMIN_USERNAMES = [
+					"scoofy","matt","aoeu","aoeuaoeu",
+					"thong", "barf"
+				  ]
+FAKE_NAME_LIST = fake_names.return_names()
 #########################################################
 ####################### Tasks #######################
 #class Task():
@@ -844,8 +853,12 @@ class AdminDelHandler(Handler):
 
 class FrontHandler(Handler):
 	def render_front_page(self, page_type, page_num="1"):
+		global ADMIN_USERNAMES
+		global FAKE_NAME_LIST
 		user = self.return_user_if_cookie()
 		user_id = self.check_cookie_return_val("user_id")
+		current_time = time.time()
+		print "The time is:", current_time
 		
 		content_type = "kids"
 		over18 = self.check_cookie_return_val("over18")
@@ -860,10 +873,23 @@ class FrontHandler(Handler):
 		if page_type in object_pages:
 			object_query = object_query.filter('printable =', True)
 
+		### obj list method ###
+		use_object_list = False
+		if page_type =="/":
+			use_object_list = True
+			object_list = list(object_query)
+		###
+
 		if page_type == "/":
 			cursor_url = "/?cursor="
 			# sort by rank, then epoch if a tie
 			object_query.order('-rank').order('-epoch')
+
+			###
+			for obj in object_list:
+				obj.rank = return_rank(obj)
+			object_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+			###
 
 		elif page_type == "/objects":
 			cursor_url = "/objects?cursor="
@@ -873,9 +899,11 @@ class FrontHandler(Handler):
 		elif page_type == "/recentcommentsmain":
 			cursor_url = "/recentcommentsmain?cursor="
 			object_query.order('-most_recent_comment_epoch')
+
 		elif page_type == "/newmain":
 			cursor_url = "/newmain?cursor="
 			object_query.order('-epoch')
+
 		elif page_type == "/topmain":
 			cursor_url = "/topmain?cursor="
 			object_query.order('-votesum')
@@ -885,11 +913,31 @@ class FrontHandler(Handler):
 			cursor_url = "/news?cursor="
 			object_query.order('-rank').order('-epoch')
 
+		elif page_type == "/newnews":
+			object_query = object_query.filter('news =', True)
+			cursor_url = "/newnews?cursor="
+			object_query.order('-epoch')
+
+		elif page_type == "/topnews":
+			object_query = object_query.filter('news =', True)
+			cursor_url = "/topnews?cursor="
+			object_query.order('-votesum')
+
 		elif page_type == "/university":
 			object_query = object_query.filter('learn =', True)
 			cursor_url = "/university?cursor="
 			object_query.order('-rank').order('-epoch')
-			
+
+		elif page_type == "/newuniversity":
+			object_query = object_query.filter('learn =', True)
+			cursor_url = "/newuniversity?cursor="
+			object_query.order('-epoch')
+
+		elif page_type == "/topuniversity":
+			object_query = object_query.filter('learn =', True)
+			cursor_url = "/topuniversity?cursor="
+			object_query.order('-votesum')
+
 		elif page_type == "/video":
 			object_query = object_query.filter('learn =', True)
 			cursor_url = "/video?cursor="
@@ -898,41 +946,27 @@ class FrontHandler(Handler):
 		cursor = self.request.get("cursor")
 		if cursor:
 			object_query.with_cursor(cursor)
-		#the_objects = object_query.fetch(30)
+
 		page_num = int(page_num)
 		next_page_num = page_num + 1
 		number_of_items_to_fetch = 30
-		the_objects = object_query.fetch(number_of_items_to_fetch, offset = max((page_num - 1) * number_of_items_to_fetch, 0))
+
+		if use_object_list:
+			the_objects = object_list[( (page_num -1) * number_of_items_to_fetch) : (page_num * number_of_items_to_fetch)]
+		else:
+			the_objects = object_query.fetch(number_of_items_to_fetch, offset = max((page_num - 1) * number_of_items_to_fetch, 0))
 		cursor = object_query.cursor()
 
-		if page_type in ["/", "/news", "/university", "/objects"]:
+		if page_type in ["/", "/news", "/newnews", "/topnews", "/university", "/newuniverisy", "topuniversity", "/objects"]:
 			# resort with live updating rankings
 			for obj in the_objects:
-				# logging.warning(obj.title)
-				# logging.warning(obj.rank)
-				# logging.warning('---------')
 				obj.rank = return_rank(obj)
-
-			# logging.warning('------------------------------------')
-			
-			# for obj in the_objects:
-			# 	logging.warning(obj.title)
-			# 	logging.warning(obj.rank)
-			# 	logging.warning('---------')
-
 			the_objects.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
 
-			# logging.warning('------------------------------------')
-			# for obj in the_objects:
-			# 	logging.warning(obj.title)
-			# 	logging.warning(obj.rank)
-			# 	logging.warning(obj.epoch)
-			# 	logging.warning('---------')
-
 		the_dict = cached_vote_data_for_masonry(the_objects, user_id)
-		if page_type == "/news":
-			for obj in the_dict:
-				print obj
+		#if page_type == "/news":
+			#for obj in the_dict:
+				#print obj
 		#logging.warning(the_dict)
 		end_of_content = None
 		if len(the_dict) == 0:
@@ -953,6 +987,9 @@ class FrontHandler(Handler):
 
 						page_num = page_num,
 						next_page_num = next_page_num,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
 						)
 			return
 		elif page_type == "/objects":
@@ -967,6 +1004,9 @@ class FrontHandler(Handler):
 
 						page_num = page_num,
 						next_page_num = next_page_num,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
 						)
 			return
 		elif page_type == "/news":
@@ -978,8 +1018,42 @@ class FrontHandler(Handler):
 						cursor = cursor,
 						cursor_url = cursor_url,
 						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
 						)
 			return
+
+		elif page_type == "/newnews":
+			self.render("news_front.html",
+						user = user,
+						user_id = user_id,
+
+						the_dict = the_dict,
+						cursor = cursor,
+						cursor_url = cursor_url,
+						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
+						)
+			return
+
+		elif page_type == "/topnews":
+			self.render("news_front.html",
+						user = user,
+						user_id = user_id,
+
+						the_dict = the_dict,
+						cursor = cursor,
+						cursor_url = cursor_url,
+						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
+						)
+			return			
+
 		elif page_type == "/university":
 			self.render("uni_front.html",
 						user = user,
@@ -989,8 +1063,42 @@ class FrontHandler(Handler):
 						cursor = cursor,
 						cursor_url = cursor_url,
 						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
 						)
 			return
+
+		elif page_type == "/newuniversity":
+			self.render("uni_front.html",
+						user = user,
+						user_id = user_id,
+
+						the_dict = the_dict,
+						cursor = cursor,
+						cursor_url = cursor_url,
+						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
+						)
+			return
+
+		elif page_type == "/topuniversity":
+			self.render("uni_front.html",
+						user = user,
+						user_id = user_id,
+
+						the_dict = the_dict,
+						cursor = cursor,
+						cursor_url = cursor_url,
+						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
+						)
+			return			
+
 		elif page_type == "/video":
 			self.render("uni_front_video.html",
 						user = user,
@@ -1000,6 +1108,9 @@ class FrontHandler(Handler):
 						cursor = cursor,
 						cursor_url = cursor_url,
 						end_of_content = end_of_content,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
 						)
 			return	
 class MainEverything(FrontHandler):
@@ -1135,6 +1246,7 @@ class MainPageRecentComments(FrontHandler):
 
 	def post(self):
 		pass
+
 class MainPageNew(FrontHandler):
 	def render_front(self):
 		pass
@@ -1473,6 +1585,9 @@ class ObjectPage(Handler):
 		
 		printed_by_list = return_printed_by_list(obj_id)
 		#logging.warning(printed_by_list)
+
+		global ADMIN_USERNAMES
+		global FAKE_NAME_LIST
 		
 		self.render('objectpage.html', 
 					user = user,
@@ -1546,6 +1661,9 @@ class ObjectPage(Handler):
 					public_tag_str = public_tag_str,
 
 					show_3d_model = show_3d_model,
+
+					ADMIN_USERNAMES = ADMIN_USERNAMES,
+					FAKE_NAME_LIST = FAKE_NAME_LIST,
 					)
 
 	def get(self, obj_num):
@@ -1701,6 +1819,9 @@ class ObjectPage(Handler):
 						logging.warning('6 second sleep for new subcomment by same previous comment author')
 						time.sleep(6)
 
+				obj_comments = obj_comment_cache(obj_id, update=True)
+				the_object.total_num_of_comments = len(obj_comments)
+
 				the_object.most_recent_comment_epoch = float(time.time())
 				the_object.put()
 				memcache.set("Objects_%d" % obj_id, [the_object])
@@ -1710,7 +1831,8 @@ class ObjectPage(Handler):
 				else:
 					all_objects_query("sfw", update=True)
 
-				obj_comment_cache(obj_id, update=True)
+
+
 				user_page_comment_cache(user_id, update=True) # no longer needed really...
 				user_page_obj_com_cache(user_id, update=True)
 				if kids_bool == True:
@@ -2233,6 +2355,11 @@ class AjaxTagEdit(Handler):
 			#			  countdown = 6
 			#			 )
 		eliminated_tags = []
+		for tag in obj.tags:
+			if tag not in old_tags:
+				store_page_cache_kids(tag, update=True) # tag page
+				store_page_cache_sfw(tag, update=True) # tag page
+				store_page_cache_nsfw(tag, update=True) # tag page
 		for tag in old_tags:
 			if tag not in obj.tags:
 				eliminated_tags.append(tag)
@@ -2240,9 +2367,9 @@ class AjaxTagEdit(Handler):
 			logging.warning('updating eliminated tag search pages, sleep 6')
 			time.sleep(6)
 			for tag in eliminated_tags:
-				store_page_cache_kids(tag, update=True)
-				store_page_cache_sfw(tag, update=True)
-				store_page_cache_nsfw(tag, update=True)
+				store_page_cache_kids(tag, update=True) # tag page
+				store_page_cache_sfw(tag, update=True) # tag page
+				store_page_cache_nsfw(tag, update=True) # tag page
 class ObjectImgUpload(ObjectUploadHandler):
 	def post(self):
 		user_id = self.check_cookie_return_val("user_id")
@@ -2502,6 +2629,10 @@ class ObjectAltFile(Handler):
 		if not obj:
 			self.error(404)
 			return
+		elif obj.obj_type != "upload":
+			self.error(400)
+			self.redirect('/obj/%d' % obj_id)
+			return
 		if user.key().id() != obj.author_id:
 			logging.warning('user %d is attempting to edit object %d' %(user.key().id(), obj_id))
 			self.redirect('/obj/%d' % obj_id)
@@ -2536,6 +2667,10 @@ class ObjectAltFile(Handler):
 		obj = return_thing_by_id(obj_id, "Objects")
 		if not obj:
 			self.error(400)
+			return
+		elif obj.obj_type != "upload":
+			self.error(400)
+			self.redirect('/obj/%d' % obj_id)
 			return
 		user = self.return_user_if_cookie()
 		if not user:
@@ -4152,10 +4287,10 @@ class CommentPage(Handler):
 			self.error(404)
 			return
 		the_object = return_thing_by_id(com.obj_ref_id, "Objects")
-		obj_id = int(the_object.key().id())
 		if the_object is None:
 			self.error(404)
 			return
+		obj_id = int(the_object.key().id())
 		the_comments = obj_comment_cache(obj_id)
 		subcomment_var = None
 		parent_comment = None
@@ -4245,7 +4380,12 @@ class CommentPage(Handler):
 					all_objects_query("sfw", update=True)
 
 				object_page_cache(obj_id, update=True)
-				obj_comment_cache(obj_id, update=True)
+				obj_comments = obj_comment_cache(obj_id, update=True)
+
+				the_object.total_num_of_comments = len(obj_comments)
+				the_object.put()
+				memcache.set("Objects_%s" % str(obj_id), [the_object])
+
 				user_page_comment_cache(user_id, update=True) # no longer needed really...
 				user_page_obj_com_cache(user_id, update=True)
 				if kids_bool == True:
@@ -5636,6 +5776,15 @@ class SignUpPage(Handler):
 			if user.username_lower == name_var.lower():
 				username_already_exists = True
 				break
+
+		# add global fake names to list to make sure people don't accidentally pick a fake name the admins use
+		global FAKE_NAME_LIST
+		fake_names = []
+		for name in FAKE_NAME_LIST:
+			fake_names.append(name.lower())
+		if name_var.lower() in fake_names:
+			username_already_exists = True
+
 		logging.warning("User signup hits DB every time here")
 		
 		if username_already_exists:
@@ -5967,7 +6116,7 @@ class DeleteCommentHandler(Handler):
 		user_id = int(user_id)
 		com_id = self.request.get('com_id')
 		com = return_com_by_id(com_id)
-		# reguardless of children, these will change
+		# regardless of children, these will change
 		com.author_id = None
 		com.author_name = None
 		com.washed = True	
@@ -5989,7 +6138,13 @@ class DeleteCommentHandler(Handler):
 			com.text = "deleted"
 		com.put()
 		logging.warning('db put -- comment deleted')
-		obj_comment_cache(com.obj_ref_id, update=True, delay = 6)
+		
+		obj_comments = obj_comment_cache(com.obj_ref_id, update=True, delay = 6)
+		the_object = return_obj_by_id(com.obj_ref_id)
+		the_object.total_num_of_comments = len(obj_comments)
+		the_object.put()
+		memcache.set("Objects_%s" % str(com.obj_ref_id), [the_object])
+
 		user_page_comment_cache(user_id, update=True)
 		user_page_obj_com_cache(user_id, update=True)
 		user_page_obj_com_cache_kids(user_id, update=True)
@@ -6358,6 +6513,24 @@ class UniMain(FrontHandler):
 
 	def post(self):
 		pass
+
+class UniMainNew(FrontHandler):
+	def render_front(self):
+		pass
+	def get(self):
+		self.render_front_page("/newuniversity")
+
+	def post(self):
+		pass
+
+class UniMainTop(FrontHandler):
+	def render_front(self):
+		pass
+	def get(self):
+		self.render_front_page("/topuniversity")
+
+	def post(self):
+		pass		
 
 class UniMainVideo(FrontHandler):
 	def render_front(self):
@@ -6747,6 +6920,7 @@ class NewAskPage(Handler):
 																									str(cgi.escape(new_object.title))),
 							)
 				self.redirect('/obj/%d' % new_object.key().id())
+
 class NewsPage(FrontHandler):
 	def render_front(self):
 		pass
@@ -6788,6 +6962,24 @@ class NewsPage(FrontHandler):
 
 	def post(self):
 		pass
+
+class NewsPageNew(FrontHandler):
+	def render_front(self):
+		pass
+	def get(self):
+		self.render_front_page("/newnews")
+
+	def post(self):
+		pass
+
+class NewsPageTop(FrontHandler):
+	def render_front(self):
+		pass
+	def get(self):
+		self.render_front_page("/topnews")
+
+	def post(self):
+		pass		
 
 class NewArticlePage(Handler):
 	def render_page(self):
@@ -7004,6 +7196,15 @@ class NewArticlePage(Handler):
 				#news_front_cache(update=True, delay=0) # delay above
 				self.redirect('/obj/%d' % new_object.key().id())	
 
+class RepRapTypesPage(Handler):
+	def render_page(self):
+		user = self.return_user_if_cookie()
+
+		self.render("parts.html", 
+					user = user,
+					)
+	def get(self):
+		self.render_page()	
 
 class TagSearchMain(Handler):
 	def render_page(self, error="", tag_searched=""):
@@ -7670,7 +7871,11 @@ def return_current_wiki_page(title, update=False, delay = 0):
 			if len(page) > 0:
 				page = page[0]
 			page = [page]
-		memcache.set(key, page)
+		try:
+			memcache.set(key, page)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return page[0]
 def return_all_wiki_pages_from_cache(update = False, delay = 0):
 	key = 'all_wiki_pages'
@@ -7683,7 +7888,11 @@ def return_all_wiki_pages_from_cache(update = False, delay = 0):
 		pages = WikiEntry.all()
 		pages = list(pages)
 		pages.sort(key = lambda x: x.epoch, reverse=True)
-		memcache.set(key, pages)
+		try:
+			memcache.set(key, pages)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return pages
 def return_one_wiki_page_history_from_cache(title, update = False, delay = 0):
 	key = 'wiki/' + str(title)
@@ -7695,7 +7904,11 @@ def return_one_wiki_page_history_from_cache(title, update = False, delay = 0):
 		pages = db.GqlQuery('SELECT * FROM WikiEntry WHERE title = :1 ORDER BY epoch DESC', title)
 		if pages is not None:
 			pages = list(pages)
-		memcache.set(key, pages)
+		try:
+			memcache.set(key, pages)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return pages
 def return_wiki_history_from_cache(title, update = False, delay = 0):
 	key = 'history/' + str(title)
@@ -7708,14 +7921,18 @@ def return_wiki_history_from_cache(title, update = False, delay = 0):
 		history = db.GqlQuery('SELECT * FROM WikiEntry WHERE title = :1 ORDER BY epoch DESC', title)
 		if history is not None:
 			history = list(history)
-		memcache.set(key, history)
+		try:
+			memcache.set(key, history)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return history
 
 
 #########################################################
 
 ####################### vote/rate/flag in cache #######################
-#DAY_SCALE = 4
+#DAY_SCALE =  0.25 # approximately 6 hours
 def one_long_vote_function(obj_id, user_id, newvote):
 	"""
 	Record 'user' casting a 'vote' for a quote with an id of 'quote_id'.
@@ -7823,15 +8040,17 @@ def one_long_vote_function(obj_id, user_id, newvote):
 
 def return_rank(obj_or_com):
 	global DAY_SCALE
-	# day scale = 4
+	# day scale =  2 days
 	global DAYS_TIL_DECLINE
-	# days til decline = 3
+	# days til decline = 4
 	days_til_decline = DAYS_TIL_DECLINE
+
+	one_day = 86400 #seconds
 
 	time_now = float(time.time())
 	birth = obj_or_com.epoch
 	seconds_alive = time_now - birth
-	days_alive = float(seconds_alive) / float(86400)
+	days_alive = float(seconds_alive) / float(one_day)
 	#logging.warning("days_alive")
 	#logging.warning(days_alive)
 	if days_alive < 0.01: # approx 15 minutes
@@ -7842,7 +8061,7 @@ def return_rank(obj_or_com):
 	decay = 0
 	if days_alive > days_til_decline:
 		# decay equation is 2/3 of days alive + votesum factor for every day it has been alive
-		decay = float(float(2/3)*(days_alive-3)) + (inverse_votesum*(days_alive-3))
+		decay = float(float(2/3)*(days_alive-days_til_decline)) + (inverse_votesum*(days_alive-days_til_decline))
 
 	rank = "%020d" % (
 		# changing this to use epoch not 'com.created_int'
@@ -8261,6 +8480,12 @@ def cached_vote_data_for_masonry(obj_list, user_id):
 			parse = urlparse(obj_link)
 			#logging.warning(parse)
 			short_url = parse[1]
+		number_of_comments = obj.total_num_of_comments
+		if number_of_comments > 0:
+			number_of_comments = "(%d)" % number_of_comments
+		else:
+			number_of_comments = ""
+
 		obj_dict.append({
 			'db_type': obj.db_type,
 			'id': obj.key().id(),
@@ -8285,7 +8510,7 @@ def cached_vote_data_for_masonry(obj_list, user_id):
 
 			'flagged_by_user':return_user_flag_from_tuple(this_obj_id, user_id),
 			'time_since': time_since_creation(obj.epoch),
-			'num_comments': num_comments_of_obj(obj.key().id()),
+			'num_comments': number_of_comments,
 
 
 			#'quote': quote.quote,
@@ -8296,7 +8521,10 @@ def cached_vote_data_for_masonry(obj_list, user_id):
 		})
 	#index += 1
 	return obj_dict
+
+### num_comments_of_obj has been replaced in it's main usage, but not certain if completely gone
 def num_comments_of_obj(obj_id):
+	#no longer used that i know of, but check
 	num = len(obj_comment_cache(obj_id))
 	if num > 0:
 		return "(%d)" % num
@@ -8323,7 +8551,11 @@ def sort_comment_child_rank_after_vote(parent_id, update=False, delay = 0):
 		sorted_list.append(int(com_tuple.split('|')[1]))
 		logging.warning(sorted_list)
 	ranked_list = sorted_list
-	memcache.set(key, ranked_list)
+	try:
+		memcache.set(key, ranked_list)
+	except Exception as exception:
+		logging.error("memcache set error")
+		print exception
 	logging.warning(ranked_list)
 	return ranked_list
 def return_comment_vote_flag_triplet(comment, user_id=None):
@@ -8466,7 +8698,11 @@ def return_thing_by_id(thing_id, db_model_name, update=False, delay = 0):
 		else:
 			thing = [[]]
 		logging.warning(thing)
-		memcache.set(key, thing)
+		try:
+			memcache.set(key, thing)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return thing[0]
 
 def update_objects_changed_list_cache(obj_id):
@@ -8486,7 +8722,11 @@ def update_objects_changed_list_cache(obj_id):
 		the_list.append(obj_id)
 		logging.warning(the_list)
 		cache_list = [the_list]
-		memcache.set(key, cache_list)
+		try:
+			memcache.set(key, cache_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 def update_comments_changed_list_cache(com_id):
 	key = "comments_changed_list"
 	cache_list = memcache.get(key)
@@ -8505,7 +8745,11 @@ def update_comments_changed_list_cache(com_id):
 		the_list.append(com_id)
 		logging.warning(the_list)
 		cache_list = [the_list]
-		memcache.set(key, cache_list)	
+		try:
+			memcache.set(key, cache_list)	
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 def put_objects_in_changed_list_to_db():
 	key = "objects_changed_list"
 	cache_list = memcache.get(key)
@@ -8521,7 +8765,11 @@ def put_objects_in_changed_list_to_db():
 			db.put(obj)
 		the_list = []
 		cache_list = [the_list]
-		memcache.set(key, cache_list)
+		try:
+			memcache.set(key, cache_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 def put_comments_in_changed_list_to_db():
 	key = "comments_changed_list"
 	cache_list = memcache.get(key)
@@ -8538,8 +8786,11 @@ def put_comments_in_changed_list_to_db():
 			db.put(com)
 		the_list = []
 		cache_list = [the_list]
-		memcache.set(key, cache_list)
-
+		try:
+			memcache.set(key, cache_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 
 def update_front_style_memcache_after_vote(changed_obj, cache_key):
 	# this will reset front_page_cache(_*) style caches
@@ -8615,7 +8866,11 @@ def update_store_style_memcache_after_vote(changed_obj, tag, cache_key):
 				break
 		the_objects.sort(key = lambda x: x.rate_avg, reverse=True)
 
-		memcache.set(key, the_list)
+		try:
+			memcache.set(key, the_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	else:
 		return
 def update_store_style_memcache_after_rate(changed_obj, tag, cache_key):
@@ -8648,7 +8903,11 @@ def update_store_style_memcache_after_rate(changed_obj, tag, cache_key):
 				break
 		the_objects.sort(key = lambda x: x.rate_avg, reverse=True)
 
-		memcache.set(key, the_list)
+		try:
+			memcache.set(key, the_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	else:
 		return
 def update_object_page_memcache_after_vote(changed_obj, obj_id):
@@ -8662,7 +8921,11 @@ def update_object_page_memcache_after_vote(changed_obj, obj_id):
 	the_object = obj_singleton[0]
 	the_object.votesum = changed_obj.votesum
 
-	memcache.set(key, obj_singleton)
+	try:
+		memcache.set(key, obj_singleton)
+	except Exception as exception:
+		logging.error("memcache set error")
+		print exception
 def update_object_page_memcache_after_rate(changed_obj, obj_id):
 	key = "object" + str(obj_id)	
 	obj_singleton = memcache.get(key)
@@ -8675,8 +8938,11 @@ def update_object_page_memcache_after_rate(changed_obj, obj_id):
 	the_object.rate_avg = changed_obj.rate_avg
 	the_object.been_rated = changed_obj.been_rated
 	the_object.num_ratings = changed_obj.num_ratings
-
-	memcache.set(key, obj_singleton)
+	try:
+		memcache.set(key, obj_singleton)
+	except Exception as exception:
+		logging.error("memcache set error")
+		print exception
 def update_object_page_memcache_after_flag(changed_obj, obj_id):
 	key = "object" + str(obj_id)	
 	obj_singleton = memcache.get(key)
@@ -8688,9 +8954,11 @@ def update_object_page_memcache_after_flag(changed_obj, obj_id):
 	the_object = obj_singleton[0]
 	the_object.flagsum = changed_obj.flagsum
 	the_object.been_flagged = changed_obj.been_flagged
-
-	memcache.set(key, obj_singleton)
-
+	try:
+		memcache.set(key, obj_singleton)
+	except Exception as exception:
+		logging.error("memcache set error")
+		print exception
 
 def return_user_rate_from_tuple(obj_id, user_id):
 	key = "rate_val_tuple|" + str(user_id) + "|" + str(obj_id)
@@ -8719,14 +8987,22 @@ def return_user_rate_from_tuple(obj_id, user_id):
 			if oldrate == 0:
 				logging.error('Error -- object %d rater_list and rater_rate lists do not match' % int(obj_id))
 			user_rate = (user_id, oldrate)
-			memcache.set(key, user_rate)
+			try:
+				memcache.set(key, user_rate)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception		
 			return user_rate[1]
 
 		else:
 			# This user has not rated before
 			# oldrate set to 0 by default above
 			user_rate = (user_id, oldrate)
-			memcache.set(key, user_rate)
+			try:
+				memcache.set(key, user_rate)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
 			return user_rate[1]
 		
 	else:
@@ -8758,14 +9034,22 @@ def return_user_flag_from_tuple(obj_id, user_id):
 			if oldflag == 0:
 				logging.error('Error -- object %d flagger_list and flagger_flag lists do not match' % int(obj_id))
 			user_flag = (user_id, oldflag)
-			memcache.set(key, user_flag)
+			try:
+				memcache.set(key, user_flag)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
 			return user_flag[1]
 			
 		else:
 			# This user has not flagged before
 			# oldflag set to 0 by default above
 			user_flag = (user_id, oldflag)
-			memcache.set(key, user_flag)
+			try:
+				memcache.set(key, user_flag)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
 			return user_flag[1]
 	else:
 		flag = user_flag[1]
@@ -8794,7 +9078,11 @@ def front_page_cache(content_type, cursor_count = 0, update = False, delay = 0):
 		logging.warning("DB Query front_page_cache %s" % content_type)
 		the_objects_singlton = [the_objects]
 		# set memcache
-		memcache.set(key, the_objects_singlton)
+		try:
+			memcache.set(key, the_objects_singlton)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_objects_singlton[0]
 # These second two are superfluous, i'll just use a lambda function to sort
 def front_page_cache_new(content_type, cursor_count = 0, update = False, delay = 0):
@@ -8819,7 +9107,11 @@ def front_page_cache_new(content_type, cursor_count = 0, update = False, delay =
 		logging.warning("DB Query front_page_cache_new_ %s" % content_type)
 		the_objects_singlton_new = [the_objects]
 		# set memcache
-		memcache.set(key, the_objects_singlton_new)
+		try:
+			memcache.set(key, the_objects_singlton_new)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_objects_singlton_new[0]
 def front_page_cache_top(content_type, cursor_count = 0, update = False, delay = 0):
 	key = 'front_page_cache_top_%s' % content_type
@@ -8843,7 +9135,11 @@ def front_page_cache_top(content_type, cursor_count = 0, update = False, delay =
 		logging.warning("DB Query front_page_cache_top_ %s" % content_type)
 		the_objects_singlton_top = [the_objects]
 		# set memcache
-		memcache.set(key, the_objects_singlton_top)
+		try:
+			memcache.set(key, the_objects_singlton_top)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_objects_singlton_top[0]
 ###
 
@@ -8860,7 +9156,11 @@ def store_page_cache(search_term, update = False, delay = 0):
 		# Turn gql objects to lists
 		the_list = list(the_objects)
 		# set memcache
-		memcache.set(key, the_list)
+		try:
+			memcache.set(key, the_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_list
 def store_page_cache_kids(search_term, update = False, delay = 0):
 	key = 'store_page_cache_kids|%s' % search_term
@@ -8874,7 +9174,11 @@ def store_page_cache_kids(search_term, update = False, delay = 0):
 		# Turn gql objects to lists
 		the_list = list(the_objects)
 		# set memcache
-		memcache.set(key, the_list)
+		try:
+			memcache.set(key, the_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_list
 def store_page_cache_sfw(search_term, update = False, delay = 0):
 	key = 'store_page_cache_sfw|%s' % search_term
@@ -8888,7 +9192,11 @@ def store_page_cache_sfw(search_term, update = False, delay = 0):
 		# Turn gql objects to lists
 		the_list = list(the_objects)
 		# set memcache
-		memcache.set(key, the_list)
+		try:
+			memcache.set(key, the_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_list
 def store_page_cache_nsfw(search_term, update = False, delay = 0):
 	key = 'store_page_cache_nsfw|%s' % search_term
@@ -8902,7 +9210,11 @@ def store_page_cache_nsfw(search_term, update = False, delay = 0):
 		# Turn gql objects to lists
 		the_list = list(the_objects)
 		# set memcache
-		memcache.set(key, the_list)
+		try:
+			memcache.set(key, the_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return the_list
 
 def object_page_cache(obj_id, update=False, delay = 0):
@@ -8921,7 +9233,11 @@ def object_page_cache(obj_id, update=False, delay = 0):
 			obj_in_cache.put()
 			logging.warning('db put object_page_cache remove duplicate tags')
 		obj_in_cache = [obj_in_cache]
-		memcache.set(key, obj_in_cache)
+		try:
+			memcache.set(key, obj_in_cache)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return obj_in_cache[0]
 
 def return_obj_by_id(obj_id, update=False, delay = 0):
@@ -8940,7 +9256,11 @@ def return_com_by_id(com_id, update=True, delay = 0):
 			time.sleep(int(delay))
 		comment = Comments.get_by_id(com_id)
 		comment = [comment]
-		memcache.set(key, comment)
+		try:
+			memcache.set(key, comment)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return comment[0]
 
 def obj_comment_cache(obj_id, update=False, delay = 0):
@@ -8956,7 +9276,11 @@ def obj_comment_cache(obj_id, update=False, delay = 0):
 			comments_in_cache = list(comments_in_cache)
 		else:
 			comments_in_cache = []
-		memcache.set(key, comments_in_cache)
+		try:
+			memcache.set(key, comments_in_cache)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return comments_in_cache
 
 def objects_cache(update=False, delay=0):
@@ -8968,7 +9292,11 @@ def objects_cache(update=False, delay=0):
 		all_objects = db.GqlQuery("SELECT * FROM Objects WHERE deleted = FALSE ORDER BY created DESC")
 		object_list = list(all_objects)
 		logging.warning(object_list)
-		memcache.set(key, object_list)
+		try:
+			memcache.set(key, object_list)
+		except Exception as exception:
+			logging.error("There is an issue with memcache on the tag search page.")
+			print exception
 	return object_list
 def all_objects_query(content_type, update=False, delay = 0):
 	key = 'all_objects_query_%s' % content_type
@@ -8992,7 +9320,12 @@ def all_objects_query(content_type, update=False, delay = 0):
 			self.error(400)
 			logging.error('all_objects_query no content_type specified')
 			return
-		memcache.set(key, object_query)
+		try:
+			memcache.set(key, object_query)
+		except Exception as exception:
+			logging.error("all_objects_query failed to set memcache... probably due to too large a size")
+			print exception
+
 	return object_query
 
 def users_cache(update = False, delay = 0):
@@ -9005,7 +9338,11 @@ def users_cache(update = False, delay = 0):
 		logging.warning("DB Users Query")
 		all_users = db.GqlQuery("SELECT * FROM Users WHERE deleted = FALSE ORDER BY created DESC")
 		user_list = list(all_users)
-		memcache.set(key, user_list)
+		try:
+			memcache.set(key, user_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return user_list
 def comments_cache(update = False, delay = 0):
 	key = 'all_comments'
@@ -9017,7 +9354,11 @@ def comments_cache(update = False, delay = 0):
 		logging.warning("DB Users Query")
 		all_com = db.GqlQuery("SELECT * FROM Comments WHERE deleted = FALSE ORDER BY created DESC")
 		com_list = list(all_com)
-		memcache.set(key, com_list)
+		try:
+			memcache.set(key, com_list)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return com_list
 def user_page_cache(user_id, update=False, delay = 0):
 	# changed key to be identical key to return_thing_by_id for a user
@@ -9030,7 +9371,11 @@ def user_page_cache(user_id, update=False, delay = 0):
 		logging.warning("DB Page Query -- user_page_cache")
 		user_in_db = Users.get_by_id(user_id)
 		user_in_db = [user_in_db]
-		memcache.set(key, user_in_db)
+		try:
+			memcache.set(key, user_in_db)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return user_in_db[0]
 def user_page_object_cache(author_id, update=False, delay = 0):
 	key = 'user_object_by_id' + str(author_id)
@@ -9043,7 +9388,11 @@ def user_page_object_cache(author_id, update=False, delay = 0):
 		the_objects = db.GqlQuery("SELECT * FROM Objects WHERE author_id = :1 AND deleted = FALSE ORDER BY created DESC", author_id)
 		the_objects = list(the_objects)
 		user_objects_in_db = the_objects
-		memcache.set(key, user_objects_in_db)
+		try:
+			memcache.set(key, user_objects_in_db)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return user_objects_in_db
 def user_page_comment_cache(author_id, update=False, delay = 0):
 	key = 'user_comments_by_id' + str(author_id)
@@ -9056,7 +9405,11 @@ def user_page_comment_cache(author_id, update=False, delay = 0):
 		the_comments = db.GqlQuery("SELECT * FROM Comments WHERE author_id = :1 AND deleted = FALSE ORDER BY created DESC", author_id)
 		the_comments = list(the_comments)
 		user_comments_in_db = the_comments
-		memcache.set(key, user_comments_in_db)
+		try:
+			memcache.set(key, user_comments_in_db)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return user_comments_in_db
 def user_page_obj_com_cache(author_id, update=False, delay = 0):
 	key = 'user_obj_com_cache'+str(author_id)
@@ -9123,7 +9476,11 @@ def user_page_obj_com_cache(author_id, update=False, delay = 0):
 		# 			#the_comments.remove(com)
 		# the_list.append(len(the_list))
 		in_db = the_list
-		memcache.set(key, in_db)
+		try:
+			memcache.set(key, in_db)
+		except Exception as exception:
+			logging.error("There is an issue with memcache on the user pages who upload a lot.")
+			print exception
 	return in_db
 def user_page_obj_com_cache_kids(author_id, update=False, delay = 0):
 	key = 'user_obj_com_cache_kids'+str(author_id)
@@ -9140,7 +9497,11 @@ def user_page_obj_com_cache_kids(author_id, update=False, delay = 0):
 		the_list = the_objects + the_comments
 		the_list.sort(key = lambda x: x.epoch, reverse=True)
 		in_db = the_list
-		memcache.set(key, in_db)
+		try:
+			memcache.set(key, in_db)
+		except Exception as exception:
+			logging.error("There is an issue with memcache on the user pages")
+			print exception
 	return in_db
 
 def user_messages_cache(recipient_id, update=False, delay = 0):
@@ -9159,8 +9520,11 @@ def user_messages_cache(recipient_id, update=False, delay = 0):
 		sent = list(sent)
 		messages = received + sent
 		messages.sort(key = lambda x: x.epoch, reverse=True)
-
-		memcache.set(key, messages)
+		try:
+			memcache.set(key, messages)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return messages
 
 def learn_front_cache(update = False, delay = 0): # no longer used
@@ -9215,11 +9579,19 @@ def return_object_blob_by_key_name(referenced_blob_key, update=False, delay = 0)
 			logging.warning('query returned NoneType -- return_object_blob_by_key_name')
 			blob_ref = None
 			blob_ref = [blob_ref]
-			memcache.set(key, blob_ref)
+			try:
+				memcache.set(key, blob_ref)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
 		else:
 			blob_ref = new_blob_ref
 			blob_ref = [blob_ref]
-			memcache.set(key, blob_ref)
+			try:
+				memcache.set(key, blob_ref)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
 	return blob_ref[0]
 def return_object_blob_by_obj_id_and_priority(obj_id, priority, update = False, delay = 0):
 	key = "object_%d_blob_priority_%d" % (int(obj_id), int(priority))
@@ -9238,7 +9610,11 @@ def return_object_blob_by_obj_id_and_priority(obj_id, priority, update = False, 
 		if len(blob_ref) == 0:
 			logging.error('Object blob doesnt exist -- return_object_blob_by_obj_id_and_priority')
 			return
-		memcache.set(key, blob_ref)
+		try:
+			memcache.set(key, blob_ref)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	else:
 		#logging.warning('cached ObjectBlob')
 		pass
@@ -9708,7 +10084,11 @@ def return_printed_by_list(obj_id, update=False, delay=0):
 		if len(users_who_have_printed) > 1:
 			users_who_have_printed.sort(key = lambda x: x.obj_rep, reverse=True)
 		# set memcache
-		memcache.set(key, users_who_have_printed)
+		try:
+			memcache.set(key, users_who_have_printed)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 	return users_who_have_printed
 def new_note(recipient_id, note_text, delay=0):
 	user = return_thing_by_id(int(recipient_id), "Users", delay=int(delay))
@@ -9737,7 +10117,11 @@ def new_note(recipient_id, note_text, delay=0):
 	time.sleep(int(delay))
 	key = "%s_%d" % ("Users", int(recipient_id))
 	user = [user]
-	memcache.set(key ,user)
+	try:
+		memcache.set(key ,user)
+	except Exception as exception:
+		logging.error("memcache set error")
+		print exception
 def is_blacklisted_referer(referer):
 	global REFERER_BLACKLIST
 	blacklist = REFERER_BLACKLIST
@@ -9850,8 +10234,8 @@ def obj_update(update=False):
 		logging.warning(objlist)
 		counter = 1
 		for obj in objlist:
-			if obj.licence:
-				obj.license = obj.licence
+			num_of_comments = len(obj_comment_cache(obj.key().id()))
+			obj.total_num_of_comments = num_of_comments
 			logging.warning('putting object %d', counter)
 			obj.put()
 			counter += 1
@@ -9983,7 +10367,11 @@ def app_start_cache(update = False):
 		# 	pass
 
 		default_db_entries = "Default objects created %d seconds from epoch." % int(round(time.time()))
-		memcache.set(key, default_db_entries)
+		try:
+			memcache.set(key, default_db_entries)
+		except Exception as exception:
+			logging.error("memcache set error")
+			print exception
 #app_start_cache()
 #########################################################
 #########################################################
@@ -10036,16 +10424,21 @@ app = webapp2.WSGIApplication([
 
 	('/thingtracker', ThingTracker),
 
-
 	(r'/com/(\d+)', CommentPage),
 
 	('/university', UniMain),
+	('/newuniversity', UniMainNew),
+	('/topuniversity', UniMainTop),	
 	('/video', UniMainVideo),
 	('/newlesson', NewLessonPage),
 	('/ask', NewAskPage),
 
 	('/news', NewsPage),
+	('/newnews', NewsPageNew),
+	('/topnews', NewsPageTop),	
 	('/newarticle', NewArticlePage),
+
+	('/parts', RepRapTypesPage),
 
 	('/tag', TagSearchMain),
 	### tag_error is commented out above ###

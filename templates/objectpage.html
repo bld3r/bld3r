@@ -308,8 +308,12 @@
 		float:right;
 		clear:right;
 		text-align: right;
-		padding-top: 10px;
-		margin-left: -30px;
+		padding-top: 8px;
+		margin-left: -55px;
+		background: #fff;
+		border: 1px solid #ccc;
+		border-color: rgba(0,0,0,.2);
+		box-shadow: 0 2px 10px rgba(0,0,0,.2);
 		position:absolute;
 		z-index: 3;
 	}
@@ -444,15 +448,13 @@
 	}	
 
 	.to_print {
-		font-size: 14px;
+		font-size: 16px;
 		color:#444;
-		width: 158px;
+		width: 175px;
 		text-align: center;
-		background: #f5f5f5;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		background: #fff;	
 		border: 1px solid rgba(0,0,0,0.1);
-		padding-right: 5px;
-		padding-left: 5px;
+		padding: 5px;
 		margin-top:-8px;
 		cursor:pointer;	
 		text-align: left;
@@ -466,15 +468,13 @@
 	}
 
 	.printed {
-		font-size: 14px;
+		font-size: 16px;
 		color:#444;
-		width: 158px;
+		width: 175px;
 		text-align: center;
-		background: #f5f5f5;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		background: #fff;	
 		border: 1px solid rgba(0,0,0,0.1);
-		padding-right: 5px;
-		padding-left: 5px;
+		padding: 5px;
 		cursor:pointer;
 		text-align: left;
 	
@@ -488,15 +488,13 @@
 	}
 
 	.gotoprintshelf {
-		font-size: 14px;
+		font-size: 16px;
 		color:#444;
-		width: 158px;
+		width: 175px;
 		text-align: center;
-		background: #f5f5f5;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		background: #fff;	
 		border: 1px solid rgba(0,0,0,0.1);
-		padding-right: 5px;
-		padding-left: 5px;
+		padding: 5px;
 		cursor:pointer;	
 		text-align: left;
 	}
@@ -539,9 +537,13 @@
 
 	.info_edit_slide {
 		width:137px;
-		height: 32px;
+		height: auto;
 		display: none;
 		position:absolute;
+		background: #fff;
+		border: 1px solid #ccc;
+		border-color: rgba(0,0,0,.2);
+		box-shadow: 0 2px 10px rgba(0,0,0,.2);		
 		z-index: 2;
 		float:left;
 		margin-left: 190px;
@@ -561,15 +563,15 @@
 	}
 
 	.open_description_edit_slide{
-		font-size:14px;
+		font-size:16px;
 		color:#444;
-		width: 100px;
-		text-align: left;
-		background: #f5f5f5;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
+		width: 110px;
+		text-align: left;	
 		border: 1px solid rgba(0,0,0,0.1);
+		padding-top: 5px;
+		padding-bottom: 5px;
 		padding-right: 5px;
-		padding-left: 30px;
+		padding-left: 20px;
 		cursor:pointer;
 		float:left;
 		clear:left;		
@@ -583,13 +585,14 @@
 	}
 
 	.other_file_upload_link_slide{
-		font-size:14px;
+		font-size:16px;
 		color:#444;
-		width: 100px;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
-		border: 1px solid rgba(0,0,0,0.1);
+		width: 110px;
+		padding-top: 5px;
+		padding-bottom: 5px;
 		padding-right: 5px;
-		padding-left: 30px;
+		padding-left: 20px;
+		border: 1px solid rgba(0,0,0,0.1);
 		cursor:pointer;
 		float:left;
 		clear:left;	
@@ -603,18 +606,18 @@
 	}
 
 	.delete_object_slide{
-		font-size:14px;
+		font-size:16px;
 		color:#444;
-		width: 100px;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
-		border: 1px solid rgba(0,0,0,0.1);
+		width: 110px;
+		padding-top: 5px;
+		padding-bottom: 5px;		
 		padding-right: 5px;
-		padding-left: 30px;
+		padding-left: 20px;
+		border: 1px solid rgba(0,0,0,0.1);		
 		cursor:pointer;
 		float:left;
 		clear:left;	
 		text-align: left;	
-		margin-bottom: 5px;
 	}
 	.delete_object_slide:hover{
 		color:#333;
@@ -627,7 +630,7 @@
 		color:#444;
 	}
 	.open_description_edit{
-		font-size:14px;
+		font-size:16px;
 		color:#444;
 		width: 90px;
 		text-align: center;
@@ -651,7 +654,7 @@
 	}
 
 	.other_file_upload_link{
-		font-size:14px;
+		font-size:16px;
 		color:#444;
 		width: 90px;
 		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
@@ -671,25 +674,41 @@
 		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
 		border:solid 1px #c6c6c6; 
 	}
+
 	.submit_edits {
-		font-size:14px;
-		color:#444;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
-		border: 1px solid rgba(0,0,0,0.1);
+		font-size: 16px;
+		color:white;
+		background: #427fed;		
+		border: 1px solid #c6c6c6;
 		border-radius:4px;
 		padding: 5px;
-		cursor:pointer;
-		float:left;
-		clear:left;
-		margin-right:15px;		
+		cursor: pointer;
 	}
 
 	.submit_edits:hover {
-		color:#333;
-		background: #eee;
-		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
-		border:solid 1px #c6c6c6; 		
+		background: #4387fd;
+		background-image: -webkit-linear-gradient(top,#4387fd,#4683ea);		
+		border:solid 1px #c6c6c6; 
+		cursor: pointer;
 	}
+	
+	.cancel_description_submit {
+		margin-left: 100px;
+		font-size: 16px;
+		color:white;
+		background: #c04848;		
+		border: 1px solid #c6c6c6;
+		border-radius:4px;
+		padding: 5px;
+		cursor: pointer;
+	}
+
+	.cancel_description_submit:hover {
+		background: #b13d3d;
+		background-image: -webkit-linear-gradient(top,#b13d3d,#c75b5b);		
+		border:solid 1px #c6c6c6; 
+		cursor: pointer;
+	}		
 
 	.printed_by_list {
 		float:left;
@@ -785,21 +804,39 @@
 
 
 	.tag_submit {
-		font-size: 14px;
-		color:#444;
-		background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);		
-		border: 1px solid rgba(0,0,0,0.1);
+		font-size: 16px;
+		color:white;
+		background: #427fed;		
+		border: 1px solid #c6c6c6;
 		border-radius:4px;
-		padding-right: 5px;
-		padding-left: 5px;
+		padding: 5px;
+		cursor: pointer;
 	}
 
 	.tag_submit:hover {
-		color:#333;
-		background: #eee;
-		background-image: -webkit-linear-gradient(top,#e8e8e8,#f1f1f1);		
+		background: #4387fd;
+		background-image: -webkit-linear-gradient(top,#4387fd,#4683ea);		
 		border:solid 1px #c6c6c6; 
+		cursor: pointer;
 	}
+
+	.cancel_tag_submit {
+		margin-left: 100px;
+		font-size: 16px;
+		color:white;
+		background: #c04848;		
+		border: 1px solid #c6c6c6;
+		border-radius:4px;
+		padding: 5px;
+		cursor: pointer;
+	}
+
+	.cancel_tag_submit:hover {
+		background: #b13d3d;
+		background-image: -webkit-linear-gradient(top,#b13d3d,#c75b5b);		
+		border:solid 1px #c6c6c6; 
+		cursor: pointer;
+	}	
 
 	.user_img {
 		max-width: 90px;
@@ -822,10 +859,24 @@
 		width: 600px;
 		max-height: 450px;		
 	}
+
+	/*css image gallery*/
+	.image-gallery .big-image img{	
+		display:none;
+		margin:0 auto;
+	}
+	/*Selected image display*/
+	.image-gallery .big-image img:target{display:block;}
+	/*on select image dusplay none the default image*/
+	.image-gallery .big-image img:target ~ img#default{display:none;}
+	/*Shoe Default Image in first load*/
+	.image-gallery .big-image img#default{display:block;}
+
 </style>
 
 <body>
 	{% include "header3.html" %}
+
 	<span class="verify_user" id="{{user_hash}}">
 	</span>
 
@@ -896,11 +947,11 @@
 								</span>
 							{% elif voted == 1 %}
 								<span class= "{{obj_id}}" id="votedown2" >
-								  	<span class='votedown' id="vd{{obj_id}}" title="This object is stupid! Downvote so others won't see it. (Click again to undo.)">▼</span>
+								  	<span class='votedown' id="vd{{obj_id}}" title="Downvote so others won't see it. (Click again to undo.)">▼</span>
 								</span>
 							{% else %}
 							  <span class= "{{obj_id}}" id="votedown" >
-							  	<span class='votedown' id="vd{{obj_id}}" title="This object is stupid! Downvote so others won't see it. (Click again to undo.)">▼</span>
+							  	<span class='votedown' id="vd{{obj_id}}" title="Downvote so others won't see it. (Click again to undo.)">▼</span>
 							  </span>	
 							{% endif %} 
 						</span>
@@ -976,9 +1027,25 @@
 					{% if obj_type in ['link', 'upload', 'tor'] %}
 						<div class="img_box">
 							{% if img1 %}
-								<div class="img1">
+<!-- 								<div class="img1">
 									<img src="{{img1}}">
+								</div> -->
+							<div class="image-gallery">
+								<div class="big-image">              
+									<img id="img1" src="{{img1}}" />
+									{% if other_img_list %}
+										{% for img in other_img_list %}
+											<img id="{{img}}"src="{{img}}" >
+										{% endfor %}
+									{% endif %}
+									{% if visitor_img_quad_list %}
+										{% for the_quad in visitor_img_quad_list %}
+											<img id="{{the_quad[2]}}" src="{{the_quad[2]}}">
+										{% endfor %}
+									{% endif %}
+									<img id="default" src="{{img1}}" />
 								</div>
+							</div>
 							{% else %}
 								<div class="no_img">
 									No image :(
@@ -1018,14 +1085,14 @@
 								<br>
 							</div>
 						{% endif %} 						
-						<span class='link' title="Go to the host of this object."  style="
-							max-width:500px;
+						<div class='link' title="Go to the host of this object."  style="
+							width:400px;
 							padding-left:15px;
 							">
 							<a href="{{obj_link}}">
 								{{obj_link}}
 							</a> 							
-						</span>
+						</div>
 					{% endif %}
 					{% if user %}
 						<span class="flagbox">
@@ -1188,13 +1255,16 @@
 						{% endif %}
 					{% endif %}
 
-					{% if other_img_list %}
+					{% if other_img_list or visitor_img_quad_list%}
 						<div class="clear">
 						</div>
 						<div class="other_img_box"style="width:600px; margin-left:10px;">
-							{% for img in other_img_list %}
-								<span style="float:left; margin: 5px;">
-									<img src="{{img}}" width="120">
+							<span style="float:left; margin: 5px;">
+								<a href="#img1"><img  src="{{img1}}" width="120"/></a>
+							</span>
+								{% for img in other_img_list %}
+									<span style="float:left; margin: 5px;">
+										<a href="#{{img}}"><img  src="{{img}}" width="120"/></a>
 									<br>
 									<!--Uncomment after we fix the js
 									<span style="float:left;">
@@ -1243,8 +1313,8 @@
 						<div class="other_img_box" style="width:600px; margin-left:10px;">
 							{% for the_quad in visitor_img_quad_list %}
 								<span style="float:left; margin: 5px;">
-									<img src="{{the_quad[2]}}" width="120">
-									<br>
+									<a href="#{{the_quad[2]}}"><img  src="{{the_quad[2]}}" width="120"/></a>
+									<br>									
 									by 
 									<a href="/user/{{the_quad[0]}}">
 										{{the_quad[1]}}
@@ -1327,13 +1397,13 @@
 														margin-top:-5px;
 														height:30px;
 														padding: 0.3em 0.6em;
-														box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-														background-color: #333;
+														background-color: #009200;
 														color: #fff;
 														font-size:16px;
-														border: 1px solid #000;
+														border: 1px solid #fafafa;
 														border-radius: 3px;
 														text-decoration: none;
+														cursor: pointer;
 														">
 												</form>
 												<br>
@@ -1359,13 +1429,13 @@
 												margin-top:-5px;
 												height:30px;
 												padding: 0.3em 0.6em;
-												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-												background-color: #333;
+												background-color: #009200;
 												color: #fff;
 												font-size:16px;
-												border: 1px solid #000;
+												border: 1px solid #fafafa;
 												border-radius: 3px;
 												text-decoration: none;
+												cursor: pointer;
 												">
 										</form>
 									</span>
@@ -1378,13 +1448,13 @@
 												margin-top:-5px;
 												height:30px;
 												padding: 0.3em 0.6em;
-												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-												background-color: #333;
+												background-color: #009200;
 												color: #fff;
 												font-size:16px;
-												border: 1px solid #000;
+												border: 1px solid #fafafa;
 												border-radius: 3px;
 												text-decoration: none;
+												cursor: pointer;
 											">
 										</form>
 									</span>
@@ -1397,13 +1467,13 @@
 												margin-top:-5px;
 												height:30px;
 												padding: 0.3em 0.6em;
-												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-												background-color: #333;
+												background-color: #009200;
 												color: #fff;
 												font-size:16px;
-												border: 1px solid #000;
+												border: 1px solid #fafafa;
 												border-radius: 3px;
 												text-decoration: none;
+												cursor: pointer;
 											">
 										</form>
 									</span>
@@ -1416,13 +1486,13 @@
 												margin-top:-5px;
 												height:30px;
 												padding: 0.3em 0.6em;
-												box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-												background-color: #333;
+												background-color: #009200;
 												color: #fff;
 												font-size:16px;
-												border: 1px solid #000;
+												border: 1px solid #fafafa;
 												border-radius: 3px;
 												text-decoration: none;
+												cursor: pointer;
 											">
 										</form>
 									</span>
@@ -1479,10 +1549,9 @@
 														float: right;
 														clear: right;
 														padding: 0.3em 0.6em;
-														box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3),0 1px 0 rgba(255, 255, 255, 0.4) inset;
-														background-color: #333;
+														background-color: #009200;
 														color: #fff;
-														border: 1px solid #000;
+														border: 1px solid #fafafa;
 														border-radius: 3px;
 														text-decoration: none;
 													">
@@ -1524,24 +1593,26 @@
 									{% if user %}
 										{% if user_is_author == True %}
 											<span class="open_description_edit_slide">
-												edit
+												Edit
 											</span>
-											{% if not file_list_full %}
-												<a href="/altfile/{{obj_id}}">
-													<span class="other_file_upload_link_slide">
-														add a file
-													</span>
-												</a>
-											{% else %}
-												<a href="/altfile/{{obj_id}}">
-													<span class="other_file_upload_link_slide" style="color:black;">
-														remove a file
-													</span>
-												</a>
+											{% if the_obj.obj_type == "upload" %}
+												{% if not file_list_full %}
+													<a href="/altfile/{{obj_id}}">
+														<span class="other_file_upload_link_slide">
+															Add a file
+														</span>
+													</a>
+												{% else %}
+													<a href="/altfile/{{obj_id}}">
+														<span class="other_file_upload_link_slide" style="color:black;">
+															Remove a file
+														</span>
+													</a>
+												{% endif %}
 											{% endif %}
 											<span class="delete_object_slide">
 												<a href="/obj/del/{{obj_id}}">
-													delete object
+													Delete object
 												</a>
 											</span>		
 										{% endif %}
@@ -1572,7 +1643,15 @@
 									{% endif %}
 									<a href="/user/{{author_id}}">
 										<span style="color:#0077cc;">
-											{{author.username}}
+											{% if author.username not in ADMIN_USERNAMES %}
+												{{author.username}}
+												
+											{% else %}
+												<!-- this code allows admins to post as one of the 180 fake usernames (fake it till you make it!) -->
+												{% set bigint = the_obj.epoch|int() %}
+												{% set randint = bigint % 180 %}
+												{{ FAKE_NAME_LIST[randint] }}
+											{% endif %}
 										</span>
 									</a>
 									<br>
@@ -1703,18 +1782,16 @@
 														<input type="hidden" name="description_user_id" value="{{user_id}}" id="description_user_id">
 														<input type="hidden" name="verify" value="{{user_hash}}" id="description_verify">
 														<span class="description_submit">
+															<br>
 															<span class="submit_edits">
 																Submit edits
 															</span>
-															<br>
-															<br>
 														</span>
+														<span class="cancel_description_submit">
+															Cancel
+														</span>															
 													</form>
-													<br>
-													<br>
-													<span class="cancel_description_submit" style="float:right;clear:left;cursor:pointer;color:red;">
-														cancel
-													</span>	
+	
 												</div>
 											{% endif %}
 										{% endif %}
@@ -1783,18 +1860,19 @@
 										<div class="tags_edit" style="display:none;">
 											<br>
 											<br>
-											<form method="post">
+											<form method="post" style="clear:left;">
 												<hr>
 												{% if user_is_author == True %}
-													<span title="Other users cannot edit these">Author tags</span>
 													<br>
-													<input type="text" name='author_tags' value='{{author_tag_str}}' id="author_tag_edit_tags">
+													<span title="Other users cannot edit these" style="clear:left;">Author tags</span>
+													<br>
+													<input type="text" name='author_tags' value='{{author_tag_str}}' id="author_tag_edit_tags" style="font-size: 16px; width:270px; padding-top:5px; padding-bottom:5px;">
 													<br>
 													<br>
 												{% endif %}
 												<span title="Anyone can edit these">Public tags</span>
 												<br>
-												<input type="text" name='public_tags' value='{{public_tag_str}}' id="public_tag_edit_tags">
+												<input type="text" name='public_tags' value='{{public_tag_str}}' id="public_tag_edit_tags" style="font-size: 16px; width:270px; padding-top:5px; padding-bottom:5px;">
 												<br>
 												<br>
 												<!-- <input type="submit" value="update">
@@ -1803,13 +1881,13 @@
 												<input type="hidden" name="obj_id" value="{{obj_id}}" id="author_tag_edit_obj_id">
 												<input type="hidden" name="user_id" value="{{user_id}}" id="user_id_input">
 												
-												<span class="cancel_tag_submit" style="float:right;clear:left;cursor:pointer;color:red;">
-													cancel
-												</span>
+
 												<span class="tag_submit" title="Separate tags with commas">
 													Submit edits
 												</span>
-												<br>
+												<span class="cancel_tag_submit">
+													Cancel
+												</span>												<br>
 												<br>
 
 											</form>
@@ -1833,15 +1911,16 @@
 											<form method="post">
 												<hr>
 												{% if user_is_author == True %}
+													<br>
 													<span title="Other users cannot edit these">Author tags</span>
 													<br>
-													<input type="text" name='author_tags' value='{{author_tag_str}}' id="author_tag_edit_tags">
+													<input type="text" name='author_tags' value='{{author_tag_str}}' id="author_tag_edit_tags" style="font-size: 16px; width:270px; padding-top:5px; padding-bottom:5px;">
 													<br>
 													<br>
 												{% endif %}
 												<span title="Anyone can edit these">Public tags</span>
 												<br>
-												<input type="text" name='public_tags' value='{{public_tag_str}}' id="public_tag_edit_tags">
+												<input type="text" name='public_tags' value='{{public_tag_str}}' id="public_tag_edit_tags" style="font-size: 16px; width:270px; padding-top:5px; padding-bottom:5px;">
 												<br>
 												<br>
 												<!-- <input type="submit" value="update">
@@ -1850,13 +1929,12 @@
 												<input type="hidden" name="obj_id" value="{{obj_id}}" id="author_tag_edit_obj_id">
 												<input type="hidden" name="user_id" value="{{user_id}}" id="user_id_input">
 												
-												<span class="cancel_tag_submit" style="float:right;clear:left;cursor:pointer;color:red;">
-													cancel
-												</span>
 												<span class="tag_submit">
 													Submit edits
 												</span>
-												<br>
+												<span class="cancel_tag_submit">
+													Cancel
+												</span>												<br>
 												<br>
 											</form>
 										</div>
@@ -2010,7 +2088,18 @@
 								</div>
 								<input type="hidden" name="verify" value="{{user_hash}}">
 								<span style="float:right;">
-									<input type="submit" value="Post">
+									<input type="submit" value="Post" style="
+									width:80px;
+									height:30px;
+									padding: 0.3em 0.6em;
+									background-color: #427fed;
+									font-size: 18px;
+									color: #fff;
+									border: 1px solid #fafafa;
+									border-radius: 3px;
+									text-decoration: none;
+									cursor: pointer;		
+									">
 								</span>
 							</div>
 						</form>

@@ -53,8 +53,6 @@
 		margin-left: 15px;
 	}
 	form {
-		clear:both;
-		margin-top: 20px;
 		max-width: 800px;
 	}
 
@@ -98,12 +96,11 @@
 				<hr>
 			</div>
 			
-			<div class="input_container" style="float:left; width:600px;  height:auto;">
+			<div class="input_container" style="float:left; width:600px;  height:auto; margin-bottom:30px; margin-left:20px;">
 				<div class="name">
 					{{title}}	
 				</div>	
-
-				<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+				<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data" style="margin-top: 20px; float:left; clear: left;">
 					<table>
 						<tr>
 							<td>
@@ -160,7 +157,18 @@
 						margin-left:130px;
 						">
 						<br>
-						<input type="submit" value="Upload" >
+						<input type="submit" value="Upload" style="
+							width:200px;
+							height:30px;
+							padding: 0.3em 0.6em;
+							background-color: #009200;
+							font-size: 18px;
+							color: #fff;
+							border: 1px solid #fafafa;
+							border-radius: 3px;
+							text-decoration: none;
+							cursor: pointer;		
+							">
 					</div>
 					<div>
 						<br>

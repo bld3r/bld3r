@@ -261,7 +261,15 @@
 
 			<a href="/user/{{object.author_id}}">
 				<span style="color:#0077cc;">
-					{{object.author_name}}
+					{% if object.author_name not in ADMIN_USERNAMES %}
+						{{object.author_name}}
+						
+					{% else %}
+						<!-- this code allows admins to post as one of the 180 fake usernames (fake it till you make it!) -->
+						{% set bigint = object.epoch|int() %}
+						{% set randint = bigint % 180 %}
+						{{ FAKE_NAME_LIST[randint] }}
+					{% endif %}
 				</span>
 			</a>
 			

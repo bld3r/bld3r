@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		RepRap Parts
+	</title>
+	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
+	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		<style>
+		* {
+			margin:0px;
+			font-family:Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+			//border:solid #999 1px;
+		}
+		* a{
+			text-decoration: none;
+			color:#0077cc;
+		}
+
+		* a:visited{
+			text-decoration: none;
+			color:#4a6b82;
+		}		
+
+		h1 {
+			color:#4a6b82;
+		}
+
+		td {
+			padding-left:40px;
+			padding-bottom:10px;
+			width:250px;
+		}
+		.box_container {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.tag_color {
+			color: #4a6b82;
+			background: #E0EAF1;
+			padding: 5px;
+			line-height: 200%;
+			margin-right: 5px;
+			border-left: 1px solid white;	
+			border-top: 1px solid white;			
+			border-right: 1px solid #b3cee1;	
+			border-bottom: 1px solid #b3cee1;		
+			border-radius: 4px;
+		}	
+
+		.rep_color {
+			color: white;
+			background: #333;
+			padding: 5px;
+			line-height: 200%;
+			margin-right: 5px;
+			border-left: 1px solid white;	
+			border-top: 1px solid white;			
+			border-right: 1px solid #000;	
+			border-bottom: 1px solid #000;		
+			border-radius: 4px;
+		}		
+
+		.sub_div {
+			max-width: 22%;
+			float: left;
+			//border: solid #999 1px;
+			margin: 1px;
+			padding: 5px;
+			margin-bottom:30px;
+		}			
+		
+	</style>	
+</head>
+
+
+	
+
+<body>
+	{% include "header3.html" %}
+	<div>
+		{% if not user %}
+			{% include "why_bld3r.html" %}
+		{% endif %}			
+	  	<br>
+		<h1 style="
+			color:#444; 
+			text-align:center; 
+			margin-top:20px;
+			">
+			RepRap Parts
+		</h1>
+		<p style="
+			color:#444; 
+			text-align:center; 
+			margin:20px;
+			">
+			When tagging parts, tag exactly as "part for &lt;exact name&gt;".
+			<br>
+			The back end will add underscores. 
+			<br>
+			For example, "part for Darwin" becomes "part_for_Darwin".
+			<br>
+			This is a simple tagging process, but should prevent accidental tagging.
+			<br>
+			Also, remember that you can tag other people's objects if you see they've done it incorrectly.
+		</p>
+
+
+		<div class="reprap_types">
+
+			<a href="/tag/part_for_Darwin">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Darwin
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Mendel">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Mendel
+				</div>
+			</a>
+
+			<a href="/tag/part_for_MendelMax">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					MendelMax
+				</div>
+			</a>
+
+			<a href="/tag/part_for_MendelMax_20">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					MendelMax 2.0
+				</div>
+			</a>
+
+			<a href="/tag/part_for_RepRapPro_Mendel">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					RepRapPro Mendel
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Mendel90">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Mendel90
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Prusa">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Prusa
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Prusa_i3">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Prusa i3 <!--Rework Introduction-->
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Prusa_i3xl">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Prusa i3xl
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Huxley">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Huxley
+				</div>
+			</a>
+
+			<a href="/tag/part_for_RepRapPro_Huxley">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					RepRapPro Huxley
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Morgan">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Morgan
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Simpson">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Simpson
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Printrbot">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Printrbot
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Cartesio">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Cartesio
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Eventorbot">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Eventorbot
+				</div>
+			</a>
+
+			<a href="/tag/part_for_GolemD">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					GolemD
+				</div>
+			</a>
+
+			<a href="/tag/part_for_FoldaRap">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					FoldaRap
+				</div>
+			</a>
+
+			<a href="/tag/part_for_Adapto">
+				<div style="
+					float:left;
+					margin: 10px;
+					padding: 10px;
+					border: solid 1px #999;
+					">
+					Adapto
+				</div>
+			</a>
+
+		</div>
+	</div>
+	{% include "scripts.html" %}
+</body>
+</html>

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+  $('.long_load').animate({"opacity": "1"}, 10000);
   var $container = $('#masonry_division');
   $container.imagesLoaded(function(){
     $('.loader').fadeOut("fast");
@@ -14,8 +14,8 @@ $(document).ready(function(){
   // Infinite Scroll
   $container.infinitescroll({
     debug: false,
-    //extraScrollPx: 1000,
-    bufferPx: 1000,
+    extraScrollPx: 0,
+    bufferPx: 0,
     navSelector  : '#navigation',    // selector for the paged navigation 
     nextSelector : '#navigation a',  // selector for the NEXT link (to page 2)
     itemSelector : '.masonry_object',     // selector for all items you'll retrieve
