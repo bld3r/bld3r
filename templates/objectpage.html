@@ -1027,25 +1027,27 @@
 					{% if obj_type in ['link', 'upload', 'tor'] %}
 						<div class="img_box">
 							{% if img1 %}
-<!-- 								<div class="img1">
+								<!-- 
+								<div class="img1">
 									<img src="{{img1}}">
-								</div> -->
-							<div class="image-gallery">
-								<div class="big-image">              
-									<img id="img1" src="{{img1}}" />
-									{% if other_img_list %}
-										{% for img in other_img_list %}
-											<img id="{{img}}"src="{{img}}" >
-										{% endfor %}
-									{% endif %}
-									{% if visitor_img_quad_list %}
-										{% for the_quad in visitor_img_quad_list %}
-											<img id="{{the_quad[2]}}" src="{{the_quad[2]}}">
-										{% endfor %}
-									{% endif %}
-									<img id="default" src="{{img1}}" />
+								</div> 
+								-->
+								<div class="image-gallery">
+									<div class="big-image">              
+										<img id="img1" src="{{img1}}" />
+										{% if other_img_list %}
+											{% for img in other_img_list %}
+												<img id="{{img}}"src="{{img}}" >
+											{% endfor %}
+										{% endif %}
+										{% if visitor_img_quad_list %}
+											{% for the_quad in visitor_img_quad_list %}
+												<img id="{{the_quad[2]}}" src="{{the_quad[2]}}">
+											{% endfor %}
+										{% endif %}
+										<img id="default" src="{{img1}}" />
+									</div>
 								</div>
-							</div>
 							{% else %}
 								<div class="no_img">
 									No image :(
@@ -1735,7 +1737,21 @@
 												</div>
 												<br>
 												<div style="text-align: justify;">
-													{{the_obj.description}}
+													{% if the_obj.markdown %}
+														{{the_obj.markdown | safe }}
+													{% else %}
+														<!-- note: this section should be removed eventually -->
+														<span style="font-size: 8px;">
+															<hr>
+															Admin note, this description has not been updated since we added markdown.
+															<br>
+															To update, simply edit the text with at least one change.
+															<hr>
+														</span>  
+														<br>
+														{{the_obj.description}}
+														<!-- end section that should be removed eventually -->
+													{% endif %}
 												</div>
 											</span>
 										</span>
@@ -1777,7 +1793,7 @@
 												<div class="description_edit" style="margin:15px; display:none;">
 													<br>
 													<form method="post">
-														<pre><textarea name='description' id="description_text" style="width:300px; height:80px;">{{description}}</textarea></pre>
+														<pre><textarea name='description' id="description_text" style="width:300px; height:80px;">{{the_obj.description}}</textarea></pre>
 														<input type="hidden" name="description_obj_id" value="{{obj_id}}" id="description_obj_id">
 														<input type="hidden" name="description_user_id" value="{{user_id}}" id="description_user_id">
 														<input type="hidden" name="verify" value="{{user_hash}}" id="description_verify">
@@ -1887,7 +1903,8 @@
 												</span>
 												<span class="cancel_tag_submit">
 													Cancel
-												</span>												<br>
+												</span>
+												<br>
 												<br>
 
 											</form>
@@ -1979,7 +1996,21 @@
 				{% if obj_type == 'ask' %}
 					<div class = "ask_box">
 						<span class="description_text_holder">
-							{{the_obj.description}}
+							{% if the_obj.markdown %}
+								{{the_obj.markdown | safe }}
+							{% else %}
+								<!-- note: this section should be removed eventually -->
+								<span style="font-size: 8px;">
+									<hr>
+									Admin note, this description has not been updated since we added markdown.
+									<br>
+									To update, simply edit the text with at least one change.
+									<hr>
+								</span>  
+								<br>
+								{{the_obj.description}}
+								<!-- end section that should be removed eventually -->
+							{% endif %}
 						</span>
 						<br>
 						<br>
@@ -2035,7 +2066,7 @@
 									<div class="description_edit" style="display:none; margin-left:90px;">
 										<br>
 										<form method="post">
-											<pre><textarea name='description' id="description_text" style="width:630px; height:350px">{{description}}</textarea></pre>
+											<pre><textarea name='description' id="description_text" style="width:630px; height:350px">{{the_obj.description}}</textarea></pre>
 											<input type="hidden" name="description_obj_id" value="{{obj_id}}" id="description_obj_id">
 											<input type="hidden" name="description_user_id" value="{{user_id}}" id="description_user_id">
 											<input type="hidden" name="verify" value="{{user_hash}}" id="description_verify">
@@ -2070,7 +2101,22 @@
 							">
 							Description
 							<br>
-							<pre>{{the_obj.description}}</pre>
+							{% if the_obj.markdown %}
+								<pre>{{the_obj.markdown | safe }}</pre>
+							{% else %}
+								<!-- note: this section should be removed eventually -->
+								<span style="font-size: 8px;">
+									<hr>
+									Admin note, this description has not been updated since we added markdown.
+									<br>
+									To update, simply edit the text with at least one change.
+									<hr>
+								</span>  
+								<br>
+								<pre>{{the_obj.description}}</pre>
+								<!-- end section that should be removed eventually -->
+							{% endif %}
+							
 						</div>						
 					</div>
 				{% endif %}

@@ -1671,6 +1671,9 @@ class ObjectPage(Handler):
 		self.render_page(obj_num=obj_id)
 	
 	def post(self, obj_num):
+		'''
+		This section posts a new comment
+		'''
 		the_comments = obj_comment_cache(int(obj_num))
 		comment_var = self.request.get("obj_comment_form")
 		subcomment_var = None
@@ -2251,6 +2254,10 @@ class AjaxDescriptionEdit(Handler):
 			logging.warning("No change to description")
 			return
 		obj.description = desc_var
+		# Now escape, and save as markdown text
+		escaped_description_text = cgi.escape(desc_var)
+		mkd_converted_description = mkd.convert(escaped_description_text)
+		obj.markdown = mkd_converted_description
 		obj.put()
 		memcache.set("Objects_%d" % int(obj_id), [obj])
 class AjaxTagEdit(Handler):
@@ -5063,6 +5070,10 @@ class NewObjectPage3(Handler):
 
 			if description_var:
 				new_object.description = description_var
+				# Now escape, and save as markdown text
+				escaped_description_text = cgi.escape(description_var)
+				mkd_converted_description = mkd.convert(escaped_description_text)
+				obj.markdown = mkd_converted_description
 			else:
 				pass
 			if the_tags:
@@ -5180,6 +5191,10 @@ class NewLinkPage(Handler):
 
 			# Optional fields
 			description_var = self.request.get("description")
+			# Now escape, and save as markdown text
+			escaped_description_text = cgi.escape(description_var)
+			mkd_converted_description = mkd.convert(escaped_description_text)
+			
 			tag_var = self.request.get("tags")
 			the_tags = None
 			if tag_var:
@@ -5257,6 +5272,7 @@ class NewLinkPage(Handler):
 									food_related = food_related,
 
 									description=description_var,
+									markdown = mkd_converted_description,
 									printable = True,
 									rank = new_rank(),
 									num_user_when_created = num_users_now(),
@@ -5592,6 +5608,7 @@ class NewTorPage(Handler):
 
 			# Optional fields
 			description_var = self.request.get("description")
+			markdown_var = convert_text_to_markdown(description_var)
 			tag_var = self.request.get("tags")
 			the_tags = None
 			if tag_var:
@@ -5670,6 +5687,7 @@ class NewTorPage(Handler):
 									food_related= food_related,
 
 									description=description_var,
+									markdown = markdown_var,
 									printable = True,
 									rank = new_rank(),
 									num_user_when_created = num_users_now(),
@@ -6642,6 +6660,7 @@ class NewLessonPage(Handler):
 
 			# Optional fields
 			description_var = self.request.get("description")
+			markdown_var = convert_text_to_markdown(description_var)
 			tag_var = self.request.get("tags")
 			the_tags = None
 			if tag_var:
@@ -6711,6 +6730,7 @@ class NewLessonPage(Handler):
 									learn_skill = skill_var,
 
 									description=description_var,
+									markdown = markdown_var,
 									rank = new_rank(),
 									num_user_when_created = num_users_now(),
 									voter_list = [user_id],
@@ -6804,6 +6824,7 @@ class NewAskPage(Handler):
 			# Required fields
 			title_var = self.request.get("title")
 			full_question_var = self.request.get("text")
+			markdown_var = convert_text_to_markdown(full_question_var)
 
 			# Kids and NSFW entries (if available)
 			# Here, defaults are okay-for-kids/sfw, because no entry if kids online:
@@ -6867,6 +6888,7 @@ class NewAskPage(Handler):
 
 									learn = True,
 									description = full_question_var,
+									markdown = markdown_var,
 									rank = new_rank(),
 									num_user_when_created = num_users_now(),
 									voter_list = [user_id],
@@ -7056,6 +7078,7 @@ class NewArticlePage(Handler):
 
 			# Optional fields
 			description_var = self.request.get("description")
+			markdown_var = convert_text_to_markdown(description_var)
 			tag_var = self.request.get("tags")
 			the_tags = None
 			if tag_var:
@@ -7138,6 +7161,7 @@ class NewArticlePage(Handler):
 									food_related = food_related,
 
 									description=description_var,
+									markdown = markdown_var,
 									news = True,
 									rank = new_rank(),
 									num_user_when_created = num_users_now(),
@@ -10211,6 +10235,12 @@ def num_users_now():
 		return len(all_users)
 	else:
 		return 0
+def convert_text_to_markdown(string):
+	'''escape, and save as markdown text'''
+	escaped_text = cgi.escape(string)
+	mkd_converted_string = mkd.convert(escaped_text)
+	return mkd_converted_string
+			
 
 #########################################################
 def user_update(update=False):
