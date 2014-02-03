@@ -1364,10 +1364,20 @@ class ThingTracker(Handler):
 		self.response.headers['Content-Type'] = 'application/json'
 		json_things = []
 		for obj in obj_list:
+			the_author = obj.author_name
+			if obj.original_creator:
+				the_author = obj.original_creator
+			all_tags = obj.tags
+			print all_tags
 			json_things.append(
 				{
-					"id":obj.uuid,
-					"title":obj.title,
+					"id": str(obj.uuid),
+					"title": str(obj.title),
+					"author": str(the_author),
+					"license": str(obj.license),
+					"tags": all_tags,
+					"thumbnailURL": "http://bld3r.com%s" % obj.main_img_link,
+					"description": obj.description,
 					"ref-url":page_url + "/obj/" + str(obj.key().id()) + ".json",
 					"metadata" : {
 							"created" : str(obj.created)
@@ -1378,7 +1388,7 @@ class ThingTracker(Handler):
 			"specification-version" : 0.02,
 			"url" : "http://www.bld3r.com/thingtracker",
 			"description" : "Thingtracker for bld3r.com",
-			"updated" : "2013-07-01T18:12:00-06:00",
+			"updated" : "2014-02-03T14:40:00-06:00",
 			"things-count" : list_length,
 			"maintainers" : [
 				{"name" : "Matthew Schoolfield"},
