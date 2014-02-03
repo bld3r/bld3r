@@ -5083,7 +5083,7 @@ class NewObjectPage3(Handler):
 				# Now escape, and save as markdown text
 				escaped_description_text = cgi.escape(description_var)
 				mkd_converted_description = mkd.convert(escaped_description_text)
-				obj.markdown = mkd_converted_description
+				new_object.markdown = mkd_converted_description
 			else:
 				pass
 			if the_tags:
