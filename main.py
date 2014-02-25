@@ -951,6 +951,7 @@ class FrontHandler(Handler):
 		next_page_num = page_num + 1
 		number_of_items_to_fetch = 30
 
+		# this is for using the object list style of page loading, which we are currently using for the index page
 		if use_object_list:
 			the_objects = object_list[( (page_num -1) * number_of_items_to_fetch) : (page_num * number_of_items_to_fetch)]
 		else:
@@ -3251,7 +3252,7 @@ class ObjDelPage(Handler):
 				self.redirect('/')
 
 class UserPage(Handler):
-	def render_page(self, user_num, error=""):
+	def render_page(self, user_num, page_num, error=""):
 		user = self.return_user_if_cookie()
 		photo_upload_url = blobstore.create_upload_url('/user_page_img_upload')
 
@@ -3264,6 +3265,8 @@ class UserPage(Handler):
 		else:
 			over18 = self.check_cookie_return_val("over18")
 			user_id = self.check_cookie_return_val("user_id")
+
+			# the list will be the list of all content created by this user
 			the_list = []
 			if over18 != "True":
 				# under 18 or no cookie
@@ -3272,7 +3275,26 @@ class UserPage(Handler):
 				# over 18
 				the_list = user_page_obj_com_cache(userpage_id)
 
+
+
+			page_num = int(page_num)
+			next_page_num = page_num + 1
+			number_of_items_to_fetch = 30
+
+			# this is for using the object list style of page loading, which we are currently using for the index page
+			the_list = the_list[( (page_num -1) * number_of_items_to_fetch) : (page_num * number_of_items_to_fetch)]	
+
+			print the_list
+			if the_list:
+				end_of_content = False
+			else:
+				end_of_content = True
+			print end_of_content
+
 			the_list = masonry_format_for_userpage(the_list, user_id)
+
+
+
 			for com in the_list:
 				#logging.warning(type(com))
 				#logging.warning(isinstance(com, dict))
@@ -3292,18 +3314,9 @@ class UserPage(Handler):
 			else:
 				pass
 
-			username_var = the_user.username
-			created_var = the_user.created
-			epoch_var = the_user.epoch
-			net_votes = the_user.net_votes
 			img = the_user.main_img_link
-			summary = the_user.summary
-			location = the_user.location
-			printer = the_user.printer
-			slicer = the_user.slicer
-			software = the_user.software
 
-			user_since = time_since_creation(epoch_var)
+			user_since = time_since_creation(the_user.epoch)
 
 			user_hash = None
 			if user:
@@ -3331,9 +3344,6 @@ class UserPage(Handler):
 						is_blocked = is_blocked,
 						is_followed = is_followed,
 
-						username=username_var, 
-						created=created_var, 
-						net_votes = net_votes,
 						the_list = the_list,
 						user_id = user_id,
 						user_since = user_since,
@@ -3343,16 +3353,14 @@ class UserPage(Handler):
 						logged_in = logged_in,
 						
 						img = img,
-						summary = summary,
-						location = location,
-						printer = printer,
-						slicer = slicer,
-						software = software,
+
+						next_page_num = next_page_num,
+						end_of_content = end_of_content,
 
 						photo_upload_url = photo_upload_url)
-	def get(self, user_num):
+	def get(self, user_num, page_num="1"):
 		user_id = int(user_num)
-		self.render_page(user_num=user_id)
+		self.render_page(user_num=user_id, page_num = page_num)
 class SendMessageHandler(Handler):	# This was part of UserPage, but seperated it to make it stop redirecting.
 	def post(self): #, user_num):
 		message = self.request.get("message")
@@ -10442,6 +10450,7 @@ app = webapp2.WSGIApplication([
 	('/logout', LogoutPage),
 
 	(r'/user/(\d+)', UserPage),
+	(r'/user/(\d+)/page/(\d+)', UserPage),
 	(r'/user/printshelf/(\d+)', UserPrintshelf),
 	(r'/user/messages/(\d+)', UserMessagePage),
 	(r'/user/note/(\d+)', UserNotePage),

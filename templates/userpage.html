@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>
-		Bld3r | {{username}}
+		Bld3r | {{the_user.username}}
 	</title>
 	<meta name="description" content="Bld3r.com is a 3D printing community for both beginners and enthusiasts. Maybe you have creations you want to share with others, or maybe you just want to learn how to do basic 3D modeling or find out which printer is right for you. We like to print in 3D, and we want to make it easier for everyone." />
 	<meta property="og:image" content="http://www.bld3r.com/img/bld3r_cover.png" />		
@@ -151,7 +151,7 @@
 
 		<div class="left-column" style="width:250px; float:left;">
 			<div style="margin-left:20px;font-size:50px;">
-				{{username}}
+				{{the_user.username}}
 			</div>
 			<div style=" clear:left; color:#999; margin-left:20px;position:relative;top:-4px">
 				user for {{user_since}}
@@ -247,7 +247,7 @@
 			<span style="float:right;">
 				<span style="float:left;">
 					<a href="/user/printshelf/{{the_user.key().id()}}" style="color:#0077cc;;">
-						{{username}}'s printshelf
+						{{the_user.username}}'s printshelf
 					</a>
 					&nbsp;
 				</span>
@@ -496,8 +496,8 @@
 						</td>
 						<td>
 							<div style="text-align: justify;">
-								{% if summary %}
-									{{summary}}
+								{% if the_user.summary %}
+									{{the_user.summary}}
 								{% endif %}
 							</div>
 						</td>
@@ -507,7 +507,7 @@
 							Location 
 						</td>
 						<td>
-							{{location}}
+							{{the_user.location}}
 						</td>
 					</tr>
 					<tr>
@@ -515,7 +515,7 @@
 							Printer
 						</td>
 						<td>
-							{{printer}}
+							{{the_user.printer}}
 						</td>
 					</tr>	
 					<tr>
@@ -523,7 +523,7 @@
 							Slicer
 						</td>
 						<td>
-							{{slicer}}
+							{{the_user.slicer}}
 						</td>
 					</tr>
 					<tr>
@@ -531,7 +531,7 @@
 							Modeling software
 						</td>
 						<td>
-							{{software}}
+							{{the_user.software}}
 						</td>
 					</tr>												
 				</table>
@@ -563,7 +563,7 @@
 						<textarea id="the_textarea" name="message" value=""></textarea>
 						<br>
 						<!-- Removed submit button to prevent redirect replaced with div
-						<input class="message_submit" type="submit" value="Message {{username}}">
+						<input class="message_submit" type="submit" value="Message {{the_user.username}}">
 						-->
 						<span class="message_submit">
 							<span style="
@@ -577,7 +577,7 @@
 								border-radius: 3px;
 								text-decoration: none;
 							">
-								Message {{username}}
+								Message {{the_user.username}}
 							</span>
 						</span>
 						<br>
@@ -609,6 +609,37 @@
 		</div>
 		<div class="masonry_base_div">
 		</div>
+		<span style="clear:both;"></span>
+		{% if end_of_content %}
+			<div style="
+				margin-bottom: 10px; 
+				margin-left:0 auto; 
+				margin-right:0 auto; 
+				width: 200px; 
+				text-align:center; 
+				padding:20px; 
+				font-size:18px; 
+				background:white;
+				border-radius:5px;
+				">
+				end of content
+			</div>
+		{% else %}
+			<div style="
+				margin-bottom: 7px; 
+				margin-left:0 auto; 
+				margin-right:0 auto; 
+				width: 200px; 
+				text-align:center; 
+				padding:20px; 
+				font-size:18px; 
+				background:white;
+				border-radius:5px;">
+				<a href="/user/{{user_id}}/page/{{next_page_num}}">
+					Next Page
+				</a>
+			</div>
+		{% endif %}
 	{% else %}
 		<h1>
 			This user has been deleted.
