@@ -50,6 +50,7 @@ URL_CHECK_HEADERS = {
 	}
 ALLOWED_IMAGE_EXTENTIONS = ['png','jpg','jpeg','bmp']
 ALLOWED_ALTERNATE_FILE_EXTENTIONS = ['stl', 'scad']
+MAX_FILE_SIZE_FOR_OBJECTS = 5242880
 mkd = markdown2.Markdown()
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(extensions=['jinja2.ext.with_'],
@@ -4763,6 +4764,15 @@ class NewObjectUpload1(ObjectUploadHandler):
 						pass
 
 					if file_data:
+						# size limit
+						global MAX_FILE_SIZE_FOR_OBJECTS
+						if file_data.size > MAX_FILE_SIZE_FOR_OBJECTS:
+							logging.warning(file_data)
+							logging.warning(file_data.size)
+							file_data.delete()
+							self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file is too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload your file to an alternative host and link to it instead.") 
+							return
+
 						file_url = '/serve_obj/%s' % file_data.key()
 						file_blob_key = file_data.key()
 						filename = file_data.filename
