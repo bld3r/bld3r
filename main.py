@@ -2550,7 +2550,7 @@ class ObjectImgUpload(ObjectUploadHandler):
 			filename_full = img_upload.filename
 			filename = filename_full.split('.')
 			logging.warning(filename)
-			if filename[-1] not in ['png','jpg','jpeg','bmp']:
+			if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 				logging.error('not "image" filetype, redirect')
 				img_upload.delete()
 				self.redirect('/obj/%d' % obj_id)
@@ -2904,12 +2904,12 @@ class ObjectAltFileUpload(ObjectUploadHandler):
 				filename = filename.split('.')
 				logging.warning(filename)
 				global ALLOWED_ALTERNATE_FILE_EXTENTIONS
-				if filename[-1] not in ALLOWED_ALTERNATE_FILE_EXTENTIONS:
+				if filename[-1].lower() not in ALLOWED_ALTERNATE_FILE_EXTENTIONS:
 					logging.warning('disallowed filetype, redirect')
 					file_data.delete()
 					self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file was not an allowed filetype.")) # this should return to an error version of the upload page
 					return
-				if filename[-1] == "stl" and not is_ascii_stl(file_data):
+				if filename[-1].lower() == "stl" and not is_ascii_stl(file_data):
 					logging.warning('stl does not parse, redirect')
 					file_data.delete()
 					self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file did not seem to be a proper ascii .stl or it may be corrupt. If the problem persists, and you believe this is an acceptable ascii .stl file, please contact us.")) # this should return to an error version of the upload page
@@ -3035,7 +3035,7 @@ class VisitorImgUpload(ObjectUploadHandler):
 			filename_full = img_upload.filename
 			filename = filename_full.split('.')
 			logging.warning(filename)
-			if filename[-1] not in ['png','jpg','jpeg','bmp']:
+			if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 				logging.error('not "image" filetype, redirect')
 				img_upload.delete()
 				self.redirect('/obj/%d' % obj_id)
@@ -4285,7 +4285,7 @@ class UserPageImgUpload(ObjectUploadHandler):
 			filename_full = img_upload.filename
 			filename = filename_full.split('.')
 			logging.warning(filename)
-			if filename[-1] not in ['png','jpg','jpeg','bmp']:
+			if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 				logging.error('not "image" filetype, redirect')
 				img_upload.delete()
 				self.redirect('/user/%d' % user_id)
@@ -4769,7 +4769,7 @@ class NewObjectUpload1(ObjectUploadHandler):
 						filename_full = filename
 						filename = filename.split('.')
 						logging.warning(filename)
-						if filename[-1] not in ["stl"]:
+						if filename[-1].lower() not in ["stl"]:
 							logging.warning('not "stl" filetype, redirect')
 							file_data.delete()
 							self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file must be a stereo lithography filetype (.stl).") # this should return to an error version of the upload page
@@ -5026,7 +5026,7 @@ class NewObjectUpload2(ObjectUploadHandler):
 						#blob_info = blobstore.BlobInfo.get(img_upload)
 						#img_size = blob_info.size
 						#logging.warning(img_size)
-						if filename[-1] not in ['png','jpg','jpeg','bmp']:
+						if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 							logging.error('not "image" filetype, redirect')
 							img_upload.delete()
 							self.redirect("/newobject2/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file did not appear to be an allowed image filetype.")) # this should return to an error version of the upload page
@@ -5112,6 +5112,17 @@ class NewObjectUpload2(ObjectUploadHandler):
 
 					user_page_object_cache(user_id, update=True) # No longer needed really...
 					user_page_obj_com_cache(user_id, update=True)
+
+					# Update all front pages using the load_front_pages_from_memcache_else_query function
+					global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+					if new_object.nsfw == True:
+						# currently no other page types supported beyond "/"
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+					else:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+					if new_object.okay_for_kids == True:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
 					self.redirect('/newobject3/%d' % new_object.key().id())
 
 				#except:
@@ -5591,7 +5602,7 @@ class NewLinkUpload(ObjectUploadHandler):
 						filename_full = img_upload.filename
 						filename = filename_full.split('.')
 						#logging.warning(filename)
-						if filename[-1] not in ['png','jpg','jpeg','bmp']:
+						if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 							logging.error('not "image" filetype, redirect')
 							img_upload.delete()
 							self.redirect("/newlink2/%d?redirect=filetype&file_type_error=%s" % (obj_id, "This file must be an allowed image filetype."))
@@ -5666,6 +5677,17 @@ class NewLinkUpload(ObjectUploadHandler):
 					object_page_cache(new_object.key().id(),update=True)
 					user_page_object_cache(user_id, update=True) # No longer needed really...
 					user_page_obj_com_cache(user_id, update=True)
+					
+					# Update all front pages using the load_front_pages_from_memcache_else_query function
+					global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+					if new_object.nsfw == True:
+						# currently no other page types supported beyond "/"
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+					else:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+					if new_object.okay_for_kids == True:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
 					self.redirect('/obj/%d' % new_object.key().id())
 
 				#except:
