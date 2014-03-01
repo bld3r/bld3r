@@ -851,6 +851,76 @@ class AdminDelHandler(Handler):
 	def post(self):
 		pass
 
+NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT = 999
+def load_front_pages_from_memcache_else_query(page_type, page_num, content_type, update=False):
+	if page_type == "/":
+		key = "front_page_%s_%s" % (content_type, page_num)
+		#print "\n", "loading:", key, "\n"
+	else:
+		# i will add other pages later
+		self.error("load_front_pages_from_memcache_else_query error. Improper page_type.")
+		return []
+
+	page_time_list_tuple = memcache.get(key)
+	if page_time_list_tuple is None:
+		update = True
+	elif len(page_time_list_tuple) > 0:
+		last_update = page_time_list_tuple[0]
+
+		current_time = time.time()
+		the_time_fifteen_minutes_ago = current_time - (15 * 60)
+
+		if the_time_fifteen_minutes_ago > last_update:
+			update = True
+	
+	if update == True:
+		current_time = time.time()
+
+		page_num = int(page_num)
+		next_page_num = page_num + 1
+		number_of_items_to_fetch = 30
+
+		object_query = all_objects_query(content_type)
+		logging.warning("DB query all_objects_query(%s)" % content_type) 
+		object_list = list(object_query)
+
+		for obj in object_list:
+			obj.rank = return_rank(obj)
+		object_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+
+		#print "\n", "full object list:", object_list, "\n"
+		end_of_content = False
+
+		for this_pages_number in range(page_num + 1):
+			# add 1 to page number to include page number in range, then skip zero, so there isn't any ordinal confusion.
+			# this_pages_number "1" will be page 1
+			if this_pages_number == 0:
+				continue
+			#print "\n", "this page's number:", this_pages_number, "\n"
+			
+			# now back to normal counting
+			the_objects = object_list[( (this_pages_number -1) * number_of_items_to_fetch) : (this_pages_number * number_of_items_to_fetch)]
+			
+			#print "\n", the_objects, "\n"
+			
+			if not the_objects: # If the objects is an empty list
+				end_of_content = True
+
+			page_time_list_tuple = [current_time, the_objects]
+
+			if page_type == "/":
+				new_key = "front_page_%s_%d" % (content_type, this_pages_number)
+				#print "\n", "new key:", new_key, "\n"
+			else:
+				self.error("load_front_pages_from_memcache_else_query error. Improper page_type.")
+
+			memcache.set(new_key, page_time_list_tuple)
+
+			if end_of_content:
+				break
+
+	#print "\n", page_time_list_tuple[1], "\n"
+	return page_time_list_tuple[1] # This should always be the last page number, which will be the page loaded.
 class FrontHandler(Handler):
 	def render_front_page(self, page_type, page_num="1"):
 		global ADMIN_USERNAMES
@@ -858,7 +928,7 @@ class FrontHandler(Handler):
 		user = self.return_user_if_cookie()
 		user_id = self.check_cookie_return_val("user_id")
 		current_time = time.time()
-		print "The time is:", current_time
+		#print "The time is:", current_time
 		
 		content_type = "kids"
 		over18 = self.check_cookie_return_val("over18")
@@ -866,6 +936,34 @@ class FrontHandler(Handler):
 			over18 = True
 			content_type = "sfw"
 
+		if page_type == "/":
+			the_objects = load_front_pages_from_memcache_else_query(page_type=page_type, page_num=page_num, content_type=content_type)
+
+			page_num = int(page_num)
+			next_page_num = page_num + 1
+
+			the_dict = cached_vote_data_for_masonry(the_objects, user_id)
+
+			end_of_content = None
+			if len(the_dict) == 0:
+				end_of_content = True
+
+			self.render("front_infinite.html", 
+						user = user,
+						user_id = user_id,
+
+						the_dict = the_dict,
+						cursor = None,
+						cursor_url = None,
+						end_of_content = end_of_content,
+
+						page_num = page_num,
+						next_page_num = next_page_num,
+
+						ADMIN_USERNAMES = ADMIN_USERNAMES,
+						FAKE_NAME_LIST = FAKE_NAME_LIST,
+						)
+			return
 		object_query = all_objects_query(content_type)		
 		object_pages = ["/objects"]
 
@@ -4764,7 +4862,19 @@ class NewObjectUpload1(ObjectUploadHandler):
 					object_page_cache(new_object.key().id(),update=True)
 					user_page_object_cache(user_id, update=True) # No longer needed really...
 					user_page_obj_com_cache(user_id, update=True)
-					
+
+
+					# Update all front pages using the load_front_pages_from_memcache_else_query function
+					global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+					if nsfw_var == True:
+						# currently no other page types supported beyond "/"
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+					else:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+					if okay_for_kids_var == True:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
 					if user:
 						for follower_id in user.follower_list:
 							logging.warning('should sleep here')
@@ -5331,6 +5441,18 @@ class NewLinkPage(Handler):
 					pass
 
 				object_page_cache(new_object.key().id(),update=True)
+
+				# Update all front pages using the load_front_pages_from_memcache_else_query function
+				global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+				if nsfw_var == True:
+					# currently no other page types supported beyond "/"
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if okay_for_kids_var == True:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
 				user_page_obj_com_cache(user_id, update=True)
 				if user:
 					for follower_id in user.follower_list:
@@ -5745,6 +5867,18 @@ class NewTorPage(Handler):
 					pass
 
 				object_page_cache(new_object.key().id(),update=True)
+
+				# Update all front pages using the load_front_pages_from_memcache_else_query function
+				global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+				if nsfw_var == True:
+					# currently no other page types supported beyond "/"
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if okay_for_kids_var == True:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
 				user_page_obj_com_cache(user_id, update=True)
 				if user:
 					for follower_id in user.follower_list:
@@ -6789,6 +6923,18 @@ class NewLessonPage(Handler):
 				#learn_front_cache(update = True)
 				object_page_cache(new_object.key().id(),update=True)
 				user_page_obj_com_cache(user_id, update=True)
+
+				# Update all front pages using the load_front_pages_from_memcache_else_query function
+				global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+				if nsfw_var == True:
+					# currently no other page types supported beyond "/"
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if okay_for_kids_var == True:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
 				if user:
 					for follower_id in user.follower_list:
 						logging.warning('should sleep here')
@@ -6947,6 +7093,18 @@ class NewAskPage(Handler):
 				#learn_front_cache(update = True)
 				object_page_cache(new_object.key().id(),update=True)
 				user_page_obj_com_cache(user_id, update=True)
+
+				# Update all front pages using the load_front_pages_from_memcache_else_query function
+				global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+				if nsfw_var == True:
+					# currently no other page types supported beyond "/"
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if okay_for_kids_var == True:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
 				if user:
 					for follower_id in user.follower_list:
 						logging.warning('should sleep here')
@@ -7222,6 +7380,17 @@ class NewArticlePage(Handler):
 
 				object_page_cache(new_object.key().id(),update=True)
 				user_page_obj_com_cache(user_id, update=True)
+
+				# Update all front pages using the load_front_pages_from_memcache_else_query function
+				global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+				if nsfw_var == True:
+					# currently no other page types supported beyond "/"
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if okay_for_kids_var == True:
+					load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
 				if user:
 					for follower_id in user.follower_list:
 						logging.warning('should sleep here')
