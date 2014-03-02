@@ -924,17 +924,16 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 			memcache.set(new_key, page_time_list_tuple)
 
 			if this_pages_number == page_num:
-				page_time_list_tuple_to_return = page_time_list_tuple
+				page_time_list_tuple_to_return = page_time_list_tuple # this saves the current page which will be set to return below
 				#print "\n", "returning this page"
 
 			if end_of_content:
 				break
 
-	else: # cache is ready to load (update = False)
-		page_time_list_tuple_to_return = page_time_list_tuple
+		page_time_list_tuple = page_time_list_tuple_to_return
 
 	#print "\n", page_time_list_tuple[1], "\n"
-	return page_time_list_tuple_to_return[1] # This should always be the last page number, which will be the page loaded.
+	return page_time_list_tuple[1] # This should always be the current page.
 class FrontHandler(Handler):
 	def render_front_page(self, page_type, page_num="1"):
 		global ADMIN_USERNAMES
