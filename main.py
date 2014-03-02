@@ -603,7 +603,7 @@ class AdminPage(Handler):
 			self.redirect('/')
 			return
 		#logging.warning(has_cookie)
-		if user.username not in ['aeou', 'barf', 'thong', 'matt']:
+		if user.username not in ['aeou', 'barf', 'thong', 'matt', 'scoofy']:
 			self.redirect('/')
 			return
 		# check for admin here: either by name, or id, or both
@@ -618,7 +618,7 @@ class AdminPage(Handler):
 		self.render_front()
 
 	def post(self):
-		password = 'indeedly'
+		password = data.return_admin_password()
 
 		user = self.return_user_if_cookie()
 		has_cookie = self.return_has_cookie()
