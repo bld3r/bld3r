@@ -881,7 +881,7 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 
 		page_num = int(page_num)
 		next_page_num = page_num + 1
-		number_of_items_to_fetch = 3
+		number_of_items_to_fetch = 30
 
 		object_query = all_objects_query(content_type)
 		logging.warning("DB query all_objects_query(%s)" % content_type) 
