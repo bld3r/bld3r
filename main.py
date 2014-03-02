@@ -930,7 +930,8 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 			if end_of_content:
 				break
 
-		page_time_list_tuple = page_time_list_tuple_to_return
+		if page_time_list_tuple_to_return:
+			page_time_list_tuple = page_time_list_tuple_to_return
 
 	#print "\n", page_time_list_tuple[1], "\n"
 	return page_time_list_tuple[1] # This should always be the current page.
