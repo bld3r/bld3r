@@ -51,6 +51,7 @@ URL_CHECK_HEADERS = {
 ALLOWED_IMAGE_EXTENTIONS = ['png','jpg','jpeg','bmp']
 ALLOWED_ALTERNATE_FILE_EXTENTIONS = ['stl', 'scad']
 MAX_FILE_SIZE_FOR_OBJECTS = 5242880
+NUMBER_OF_MINUTES_BETWEEN_FRONT_PAGE_UPDATES = 15
 mkd = markdown2.Markdown()
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(extensions=['jinja2.ext.with_'],
@@ -869,9 +870,10 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 		last_update = page_time_list_tuple[0]
 
 		current_time = time.time()
-		the_time_fifteen_minutes_ago = current_time - (15 * 60)
+		global NUMBER_OF_MINUTES_BETWEEN_FRONT_PAGE_UPDATES
+		time_gap_between_cache_updates = current_time - (NUMBER_OF_MINUTES_BETWEEN_FRONT_PAGE_UPDATES * 60)
 
-		if the_time_fifteen_minutes_ago > last_update:
+		if time_gap_between_cache_updates > last_update:
 			update = True
 	
 	if update == True:
@@ -879,7 +881,7 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 
 		page_num = int(page_num)
 		next_page_num = page_num + 1
-		number_of_items_to_fetch = 30
+		number_of_items_to_fetch = 3
 
 		object_query = all_objects_query(content_type)
 		logging.warning("DB query all_objects_query(%s)" % content_type) 
@@ -892,8 +894,12 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 		#print "\n", "full object list:", object_list, "\n"
 		end_of_content = False
 
-		for this_pages_number in range(page_num + 1):
-			# add 1 to page number to include page number in range, then skip zero, so there isn't any ordinal confusion.
+		# Since a memcache set doesn't cost money, we will cache 50 pages past the current page when it's setting a new cache.
+		page_num_plus_fifty = page_num + 50
+
+		page_time_list_tuple_to_return = None
+
+		for this_pages_number in range(page_num_plus_fifty + 1): # add 1 to page number to include page number in range, then skip zero, so there isn't any ordinal confusion.
 			# this_pages_number "1" will be page 1
 			if this_pages_number == 0:
 				continue
@@ -911,17 +917,24 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 
 			if page_type == "/":
 				new_key = "front_page_%s_%d" % (content_type, this_pages_number)
-				#print "\n", "new key:", new_key, "\n"
+				#print "\n", "\n", "new key:", new_key
 			else:
 				self.error("load_front_pages_from_memcache_else_query error. Improper page_type.")
 
 			memcache.set(new_key, page_time_list_tuple)
 
+			if this_pages_number == page_num:
+				page_time_list_tuple_to_return = page_time_list_tuple
+				#print "\n", "returning this page"
+
 			if end_of_content:
 				break
 
+	else: # cache is ready to load (update = False)
+		page_time_list_tuple_to_return = page_time_list_tuple
+
 	#print "\n", page_time_list_tuple[1], "\n"
-	return page_time_list_tuple[1] # This should always be the last page number, which will be the page loaded.
+	return page_time_list_tuple_to_return[1] # This should always be the last page number, which will be the page loaded.
 class FrontHandler(Handler):
 	def render_front_page(self, page_type, page_num="1"):
 		global ADMIN_USERNAMES
