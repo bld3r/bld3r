@@ -9,3 +9,6 @@ def email_confirmation_sender_address():
 
 def password_reset_sender_address():
 	return "Password Reset (Do Not Reply) <bld3r.com@gmail.com>"
+
+def return_admin_password():
+	return "another secret password goes here"
