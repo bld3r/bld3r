@@ -18,6 +18,9 @@ handlers:
 - url: /img
   static_dir: img
 
+- url: /page/img
+  static_dir: img
+
 # All static file must be listed above this url
 - url: .*
   script: main.app
