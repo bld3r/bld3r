@@ -1189,7 +1189,10 @@
 								{% endif %}
 							{% endif %}
 						{% endif %}
-					{% endif %}				
+					{% endif %}	
+					<div style="color:red; clear:both; margin-left: 20px;">
+						{{file_upload_error}}
+					</div>
 					{% if user_is_author == True %}
 						{% if img_list_full == False %}
 							<div class="object_img_upload_form" style="float:left; width: 550px; clear:left; margin-left:100px;margin-bottom:10px;">
@@ -1204,7 +1207,7 @@
 										<br>
 										<br>
 										<input type="checkbox" name="rights" value="yes"> 
-										Rights
+										Sharing this image complies with the <a href="/tos" target="_blank">terms of service</a>.
 										<br>
 										<br>
 										<input type="submit" value="upload">
@@ -1246,7 +1249,7 @@
 										<br>
 										<br>
 										<input type="checkbox" name="rights" value="yes"> 
-										Rights
+										Sharing this image complies with the <a href="/tos" target="_blank">terms of service</a>.
 										<br>
 										<br>
 										<input type="submit" value="upload">

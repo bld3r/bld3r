@@ -1596,6 +1596,11 @@ class ObjectPage(Handler):
 
 		username = self.check_cookie_return_val("username")
 
+
+		file_upload_error = self.request.get('file_upload_error')
+		#print file_upload_error
+
+
 		#blob_ref = return_object_blob_by_obj_id_and_priority(obj_id, 0)
 		file1_filename = the_obj.stl_filename
 		#if blob_ref:
@@ -1784,6 +1789,8 @@ class ObjectPage(Handler):
 					public_tag_str = public_tag_str,
 
 					show_3d_model = show_3d_model,
+
+					file_upload_error = file_upload_error,
 
 					ADMIN_USERNAMES = ADMIN_USERNAMES,
 					FAKE_NAME_LIST = FAKE_NAME_LIST,
@@ -2567,8 +2574,17 @@ class ObjectImgUpload(ObjectUploadHandler):
 			if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 				logging.error('not "image" filetype, redirect')
 				img_upload.delete()
-				self.redirect('/obj/%d' % obj_id)
+				self.redirect('/obj/%d?file_upload_error=%s' % (obj_id, "You may only upload an image file of the types: .png, .jpg,.jpeg, .bmp."))
 				return
+			# size limit
+			global MAX_FILE_SIZE_FOR_OBJECTS
+			if img_upload.size > MAX_FILE_SIZE_FOR_OBJECTS:
+				logging.warning(img_upload)
+				logging.warning(img_upload.size)
+				img_upload.delete()
+				self.redirect("/obj/%d?file_upload_error=%s" % (obj_id, "That image was too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload a smaller version, preferably < 1MB.")) 
+				return
+
 			logging.warning(img_upload.size)
 			if img_upload.size > 100000:
 				logging.warning(img_upload)
@@ -3052,8 +3068,18 @@ class VisitorImgUpload(ObjectUploadHandler):
 			if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 				logging.error('not "image" filetype, redirect')
 				img_upload.delete()
-				self.redirect('/obj/%d' % obj_id)
+				self.redirect('/obj/%d?file_upload_error=%s' % (obj_id, "You may only upload an image file of the types: .png, .jpg,.jpeg, .bmp."))
 				return
+
+			# size limit
+			global MAX_FILE_SIZE_FOR_OBJECTS
+			if img_upload.size > MAX_FILE_SIZE_FOR_OBJECTS:
+				logging.warning(img_upload)
+				logging.warning(img_upload.size)
+				img_upload.delete()
+				self.redirect("/obj/%d?file_upload_error=%s" % (obj_id, "That image was too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload a smaller version, preferably < 1MB.")) 
+				return
+
 			logging.warning(img_upload.size)
 			if img_upload.size > 100000:
 				logging.warning(img_upload)
@@ -5040,19 +5066,30 @@ class NewObjectUpload2(ObjectUploadHandler):
 					except:
 						self.redirect("/newobject2/%d" % obj_id)
 
+
 					if img_upload:
 						img_url = '/serve_obj/%s' % img_upload.key()
 						img_blob_key = str(img_upload.key())
 						filename_full = img_upload.filename
 						filename = filename_full.split('.')
 						logging.warning(filename)
+						
 						#blob_info = blobstore.BlobInfo.get(img_upload)
 						#img_size = blob_info.size
 						#logging.warning(img_size)
+						
 						if filename[-1].lower() not in ['png','jpg','jpeg','bmp']:
 							logging.error('not "image" filetype, redirect')
 							img_upload.delete()
 							self.redirect("/newobject2/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file did not appear to be an allowed image filetype.")) # this should return to an error version of the upload page
+							return
+
+						global MAX_FILE_SIZE_FOR_OBJECTS
+						if img_upload.size > MAX_FILE_SIZE_FOR_OBJECTS:
+							logging.warning(img_upload)
+							logging.warning(img_upload.size)
+							img_upload.delete()
+							self.redirect("/newobject2/%d?redirect=filetype&file_type_error=%s" % (obj_id, "This image is too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload a smaller version, preferably < 1MB. We are currently working on integrating imgur, but have not completed it.")) 
 							return
 
 						if img_upload.size > 100000:
@@ -5534,6 +5571,7 @@ class NewLinkPage2(Handler):
 				error_1 = ""
 		elif redirect == "filetype":
 			file_type_error = self.request.get("file_type_error")
+			error_2 = file_type_error
 
 		the_obj = object_page_cache(obj_id)
 		title_var = the_obj.title
@@ -5629,6 +5667,15 @@ class NewLinkUpload(ObjectUploadHandler):
 							logging.error('not "image" filetype, redirect')
 							img_upload.delete()
 							self.redirect("/newlink2/%d?redirect=filetype&file_type_error=%s" % (obj_id, "This file must be an allowed image filetype."))
+							return
+
+						# size limit
+						global MAX_FILE_SIZE_FOR_OBJECTS
+						if img_upload.size > MAX_FILE_SIZE_FOR_OBJECTS:
+							logging.warning(img_upload)
+							logging.warning(img_upload.size)
+							img_upload.delete()
+							self.redirect("/newlink2/%d?redirect=filetype&file_type_error=%s" % (obj_id, "This image is too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload a smaller version, preferably < 1MB. We are currently working on integrating imgur, but have not completed it.")) 
 							return
 
 						if img_upload.size > 100000:
