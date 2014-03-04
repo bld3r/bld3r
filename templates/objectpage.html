@@ -1263,53 +1263,55 @@
 					{% if other_img_list or visitor_img_quad_list%}
 						<div class="clear">
 						</div>
-						<div class="other_img_box"style="width:600px; margin-left:10px;">
-							<span style="float:left; margin: 5px;">
-								<a href="#img1"><img  src="{{img1}}" width="120"/></a>
-							</span>
-								{% for img in other_img_list %}
-									<span style="float:left; margin: 5px;">
-										<a href="#{{img}}"><img  src="{{img}}" width="120"/></a>
-									<br>
-									<!--Uncomment after we fix the js
-									<span style="float:left;">
-										flag
-									</span>
-									-->
+						{% if other_img_list %}
+							<div class="other_img_box"style="width:600px; margin-left:10px;">
+								<span style="float:left; margin: 5px;">
+									<a href="#img1"><img  src="{{img1}}" width="120"/></a>
 								</span>
-							{% endfor %}
-							<div style="clear:both;">
-							</div>
-							{% if user_is_author %}
-								<br>
-								{% for img in other_img_list %}
-									<div class="delete_img_box" >
-										<form method="post" action="/object_img_delete">
-
-											<span style="float:left; margin-right: 10px;">
-												<span style="vertical-align:text-top;">Delete this image?</span> 
-												<br>
-												<input type="checkbox" name="check" value="yes" style="float:left; margin-right: 5px; margin-top:3px;">
-												<span style="float:left; margin-right: 5px;">
-													Yes
-												</span> 
-												
-												<input type="hidden" name="obj_id" value="{{obj_id}}">
-												<input type="hidden" name="image_url" value="{{img}}">
-												<input type="hidden" name="verify" value="{{user_hash}}">
-
-												<input type="submit" value="Delete">
-												
-											</span>
-											
-										</form>
-									</div>								
+									{% for img in other_img_list %}
+										<span style="float:left; margin: 5px;">
+											<a href="#{{img}}"><img  src="{{img}}" width="120"/></a>
+										<br>
+										<!--Uncomment after we fix the js
+										<span style="float:left;">
+											flag
+										</span>
+										-->
+									</span>
 								{% endfor %}
-							{% endif %}
-							<div style="clear:both;">
-								 <br>
-							</div>						
-						</div>	
+								<div style="clear:both;">
+								</div>
+								{% if user_is_author %}
+									<br>
+									{% for img in other_img_list %}
+										<div class="delete_img_box" >
+											<form method="post" action="/object_img_delete">
+
+												<span style="float:left; margin-right: 10px;">
+													<span style="vertical-align:text-top;">Delete this image?</span> 
+													<br>
+													<input type="checkbox" name="check" value="yes" style="float:left; margin-right: 5px; margin-top:3px;">
+													<span style="float:left; margin-right: 5px;">
+														Yes
+													</span> 
+													
+													<input type="hidden" name="obj_id" value="{{obj_id}}">
+													<input type="hidden" name="image_url" value="{{img}}">
+													<input type="hidden" name="verify" value="{{user_hash}}">
+
+													<input type="submit" value="Delete">
+													
+												</span>
+												
+											</form>
+										</div>								
+									{% endfor %}
+								{% endif %}
+								<div style="clear:both;">
+									 <br>
+								</div>						
+							</div>
+						{% endif %}
 					{% endif %}
 
 					{% if visitor_img_quad_list %}
