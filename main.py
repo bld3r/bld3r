@@ -10477,6 +10477,7 @@ def delete_obj(obj_id):
 	the_object.license			= None
 	the_object.obj_link			= None
 	the_object.description 		= ""
+	the_object.markdown			= ""
 	the_object.tags 			= ["None"]
 	the_object.author_tags		= ["None"]
 	the_object.public_tags 		= ["None"]
@@ -10499,6 +10500,16 @@ def delete_obj(obj_id):
 		all_objects_query("nsfw", update = True)
 	else:
 		all_objects_query("sfw",update=True)
+
+	# reset front page cache
+	global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+	if nsfw_bool == True:
+		# currently no other page types supported beyond "/"
+		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+	else:
+		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+	if kids_bool == True:
+		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
 
 
 	obj_comment_cache(obj_id, update=True)
