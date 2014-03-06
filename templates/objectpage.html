@@ -1026,15 +1026,14 @@
 					</div>
 					{% if obj_type in ['link', 'upload', 'tor'] %}
 						<div class="img_box">
-							{% if img1 %}
-								<!-- 
-								<div class="img1">
-									<img src="{{img1}}">
-								</div> 
-								-->
+							{% if img1 or visitor_img_quad_list %}
 								<div class="image-gallery">
-									<div class="big-image">              
-										<img id="img1" src="{{img1}}" />
+									<div class="big-image"> 
+										{% if img1 %}
+											<img id="img1" src="{{img1}}" />
+										{% else %}
+											<img id="img1" src="/img/noimage.png" />
+										{% endif%}
 										{% if other_img_list %}
 											{% for img in other_img_list %}
 												<img id="{{img}}"src="{{img}}" >
@@ -1045,7 +1044,11 @@
 												<img id="{{the_quad[2]}}" src="{{the_quad[2]}}">
 											{% endfor %}
 										{% endif %}
-										<img id="default" src="{{img1}}" />
+										{% if img1 %}
+											<img id="default" src="{{img1}}" />
+										{% else %}
+											<img id="default" src="/img/noimage.png" />
+										{% endif%}
 									</div>
 								</div>
 							{% else %}
@@ -1229,7 +1232,7 @@
 										<br>
 										<br>
 										<input type="checkbox" name="rights" value="yes"> 
-										Rights
+										Sharing this image complies with the <a href="/tos" target="_blank">terms of service</a>.
 										<br>
 										<br>
 										<input type="submit" value="upload">
@@ -1268,15 +1271,23 @@
 								<span style="float:left; margin: 5px;">
 									<a href="#img1"><img  src="{{img1}}" width="120"/></a>
 								</span>
-									{% for img in other_img_list %}
-										<span style="float:left; margin: 5px;">
-											<a href="#{{img}}"><img  src="{{img}}" width="120"/></a>
-										<br>
-										<!--Uncomment after we fix the js
-										<span style="float:left;">
+								{% for img in other_img_list %}
+									<span style="float:left; margin: 5px;">
+										<a href="#{{img}}"><img  src="{{img}}" width="120"/></a>
+									<br>
+									<!--Uncomment after we fix the js
+									{% if user_is_author %}
+										<span style="float:right; color:#ddd; font-size: 10px;">
+											<br>
+											delete
+										</span>
+									{% else %}
+										<span style="float:right; color:#ddd; font-size: 10px;">
+											<br>
 											flag
 										</span>
-										-->
+									{% endif %}
+									-->
 									</span>
 								{% endfor %}
 								<div style="clear:both;">
@@ -1321,17 +1332,48 @@
 							{% for the_quad in visitor_img_quad_list %}
 								<span style="float:left; margin: 5px;">
 									<a href="#{{the_quad[2]}}"><img  src="{{the_quad[2]}}" width="120"/></a>
-									<br>									
-									by 
-									<a href="/user/{{the_quad[0]}}">
-										{{the_quad[1]}}
-									</a>
 									<br>
-									<!--Uncomment after we fix the js
-									<span style="float:right;">
-										flag
+									<span style="float:left;">
+										by 
+										<a href="/user/{{the_quad[0]}}">
+											{{the_quad[1]}}
+										</a>
 									</span>
-									-->
+
+									{% if user_id_str == the_quad[0] or user_is_author %}
+										<!--user upload this photo-->
+										<span class="delete_visitor_img" id="delete_visitor_img_{{ loop.index }}" style="cursor: pointer; float:right; color:#ddd; font-size: 10px;">
+											<br>
+											delete
+										</span>
+
+										<!-- loop index is the position in the list of items to create unique ids -->
+										<div class="delete_visitor_img_{{ loop.index }}" style="display: none; float:right; clear:both; font-size: 12px; text-align:right;">
+											<br>
+											<form method="post" action="/object_page_specific_img_delete">
+												<input type="hidden" name="obj_id" value="{{obj_id}}">
+												<input type="hidden" name="photo_id" value="{{the_quad[2]}}">
+												<input type="hidden" name="user_id" value="{{user_id}}">
+												<input type="hidden" name="user_hash" value="{{user_hash}}">
+
+												<input type="checkbox" name="check" value="yes">
+												<span style="color: red;">
+													&nbsp;Confirm
+												</span>
+												<br>
+												<br>
+												<input type="submit" value="Delete">
+											</form>
+										</div>
+									{% else %}
+										<!--Uncomment after we fix the js
+										<span style="float:right; color:#ddd; font-size: 10px;">
+											<br>
+											flag
+										</span>
+										-->
+									{% endif %}
+									
 								</span>
 							{% endfor %}
 						</div>

@@ -334,6 +334,7 @@ class Users(db.Model):
 
 	imgs_on_others_objects = db.StringListProperty()
 
+
 	@classmethod
 	def by_id(cls, uid):
 		logging.warning('DB Query User Login -- @classmethod by_id ')
@@ -1556,8 +1557,9 @@ class ObjectPage(Handler):
 		user_id = self.check_cookie_return_val("user_id")
 		if user_id:
 			user_id = int(user_id)
+			user_id_str = str(user_id)
 		else:
-			pass
+			user_id_str = ""
 
 		author_tag_str = ""
 		public_tag_str = ""
@@ -1685,6 +1687,7 @@ class ObjectPage(Handler):
 
 		visitor_img_quad_list = []
 		for a_tuple in the_obj.visitor_img_list:
+			# quads are of the form ["user_id|username|img_url_path|blob_key"]
 			if a_tuple != "None":
 				visitor_img_quad_list.append(a_tuple.split("|"))
 				logging.warning(visitor_img_quad_list)
@@ -1752,6 +1755,7 @@ class ObjectPage(Handler):
 
 					username = username,
 					user_id = user_id,
+					user_id_str = user_id_str,
 					error = error,
 
 					file1_filename = file1_filename,
@@ -2516,12 +2520,6 @@ class ObjectImgUpload(ObjectUploadHandler):
 			return
 		user_id = int(user_id)
 
-		rights = self.request.get("rights")
-		logging.warning(rights)
-		if rights != "yes":
-			self.error(400)
-			logging.warning("no rights!")
-			return
 		obj_id = self.request.get("obj_id")
 		if obj_id:
 			obj_id = int(obj_id)
@@ -2530,6 +2528,13 @@ class ObjectImgUpload(ObjectUploadHandler):
 			logging.error("Object not found")
 			self.error(400)
 			return
+
+		rights = self.request.get("rights")
+		logging.warning(rights)
+		if rights != "yes":
+			self.redirect("/obj/%d?file_upload_error=%s" % (obj_id, "Eek, I think you missed the checkbox for uploading photos. You must agree to the terms when uploading photos.")) 
+			return
+
 
 		verify_hash = self.request.get("verify")
 		author = return_thing_by_id(obj.author_id, "Users")
@@ -2553,7 +2558,6 @@ class ObjectImgUpload(ObjectUploadHandler):
 			return
 		else:
 			pass
-
 
 		# Check for image
 		img_upload = None
@@ -2763,6 +2767,131 @@ class ObjectImgDelete(Handler):
 				memcache.set("Objects_%d" % obj_id, [obj])
 
 		self.redirect("/obj/%d" % obj_id)
+
+class ObjectSpecificImgDelete(Handler):
+	def post(self):
+		obj_id = self.request.get("obj_id")
+
+		print "\n", obj_id, "\n"
+
+		if obj_id:
+			next_url = "/obj/%d" % int(obj_id)
+		else:
+			print "\nNo object id\n"
+			self.error(400)
+			return
+
+		check = self.request.get("check")
+		print check
+		if check != "yes":
+			self.redirect(next_url)
+			return
+
+		user_id = self.request.get("user_id")
+		user_hash = self.request.get("user_hash")
+		print "\nuser_hash:", user_hash
+
+		user = return_thing_by_id(user_id, "Users")
+		if not user:
+			print "\nNo user\n"
+			self.error(400)
+			return
+		verify_hash = gen_verify_hash(user)
+		print "\nhash_hash: %s" % verify_hash
+
+		if user_hash != verify_hash:
+			print "\nNo hash match\n"
+			self.error(400)
+			return
+
+		# user verified
+		allowed_to_delete = False
+
+		user_is_author = False
+		obj = return_thing_by_id(obj_id, "Objects")
+		author_id = obj.author_id
+
+		if str(user_id) == str(author_id):
+			user_is_author = True
+			allowed_to_delete = True
+		
+		photo_id = self.request.get("photo_id")
+		if not photo_id:
+			print "\nNo photo id\n"
+			self.error(400)
+			return
+
+		for data in obj.visitor_img_list:
+			quad = data.split("|")
+			if photo_id == quad[2]:
+				img_uploader_id = quad[0]
+
+		if img_uploader_id:
+			if user_id == img_uploader_id:
+				allowed_to_delete = True
+
+		if not allowed_to_delete:
+			print "\nNot allowed to delete\n"
+			self.error(400)
+			return
+
+		# allowed to delete, now time to delete
+		
+		# check if visitor photo
+		quad_to_delete = None
+		count = 0
+		for data in obj.visitor_img_list:
+			quad = data.split("|")
+			if photo_id == quad[2]:
+				#delete
+				quad_to_delete = quad
+				quad_to_delete_position = count
+			count += 1
+		if quad_to_delete:
+			# delete photo
+			obj.visitor_img_list.pop(quad_to_delete_position)
+			blob_key = quad_to_delete[3]
+			blob_key = str(blob_key)
+			print "\nblob key:", blob_key
+			print "\ntype:", type(blob_key)
+			print ""
+			if blob_key:
+				blob_key = blobstore.BlobInfo.get(blob_key)
+				print "\n", blob_key
+				print "\ntype:", type(blob_key)
+				# deleting obj blob shouldn't actually be necessary anymore
+				obj_blob_ref = db.GqlQuery("SELECT * FROM ObjectBlob WHERE obj_id = :1", obj_id)
+				logging.warning('db query: deleting obj img from db and blobstore')
+				logging.warning(obj_blob_ref)
+				if obj_blob_ref:
+					obj_blob_ref = list(obj_blob_ref)
+					for ref in obj_blob_ref:
+						if ref.blob_key == blob_key:
+							obj_blob_ref = ref
+							break
+					logging.warning(obj_blob_ref)
+					db.delete(obj_blob_ref)
+				### above should not actually be necessary anymore
+				blob_key.delete()
+				obj.put()
+				memcache.set("Objects_%s" % obj_id, [obj])
+
+			# delete user's reference to this object in img list
+			#print "\n", user.imgs_on_others_objects
+			#print ""
+			for obj_ref in user.imgs_on_others_objects:
+				if str(obj_ref) == str(obj_id):
+					user.imgs_on_others_objects.remove(obj_ref)
+					#print "\nRemoving:", obj_ref
+			
+			#print "\n", user.imgs_on_others_objects
+			#print ""
+			user.put()
+			memcache.set("Users_%s" % user_id, [user])
+
+		self.redirect(next_url)
+		return
+
 class ObjectAltFile(Handler):
 	def render_page(self, obj_num):
 		obj_id = int(obj_num)
@@ -10738,6 +10867,7 @@ app = webapp2.WSGIApplication([
 	(r'/obj/del/(\d+)', ObjDelPage),
 	('/object_img_upload', ObjectImgUpload),
 	('/object_img_delete', ObjectImgDelete),
+	('/object_page_specific_img_delete', ObjectSpecificImgDelete),
 	('/visitor_img_upload', VisitorImgUpload),
 	(r'/altfile/(\d+)', ObjectAltFile),
 	('/altfileupload/', ObjectAltFileUpload),
