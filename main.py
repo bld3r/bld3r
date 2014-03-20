@@ -419,6 +419,39 @@ class Objects(db.Model):
 	file_link_5			= db.StringProperty(default = None)
 	file_blob_key_5		= blobstore.BlobReferenceProperty()
 	file_blob_filename_5= db.TextProperty()
+	file_link_5			= db.StringProperty(default = None)
+	file_blob_key_5		= blobstore.BlobReferenceProperty()
+	file_blob_filename_5= db.TextProperty()
+	file_link_6			= db.StringProperty(default = None)
+	file_blob_key_6		= blobstore.BlobReferenceProperty()
+	file_blob_filename_6= db.TextProperty()
+	file_link_7			= db.StringProperty(default = None)
+	file_blob_key_7		= blobstore.BlobReferenceProperty()
+	file_blob_filename_7= db.TextProperty()
+	file_link_8			= db.StringProperty(default = None)
+	file_blob_key_8		= blobstore.BlobReferenceProperty()
+	file_blob_filename_8= db.TextProperty()
+	file_link_9			= db.StringProperty(default = None)
+	file_blob_key_9		= blobstore.BlobReferenceProperty()
+	file_blob_filename_9	= db.TextProperty()
+	file_link_10			= db.StringProperty(default = None)
+	file_blob_key_10		= blobstore.BlobReferenceProperty()
+	file_blob_filename_10	= db.TextProperty()
+	file_link_11			= db.StringProperty(default = None)
+	file_blob_key_11		= blobstore.BlobReferenceProperty()
+	file_blob_filename_11	= db.TextProperty()
+	file_link_12			= db.StringProperty(default = None)
+	file_blob_key_12		= blobstore.BlobReferenceProperty()
+	file_blob_filename_12	= db.TextProperty()
+	file_link_13			= db.StringProperty(default = None)
+	file_blob_key_13		= blobstore.BlobReferenceProperty()
+	file_blob_filename_13	= db.TextProperty()
+	file_link_14			= db.StringProperty(default = None)
+	file_blob_key_14		= blobstore.BlobReferenceProperty()
+	file_blob_filename_14	= db.TextProperty()
+	file_link_15			= db.StringProperty(default = None)
+	file_blob_key_15		= blobstore.BlobReferenceProperty()
+	file_blob_filename_15	= db.TextProperty()
 
 	main_img_link 		= db.StringProperty(default = None)
 	main_img_blob_key	= blobstore.BlobReferenceProperty()
@@ -1684,7 +1717,28 @@ class ObjectPage(Handler):
 			other_file_list.append(the_obj.file_link_4)
 		if the_obj.file_link_5:
 			other_file_list.append(the_obj.file_link_5)
-		if len(other_file_list) >= 4:
+		if the_obj.file_link_6:
+			other_file_list.append(the_obj.file_link_6)
+		if the_obj.file_link_7:
+			other_file_list.append(the_obj.file_link_7)
+		if the_obj.file_link_8:
+			other_file_list.append(the_obj.file_link_8)
+		if the_obj.file_link_9:
+			other_file_list.append(the_obj.file_link_9)
+		if the_obj.file_link_10:
+			other_file_list.append(the_obj.file_link_10)
+		if the_obj.file_link_11:
+			other_file_list.append(the_obj.file_link_11)
+		if the_obj.file_link_12:
+			other_file_list.append(the_obj.file_link_12)
+		if the_obj.file_link_13:
+			other_file_list.append(the_obj.file_link_13)
+		if the_obj.file_link_14:
+			other_file_list.append(the_obj.file_link_14)
+		if the_obj.file_link_15:
+			other_file_list.append(the_obj.file_link_15)
+
+		if len(other_file_list) >= 14:
 			file_list_full = True
 
 		visitor_img_quad_list = []
@@ -2961,7 +3015,17 @@ class ObjectAltFile(Handler):
 		file_3 = self.request.get('file_3')
 		file_4 = self.request.get('file_4')
 		file_5 = self.request.get('file_5')
-		files_to_delete = [file_2, file_3, file_4, file_5]
+		file_6 = self.request.get('file_6')
+		file_7 = self.request.get('file_7')
+		file_8 = self.request.get('file_8')
+		file_9 = self.request.get('file_9')
+		file_10 = self.request.get('file_10')
+		file_11 = self.request.get('file_11')
+		file_12 = self.request.get('file_12')
+		file_13 = self.request.get('file_13')
+		file_14 = self.request.get('file_14')
+		file_15 = self.request.get('file_15')
+		files_to_delete = [file_2, file_3, file_4, file_5, file_6, file_7, file_8, file_9, file_10, file_11, file_12, file_13, file_14, file_15]
 
 		if file_2:
 			blob = obj.file_blob_key_2
@@ -2983,6 +3047,56 @@ class ObjectAltFile(Handler):
 			blob.delete()
 			obj.file_link_5 = None
 			obj.file_blob_filename_5 = None
+		if file_6:
+			blob = obj.file_blob_key_6
+			blob.delete()
+			obj.file_link_6 = None
+			obj.file_blob_filename_6 = None
+		if file_7:
+			blob = obj.file_blob_key_7
+			blob.delete()
+			obj.file_link_7 = None
+			obj.file_blob_filename_7 = None
+		if file_8:
+			blob = obj.file_blob_key_8
+			blob.delete()
+			obj.file_link_8 = None
+			obj.file_blob_filename_8 = None
+		if file_9:
+			blob = obj.file_blob_key_9
+			blob.delete()
+			obj.file_link_9 = None
+			obj.file_blob_filename_9 = None
+		if file_10:
+			blob = obj.file_blob_key_10
+			blob.delete()
+			obj.file_link_10 = None
+			obj.file_blob_filename_10 = None
+		if file_11:
+			blob = obj.file_blob_key_11
+			blob.delete()
+			obj.file_link_11 = None
+			obj.file_blob_filename_11 = None
+		if file_12:
+			blob = obj.file_blob_key_12
+			blob.delete()
+			obj.file_link_12 = None
+			obj.file_blob_filename_12 = None
+		if file_13:
+			blob = obj.file_blob_key_13
+			blob.delete()
+			obj.file_link_13 = None
+			obj.file_blob_filename_13 = None
+		if file_14:
+			blob = obj.file_blob_key_14
+			blob.delete()
+			obj.file_link_14 = None
+			obj.file_blob_filename_14 = None
+		if file_15:
+			blob = obj.file_blob_key_15
+			blob.delete()
+			obj.file_link_15 = None
+			obj.file_blob_filename_15 = None			
 		memcache.set("Objects_%d" % obj_id, [obj])
 		obj.put()
 		self.redirect("/altfile/%d" % obj_id)
@@ -3125,6 +3239,50 @@ class ObjectAltFileUpload(ObjectUploadHandler):
 					the_object.file_link_5 = file_url
 					the_object.file_blob_key_5 = file_blob_key
 					the_object.file_blob_filename_5 = str(file_data.filename)
+				elif the_object.file_link_5 is None:
+					the_object.file_link_5 = file_url
+					the_object.file_blob_key_5 = file_blob_key
+					the_object.file_blob_filename_5 = str(file_data.filename)
+				elif the_object.file_link_6 is None:
+					the_object.file_link_6 = file_url
+					the_object.file_blob_key_6 = file_blob_key
+					the_object.file_blob_filename_6 = str(file_data.filename)
+				elif the_object.file_link_7 is None:
+					the_object.file_link_7 = file_url
+					the_object.file_blob_key_7 = file_blob_key
+					the_object.file_blob_filename_7 = str(file_data.filename)
+				elif the_object.file_link_8 is None:
+					the_object.file_link_8 = file_url
+					the_object.file_blob_key_8 = file_blob_key
+					the_object.file_blob_filename_8 = str(file_data.filename)
+				elif the_object.file_link_9 is None:
+					the_object.file_link_9 = file_url
+					the_object.file_blob_key_9 = file_blob_key
+					the_object.file_blob_filename_9 = str(file_data.filename)
+				elif the_object.file_link_10 is None:
+					the_object.file_link_10 = file_url
+					the_object.file_blob_key_10 = file_blob_key
+					the_object.file_blob_filename_10 = str(file_data.filename)
+				elif the_object.file_link_11 is None:
+					the_object.file_link_11 = file_url
+					the_object.file_blob_key_11 = file_blob_key
+					the_object.file_blob_filename_11 = str(file_data.filename)
+				elif the_object.file_link_12 is None:
+					the_object.file_link_12 = file_url
+					the_object.file_blob_key_12 = file_blob_key
+					the_object.file_blob_filename_12 = str(file_data.filename)
+				elif the_object.file_link_13 is None:
+					the_object.file_link_13 = file_url
+					the_object.file_blob_key_13 = file_blob_key
+					the_object.file_blob_filename_13 = str(file_data.filename)
+				elif the_object.file_link_14 is None:
+					the_object.file_link_14 = file_url
+					the_object.file_blob_key_14 = file_blob_key
+					the_object.file_blob_filename_14 = str(file_data.filename)
+				elif the_object.file_link_15 is None:
+					the_object.file_link_15 = file_url
+					the_object.file_blob_key_15 = file_blob_key
+					the_object.file_blob_filename_15 = str(file_data.filename)										
 				else:
 					logging.warning("No available image slots")
 					self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (
@@ -10598,11 +10756,66 @@ def delete_obj(obj_id):
 	are_blobs = False
 
 	# if stl
-	stl_file_blob_key = the_object.stl_file_blob_key
+	stl_file_blob_key 	= the_object.stl_file_blob_key
+	file_blob_key_2 	= the_object.file_blob_key_2
+	file_blob_key_3 	= the_object.file_blob_key_3
+	file_blob_key_4 	= the_object.file_blob_key_4
+	file_blob_key_5 	= the_object.file_blob_key_5
+	file_blob_key_6 	= the_object.file_blob_key_6
+	file_blob_key_7 	= the_object.file_blob_key_7
+	file_blob_key_8 	= the_object.file_blob_key_8
+	file_blob_key_9 	= the_object.file_blob_key_9
+	file_blob_key_10 	= the_object.file_blob_key_10
+	file_blob_key_11 	= the_object.file_blob_key_11
+	file_blob_key_12 	= the_object.file_blob_key_12
+	file_blob_key_13 	= the_object.file_blob_key_13
+	file_blob_key_14 	= the_object.file_blob_key_14
+	file_blob_key_15 	= the_object.file_blob_key_15
 	if stl_file_blob_key is not None:
 		are_blobs = True
 		stl_file_blob_key.delete()
-	
+	if file_blob_key_2 is not None:
+		are_blobs = True
+		file_blob_key_2.delete()
+	if file_blob_key_3 is not None:
+		are_blobs = True
+		file_blob_key_3.delete()				
+	if file_blob_key_4 is not None:
+		are_blobs = True
+		file_blob_key_4.delete()
+	if file_blob_key_5 is not None:
+		are_blobs = True
+		file_blob_key_5.delete()
+	if file_blob_key_6 is not None:
+		are_blobs = True
+		file_blob_key_6.delete()
+	if file_blob_key_7 is not None:
+		are_blobs = True
+		file_blob_key_7.delete()
+	if file_blob_key_8 is not None:
+		are_blobs = True
+		file_blob_key_8.delete()
+	if file_blob_key_9 is not None:
+		are_blobs = True
+		file_blob_key_9.delete()
+	if file_blob_key_10 is not None:
+		are_blobs = True
+		file_blob_key_10.delete()
+	if file_blob_key_11 is not None:
+		are_blobs = True
+		file_blob_key_11.delete()
+	if file_blob_key_12 is not None:
+		are_blobs = True
+		file_blob_key_12.delete()
+	if file_blob_key_13 is not None:
+		are_blobs = True
+		file_blob_key_13.delete()
+	if file_blob_key_14 is not None:
+		are_blobs = True
+		file_blob_key_14.delete()
+	if file_blob_key_15 is not None:
+		are_blobs = True
+		file_blob_key_15.delete()
 	# if main_img
 	main_img_blob_key = the_object.main_img_blob_key
 	if main_img_blob_key is not None:
@@ -10623,6 +10836,7 @@ def delete_obj(obj_id):
 	the_object.learn_skill		= None
 	the_object.stl_file_link 	= None
 	the_object.stl_file_blob_key= None
+	the_object.stl_filename		= None
 	the_object.main_img_link 	= None
 	the_object.main_img_blob_key= None
 	the_object.license			= None
@@ -10634,6 +10848,48 @@ def delete_obj(obj_id):
 	the_object.public_tags 		= ["None"]
 	the_object.other_file1_link = None
 	the_object.other_img1_link 	= None
+	the_object.file_link_2 		= None
+	the_object.file_blob_key_2 	= None
+	the_object.file_blob_filename_2		= None
+	the_object.file_link_3 		= None
+	the_object.file_blob_key_3 	= None
+	the_object.file_blob_filename_3		= None
+	the_object.file_link_4 		= None
+	the_object.file_blob_key_4 	= None
+	the_object.file_blob_filename_4		= None
+	the_object.file_link_5 		= None
+	the_object.file_blob_key_5 	= None
+	the_object.file_blob_filename_5		= None
+	the_object.file_link_6 		= None
+	the_object.file_blob_key_6 	= None
+	the_object.file_blob_filename_6		= None
+	the_object.file_link_7 		= None
+	the_object.file_blob_key_7 	= None
+	the_object.file_blob_filename_7		= None
+	the_object.file_link_8 		= None
+	the_object.file_blob_key_8 	= None
+	the_object.file_blob_filename_8		= None
+	the_object.file_link_9 		= None
+	the_object.file_blob_key_9 	= None
+	the_object.file_blob_filename_9		= None
+	the_object.file_link_10 	= None
+	the_object.file_blob_key_10 = None
+	the_object.file_blob_filename_10	= None
+	the_object.file_link_11 	= None
+	the_object.file_blob_key_11 = None
+	the_object.file_blob_filename_11	= None
+	the_object.file_link_12 	= None
+	the_object.file_blob_key_12 = None
+	the_object.file_blob_filename_12	= None
+	the_object.file_link_13 	= None
+	the_object.file_blob_key_13 = None
+	the_object.file_blob_filename_13	= None
+	the_object.file_link_14 	= None
+	the_object.file_blob_key_14 = None
+	the_object.file_blob_filename_14	= None
+	the_object.file_link_15 	= None
+	the_object.file_blob_key_15 = None
+	the_object.file_blob_filename_15	= None
 
 	the_object.deleted 			= True
 

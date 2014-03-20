@@ -80,7 +80,7 @@
 			<div style="padding-top:10px;clear:both;">
 				<hr>
 			</div>
-			{% if not (obj.file_link_2 and obj.file_link_3 and obj.file_link_4 and obj.file_link_5) %}
+			{% if not (obj.file_link_2 and obj.file_link_3 and obj.file_link_4 and obj.file_link_5 and obj.file_link_6 and obj.file_link_7 and obj.file_link_8 and obj.file_link_9 and obj.file_link_10 and obj.file_link_11 and obj.file_link_12 and obj.file_link_13 and obj.file_link_14 and obj.file_link_15) %}
 				<div class="input_container" style="float:left; width:600px;  height:auto;">
 					<form method="post" action="{{file_upload_url}}" enctype="multipart/form-data">
 						<input type="hidden" name="verify" value="{{user_hash}}">
@@ -175,13 +175,13 @@
 					</form>
 				</div>
 			{% endif %}
-			{% if obj.file_link_2 or obj.file_link_3 or obj.file_link_4 or obj.file_link_5 %}
+			{% if obj.file_link_2 or obj.file_link_3 or obj.file_link_4 or obj.file_link_5 or obj.file_link_6 or obj.file_link_7 or obj.file_link_8 or obj.file_link_9 or obj.file_link_10 or obj.file_link_11 or obj.file_link_12 or obj.file_link_13 or obj.file_link_14 or obj.file_link_15 %}
 				<div style="
 					float:left; 
 					margin-top:30px; 
 					margin-left:50px; 
 					width: 260px; 
-					height: 340px; 
+					height: auto; 
 					border-radius: 5px; 
 					padding:40px; 
 					padding-top:20px; 
@@ -230,6 +230,86 @@
 							<br>
 							<br>
 						{% endif %}
+						{% if obj.file_link_6 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_6" value="6">
+								{{obj.file_blob_filename_6}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_7 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_7" value="7">
+								{{obj.file_blob_filename_7}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_8 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_8" value="8">
+								{{obj.file_blob_filename_8}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_9 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_9" value="9">
+								{{obj.file_blob_filename_9}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_10 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_10" value="10">
+								{{obj.file_blob_filename_10}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_11 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_11" value="11">
+								{{obj.file_blob_filename_11}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_12 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_12" value="12">
+								{{obj.file_blob_filename_12}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_13 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_13" value="13">
+								{{obj.file_blob_filename_13}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_14 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_14" value="14">
+								{{obj.file_blob_filename_14}}
+							</span>
+							<br>
+							<br>
+						{% endif %}	
+						{% if obj.file_link_15 %}
+							<span class="delete_section">
+								<input type="checkbox" name="file_15" value="15">
+								{{obj.file_blob_filename_15}}
+							</span>
+							<br>
+							<br>
+						{% endif %}												
 						<input type="submit" value="delete">
 					</form>
 				</div>
