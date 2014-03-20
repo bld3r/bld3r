@@ -39,6 +39,7 @@ from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext.webapp.util import run_wsgi_app
 #########################################################
 ####################### Global Variables #######################
+TRUSTED_USERS = ["piercet", "maxumx", "aoeu", "noob"]
 URL_SAFE_CHARS = [
 	"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I",
 	"j","J","k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R",
@@ -2998,6 +2999,9 @@ class ObjectAltFileUpload(ObjectUploadHandler):
 		# User is signed in
 		user_id = int(user_var)
 		user = return_thing_by_id(user_id, "Users")
+		trusted_user = False
+		if user.username in TRUSTED_USERS:
+			trusted_user = True
 
 		verify_hash = self.request.get("verify")
 		user_hash = "This string is not valid but not None"
@@ -3058,6 +3062,16 @@ class ObjectAltFileUpload(ObjectUploadHandler):
 				pass
 
 			if file_data:
+				# size limit
+				global MAX_FILE_SIZE_FOR_OBJECTS
+				if not trusted_user: # trusted users can upload larger files
+					if file_data.size > MAX_FILE_SIZE_FOR_OBJECTS:
+						logging.warning(file_data)
+						logging.warning(file_data.size)
+						file_data.delete()
+						self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (obj_id, "Unfortunately, this file is too large. We have a maximum file size of 5mb. Hosting large files is prohibitively expensive for us, if you need to host a larger file, please link to it instead.")) # this should return to an error version of the upload page
+						return
+
 				file_url = '/serve_obj/%s' % file_data.key()
 				file_blob_key = file_data.key()
 				filename = file_data.filename
@@ -3069,11 +3083,12 @@ class ObjectAltFileUpload(ObjectUploadHandler):
 					file_data.delete()
 					self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file was not an allowed filetype.")) # this should return to an error version of the upload page
 					return
-				if filename[-1].lower() == "stl" and not is_ascii_stl(file_data):
-					logging.warning('stl does not parse, redirect')
-					file_data.delete()
-					self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file did not seem to be a proper ascii .stl or it may be corrupt. If the problem persists, and you believe this is an acceptable ascii .stl file, please contact us.")) # this should return to an error version of the upload page
-					return				
+				if not trusted_user: # trusted users can upload binaries
+					if filename[-1].lower() == "stl" and not is_ascii_stl(file_data):
+						logging.warning('stl does not parse, redirect')
+						file_data.delete()
+						self.redirect("/altfile/%d?redirect=filetype&file_type_error=%s" % (obj_id, "That file did not seem to be a proper ascii .stl or it may be corrupt. If the problem persists, and you believe this is an acceptable ascii .stl file, please contact us.")) # this should return to an error version of the upload page
+						return				
 
 
 				### this section should parse the file type
@@ -4833,6 +4848,10 @@ class NewObjectUpload1(ObjectUploadHandler):
 			# User is signed in
 			user_id = int(user_var)
 			user = return_thing_by_id(user_id, "Users")
+			global TRUSTED_USERS
+			trusted_user = False
+			if user.username in TRUSTED_USERS:
+				trusted_user = True
 
 			# Required fields
 			title_var = self.request.get("title")
@@ -4935,12 +4954,13 @@ class NewObjectUpload1(ObjectUploadHandler):
 					if file_data:
 						# size limit
 						global MAX_FILE_SIZE_FOR_OBJECTS
-						if file_data.size > MAX_FILE_SIZE_FOR_OBJECTS:
-							logging.warning(file_data)
-							logging.warning(file_data.size)
-							file_data.delete()
-							self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file is too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload your file to an alternative host and link to it instead.") 
-							return
+						if not trusted_user: # trusted users can upload larger files
+							if file_data.size > MAX_FILE_SIZE_FOR_OBJECTS:
+								logging.warning(file_data)
+								logging.warning(file_data.size)
+								file_data.delete()
+								self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file is too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload your file to an alternative host and link to it instead.") 
+								return
 
 						file_url = '/serve_obj/%s' % file_data.key()
 						file_blob_key = file_data.key()
@@ -4953,11 +4973,12 @@ class NewObjectUpload1(ObjectUploadHandler):
 							file_data.delete()
 							self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file must be a stereo lithography filetype (.stl).") # this should return to an error version of the upload page
 							return
-						if not is_ascii_stl(file_data):
-							logging.warning('not "ascii stl" after parse, redirect')
-							file_data.delete()
-							self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file must be a ASCII stereo lithography filetype (.stl). We had a problem parsing your file. It may be a binary .stl, which we do not currently support (if you open the file in a text editor an it is only numbers, this is the problem). However, it may be corrupt, contain questionable content, or not actually be an ascii .stl filetype.") # this should return to an error version of the upload page
-							return
+						if not trusted_user: # trusted users can upload binaries
+							if not is_ascii_stl(file_data):
+								logging.warning('not "ascii stl" after parse, redirect')
+								file_data.delete()
+								self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file must be a ASCII stereo lithography filetype (.stl). We had a problem parsing your file. It may be a binary .stl, which we do not currently support (if you open the file in a text editor an it is only numbers, this is the problem). However, it may be corrupt, contain questionable content, or not actually be an ascii .stl filetype.") # this should return to an error version of the upload page
+								return
 
 						### future parser to rewrite would go here, but this is diminished and will be removed in the future
 						
