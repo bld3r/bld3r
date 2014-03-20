@@ -3692,6 +3692,228 @@ class ObjDelPage(Handler):
 			else:
 				self.redirect('/')
 
+def delete_obj(obj_id):
+	obj_str = str(obj_id)
+	if not obj_str.isdigit():
+		self.error(400)
+		return
+	obj_id = int(obj_id)
+	# Delete
+	the_object = Objects.get_by_id(obj_id)
+	user_id = the_object.author_id
+
+	are_blobs = False
+
+	# if stl
+	stl_file_blob_key 	= the_object.stl_file_blob_key
+	file_blob_key_2 	= the_object.file_blob_key_2
+	file_blob_key_3 	= the_object.file_blob_key_3
+	file_blob_key_4 	= the_object.file_blob_key_4
+	file_blob_key_5 	= the_object.file_blob_key_5
+	file_blob_key_6 	= the_object.file_blob_key_6
+	file_blob_key_7 	= the_object.file_blob_key_7
+	file_blob_key_8 	= the_object.file_blob_key_8
+	file_blob_key_9 	= the_object.file_blob_key_9
+	file_blob_key_10 	= the_object.file_blob_key_10
+	file_blob_key_11 	= the_object.file_blob_key_11
+	file_blob_key_12 	= the_object.file_blob_key_12
+	file_blob_key_13 	= the_object.file_blob_key_13
+	file_blob_key_14 	= the_object.file_blob_key_14
+	file_blob_key_15 	= the_object.file_blob_key_15
+	if stl_file_blob_key is not None:
+		are_blobs = True
+		stl_file_blob_key.delete()
+	if file_blob_key_2 is not None:
+		are_blobs = True
+		file_blob_key_2.delete()
+	if file_blob_key_3 is not None:
+		are_blobs = True
+		file_blob_key_3.delete()				
+	if file_blob_key_4 is not None:
+		are_blobs = True
+		file_blob_key_4.delete()
+	if file_blob_key_5 is not None:
+		are_blobs = True
+		file_blob_key_5.delete()
+	if file_blob_key_6 is not None:
+		are_blobs = True
+		file_blob_key_6.delete()
+	if file_blob_key_7 is not None:
+		are_blobs = True
+		file_blob_key_7.delete()
+	if file_blob_key_8 is not None:
+		are_blobs = True
+		file_blob_key_8.delete()
+	if file_blob_key_9 is not None:
+		are_blobs = True
+		file_blob_key_9.delete()
+	if file_blob_key_10 is not None:
+		are_blobs = True
+		file_blob_key_10.delete()
+	if file_blob_key_11 is not None:
+		are_blobs = True
+		file_blob_key_11.delete()
+	if file_blob_key_12 is not None:
+		are_blobs = True
+		file_blob_key_12.delete()
+	if file_blob_key_13 is not None:
+		are_blobs = True
+		file_blob_key_13.delete()
+	if file_blob_key_14 is not None:
+		are_blobs = True
+		file_blob_key_14.delete()
+	if file_blob_key_15 is not None:
+		are_blobs = True
+		file_blob_key_15.delete()
+	# if imgs
+	main_img_blob_key = the_object.main_img_blob_key
+	if main_img_blob_key is not None:
+		are_blobs = True
+		main_img_blob_key.delete()
+
+	if the_object.img_link_2:
+		the_object.img_link_2 = None
+		if the_object.img_blob_key_2:
+			the_object.img_blob_key_2.delete()
+			the_object.img_blob_filename_2 = None
+	if the_object.img_link_3:
+		the_object.img_link_3 = None
+		if the_object.img_blob_key_3:
+			the_object.img_blob_key_3.delete()
+			the_object.img_blob_filename_3 = None
+	if the_object.img_link_4:
+		the_object.img_link_4 = None
+		if the_object.img_blob_key_4:
+			the_object.img_blob_key_4.delete()
+			the_object.img_blob_filename_4 = None
+	if the_object.img_link_5:
+		the_object.img_link_5 = None
+		if the_object.img_blob_key_5:
+			the_object.img_blob_key_5.delete()
+			the_object.img_blob_filename_5 = None
+
+	if the_object.visitor_img_list:
+		# items take form ["user_id|username|img_url|blob_key"]
+		for quad in the_object.visitor_img_list:
+			if quad != "None":
+				quad_list = quad.split("|")
+				
+				user_id = str(quad_list[0])
+				username = str(quad_list[1])
+				img_url = str(quad_list[2])
+				blob_key = str(quad_list[3])
+				blob_info = blobstore.BlobInfo.get(blob_key)
+
+				if blob_info:
+					blob_info.delete()
+
+		the_object.visitor_img_list = ["None"]
+
+	if are_blobs is True:
+		all_blob_refs = db.GqlQuery("SELECT * FROM ObjectBlob WHERE obj_id = :1", obj_id)
+		db.delete(all_blob_refs)
+
+	kids_bool = the_object.okay_for_kids
+	nsfw_bool = the_object.nsfw
+
+	the_object.title 					= " "
+	the_object.author_id				= None
+	the_object.author_name				= " "
+	the_object.food_related				= False
+	the_object.learn_skill				= None
+	the_object.stl_file_link 			= None
+	the_object.stl_file_blob_key		= None
+	the_object.stl_filename				= None
+	the_object.main_img_link 			= None
+	the_object.main_img_blob_key		= None
+	the_object.license					= None
+	the_object.obj_link					= None
+	the_object.description 				= ""
+	the_object.markdown					= ""
+	the_object.tags 					= ["None"]
+	the_object.author_tags				= ["None"]
+	the_object.public_tags 				= ["None"]
+	the_object.other_file1_link 		= None
+	the_object.other_img1_link 			= None
+	the_object.file_link_2 				= None
+	the_object.file_blob_key_2 			= None
+	the_object.file_blob_filename_2		= None
+	the_object.file_link_3 				= None
+	the_object.file_blob_key_3 			= None
+	the_object.file_blob_filename_3		= None
+	the_object.file_link_4 				= None
+	the_object.file_blob_key_4 			= None
+	the_object.file_blob_filename_4		= None
+	the_object.file_link_5 				= None
+	the_object.file_blob_key_5 			= None
+	the_object.file_blob_filename_5		= None
+	the_object.file_link_6 				= None
+	the_object.file_blob_key_6 			= None
+	the_object.file_blob_filename_6		= None
+	the_object.file_link_7 				= None
+	the_object.file_blob_key_7 			= None
+	the_object.file_blob_filename_7		= None
+	the_object.file_link_8 				= None
+	the_object.file_blob_key_8 			= None
+	the_object.file_blob_filename_8		= None
+	the_object.file_link_9 				= None
+	the_object.file_blob_key_9 			= None
+	the_object.file_blob_filename_9		= None
+	the_object.file_link_10 			= None
+	the_object.file_blob_key_10 		= None
+	the_object.file_blob_filename_10	= None
+	the_object.file_link_11 			= None
+	the_object.file_blob_key_11 		= None
+	the_object.file_blob_filename_11	= None
+	the_object.file_link_12 			= None
+	the_object.file_blob_key_12 		= None
+	the_object.file_blob_filename_12	= None
+	the_object.file_link_13 			= None
+	the_object.file_blob_key_13 		= None
+	the_object.file_blob_filename_13	= None
+	the_object.file_link_14 			= None
+	the_object.file_blob_key_14 		= None
+	the_object.file_blob_filename_14	= None
+	the_object.file_link_15 			= None
+	the_object.file_blob_key_15 		= None
+	the_object.file_blob_filename_15	= None
+
+	the_object.deleted 					= True
+
+	the_object.put()
+	logging.warning('Object "Deleted"')
+	
+	object_page_cache(obj_id, update=True, delay = 6)
+
+	if kids_bool == True:
+		user_page_obj_com_cache_kids(user_id, update = True)
+	else:
+		pass
+
+	if nsfw_bool == True:
+		all_objects_query("nsfw", update = True)
+	else:
+		all_objects_query("sfw",update=True)
+
+	# reset front page cache
+	global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+	if nsfw_bool == True:
+		# currently no other page types supported beyond "/"
+		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+	else:
+		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+	if kids_bool == True:
+		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
+	obj_comment_cache(obj_id, update=True)
+	user_page_comment_cache(user_id, update=True) # no longer needed really...
+	user_page_obj_com_cache(user_id, update=True)
+	#if the_object.news == True:
+	#	news_front_cache(update = True)
+	# elif the_object.learn == True:
+	#	learn_front_cache(update = True)
+
 class UserPage(Handler):
 	def render_page(self, user_num, page_num, error=""):
 		user = self.return_user_if_cookie()
@@ -10819,189 +11041,7 @@ def is_blacklisted_referer(referer):
 			is_blacklisted = True
 			break
 	return is_blacklisted
-def delete_obj(obj_id):
-	obj_str = str(obj_id)
-	if not obj_str.isdigit():
-		self.error(400)
-		return
-	obj_id = int(obj_id)
-	# Delete
-	the_object = Objects.get_by_id(obj_id)
-	user_id = the_object.author_id
 
-	are_blobs = False
-
-	# if stl
-	stl_file_blob_key 	= the_object.stl_file_blob_key
-	file_blob_key_2 	= the_object.file_blob_key_2
-	file_blob_key_3 	= the_object.file_blob_key_3
-	file_blob_key_4 	= the_object.file_blob_key_4
-	file_blob_key_5 	= the_object.file_blob_key_5
-	file_blob_key_6 	= the_object.file_blob_key_6
-	file_blob_key_7 	= the_object.file_blob_key_7
-	file_blob_key_8 	= the_object.file_blob_key_8
-	file_blob_key_9 	= the_object.file_blob_key_9
-	file_blob_key_10 	= the_object.file_blob_key_10
-	file_blob_key_11 	= the_object.file_blob_key_11
-	file_blob_key_12 	= the_object.file_blob_key_12
-	file_blob_key_13 	= the_object.file_blob_key_13
-	file_blob_key_14 	= the_object.file_blob_key_14
-	file_blob_key_15 	= the_object.file_blob_key_15
-	if stl_file_blob_key is not None:
-		are_blobs = True
-		stl_file_blob_key.delete()
-	if file_blob_key_2 is not None:
-		are_blobs = True
-		file_blob_key_2.delete()
-	if file_blob_key_3 is not None:
-		are_blobs = True
-		file_blob_key_3.delete()				
-	if file_blob_key_4 is not None:
-		are_blobs = True
-		file_blob_key_4.delete()
-	if file_blob_key_5 is not None:
-		are_blobs = True
-		file_blob_key_5.delete()
-	if file_blob_key_6 is not None:
-		are_blobs = True
-		file_blob_key_6.delete()
-	if file_blob_key_7 is not None:
-		are_blobs = True
-		file_blob_key_7.delete()
-	if file_blob_key_8 is not None:
-		are_blobs = True
-		file_blob_key_8.delete()
-	if file_blob_key_9 is not None:
-		are_blobs = True
-		file_blob_key_9.delete()
-	if file_blob_key_10 is not None:
-		are_blobs = True
-		file_blob_key_10.delete()
-	if file_blob_key_11 is not None:
-		are_blobs = True
-		file_blob_key_11.delete()
-	if file_blob_key_12 is not None:
-		are_blobs = True
-		file_blob_key_12.delete()
-	if file_blob_key_13 is not None:
-		are_blobs = True
-		file_blob_key_13.delete()
-	if file_blob_key_14 is not None:
-		are_blobs = True
-		file_blob_key_14.delete()
-	if file_blob_key_15 is not None:
-		are_blobs = True
-		file_blob_key_15.delete()
-	# if main_img
-	main_img_blob_key = the_object.main_img_blob_key
-	if main_img_blob_key is not None:
-		are_blobs = True
-		main_img_blob_key.delete()
-
-	if are_blobs is True:
-		all_blob_refs = db.GqlQuery("SELECT * FROM ObjectBlob WHERE obj_id = :1", obj_id)
-		db.delete(all_blob_refs)
-
-	kids_bool = the_object.okay_for_kids
-	nsfw_bool = the_object.nsfw
-
-	the_object.title 			= " "
-	the_object.author_id		= None
-	the_object.author_name		= " "
-	the_object.food_related		= False
-	the_object.learn_skill		= None
-	the_object.stl_file_link 	= None
-	the_object.stl_file_blob_key= None
-	the_object.stl_filename		= None
-	the_object.main_img_link 	= None
-	the_object.main_img_blob_key= None
-	the_object.license			= None
-	the_object.obj_link			= None
-	the_object.description 		= ""
-	the_object.markdown			= ""
-	the_object.tags 			= ["None"]
-	the_object.author_tags		= ["None"]
-	the_object.public_tags 		= ["None"]
-	the_object.other_file1_link = None
-	the_object.other_img1_link 	= None
-	the_object.file_link_2 		= None
-	the_object.file_blob_key_2 	= None
-	the_object.file_blob_filename_2		= None
-	the_object.file_link_3 		= None
-	the_object.file_blob_key_3 	= None
-	the_object.file_blob_filename_3		= None
-	the_object.file_link_4 		= None
-	the_object.file_blob_key_4 	= None
-	the_object.file_blob_filename_4		= None
-	the_object.file_link_5 		= None
-	the_object.file_blob_key_5 	= None
-	the_object.file_blob_filename_5		= None
-	the_object.file_link_6 		= None
-	the_object.file_blob_key_6 	= None
-	the_object.file_blob_filename_6		= None
-	the_object.file_link_7 		= None
-	the_object.file_blob_key_7 	= None
-	the_object.file_blob_filename_7		= None
-	the_object.file_link_8 		= None
-	the_object.file_blob_key_8 	= None
-	the_object.file_blob_filename_8		= None
-	the_object.file_link_9 		= None
-	the_object.file_blob_key_9 	= None
-	the_object.file_blob_filename_9		= None
-	the_object.file_link_10 	= None
-	the_object.file_blob_key_10 = None
-	the_object.file_blob_filename_10	= None
-	the_object.file_link_11 	= None
-	the_object.file_blob_key_11 = None
-	the_object.file_blob_filename_11	= None
-	the_object.file_link_12 	= None
-	the_object.file_blob_key_12 = None
-	the_object.file_blob_filename_12	= None
-	the_object.file_link_13 	= None
-	the_object.file_blob_key_13 = None
-	the_object.file_blob_filename_13	= None
-	the_object.file_link_14 	= None
-	the_object.file_blob_key_14 = None
-	the_object.file_blob_filename_14	= None
-	the_object.file_link_15 	= None
-	the_object.file_blob_key_15 = None
-	the_object.file_blob_filename_15	= None
-
-	the_object.deleted 			= True
-
-	the_object.put()
-	logging.warning('Object "Deleted"')
-	
-	object_page_cache(obj_id, update=True, delay = 6)
-
-	if kids_bool == True:
-		user_page_obj_com_cache_kids(user_id, update = True)
-	else:
-		pass
-
-	if nsfw_bool == True:
-		all_objects_query("nsfw", update = True)
-	else:
-		all_objects_query("sfw",update=True)
-
-	# reset front page cache
-	global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
-	if nsfw_bool == True:
-		# currently no other page types supported beyond "/"
-		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
-	else:
-		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
-	if kids_bool == True:
-		load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
-
-
-	obj_comment_cache(obj_id, update=True)
-	user_page_comment_cache(user_id, update=True) # no longer needed really...
-	user_page_obj_com_cache(user_id, update=True)
-	#if the_object.news == True:
-	#	news_front_cache(update = True)
-	# elif the_object.learn == True:
-	#	learn_front_cache(update = True)
 def num_users_now():
 	all_users = users_cache()
 	if all_users:
