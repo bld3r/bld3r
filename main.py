@@ -8623,6 +8623,7 @@ def one_long_vote_function(obj_id, user_id, newvote):
 	memcache.set("Objects_%d" % int(obj_id), [obj])
 	# putting but uncomment changed list if upgrading to temporal puts
 	db.put(obj)
+	reset_front_page_memcache_after_vote(obj)
 	
 	#update_objects_changed_list_cache(obj_id)
 	#put_objects_in_changed_list_to_db()
@@ -8649,6 +8650,81 @@ def one_long_vote_function(obj_id, user_id, newvote):
 	logging.warning(user.obj_rep)
 	memcache.set("%s_%d" % ("Users", obj.author_id), [user])
 	user.put()
+
+def reset_front_page_memcache_after_vote(voted_object):
+	obj = voted_object
+
+	# set content type
+	if obj.nsfw == True:
+		content_type = 'nsfw'
+	else:
+		content_type = 'sfw'
+
+	for i in range(999):
+		if i == 0: # this memcache starts at "1" to keep page num == memcache key
+			continue
+		key = "front_page_%s_%d" % (content_type, i)
+		obj_tuple = memcache.get(key)
+		if obj_tuple:
+			time_set_var = obj_tuple[0]
+			obj_list = obj_tuple[1]
+
+			set_memcache_now = False
+			dummy_list = []
+			time_set_var = obj_list[0]
+			for this_obj in obj_list:
+				#print "\n", this_obj
+				if this_obj.key().id() == obj.key().id():
+					dummy_list.append(obj)
+					set_memcache_now = True
+				else:
+					dummy_list.append(this_obj)
+			if set_memcache_now == True:
+				new_obj_list = dummy_list
+				for this_obj in new_obj_list:
+					this_obj.rank = return_rank(this_obj)
+				new_obj_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+				memcache.set(key, [time_set_var, new_obj_list])
+				break
+		else:
+			logging.warning("\n","\n","empty front page content","\n")
+
+	#print "\n","\n","first section finished","\n", "\n"
+
+	if obj.okay_for_kids == True:
+		content_type = 'kids'
+		for i in range(999):
+			if i == 0: # this memcache starts at "1" to keep page num == memcache key
+				continue
+			key = "front_page_%s_%d" % (content_type, i)
+			obj_tuple = memcache.get(key)
+			if obj_tuple:
+				time_set_var = obj_tuple[0]
+				obj_list = obj_tuple[1]
+
+				set_memcache_now = False
+				dummy_list = []
+				time_set_var = obj_list[0]
+				for this_obj in obj_list:
+					#print "\n", this_obj
+					if this_obj.key().id() == obj.key().id():
+						dummy_list.append(obj)
+						set_memcache_now = True
+					else:
+						dummy_list.append(this_obj)
+				if set_memcache_now == True:
+					new_obj_list = dummy_list
+					for this_obj in new_obj_list:
+						this_obj.rank = return_rank(this_obj)
+					new_obj_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+
+					memcache.set(key, [time_set_var, new_obj_list])
+					break
+			else:
+				logging.warning("\n","\n","empty front page content","\n")
+
+	#print "\n","\n","second section finished","\n", "\n"
+
 
 def return_rank(obj_or_com):
 	global DAY_SCALE
