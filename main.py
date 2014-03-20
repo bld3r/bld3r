@@ -55,8 +55,8 @@ NUMBER_OF_MINUTES_BETWEEN_FRONT_PAGE_UPDATES = 15
 mkd = markdown2.Markdown()
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(extensions=['jinja2.ext.with_'],
-								loader = jinja2.FileSystemLoader(template_dir), 
-								autoescape = True)
+	loader = jinja2.FileSystemLoader(template_dir), 
+	autoescape = True)
 upload_url = blobstore.create_upload_url('/upload')
 #########################################################
 ####################### Primary Class Objects #######################
@@ -247,13 +247,14 @@ def random_string_generator(size = random.randint(15, 20),
 	return ''.join(random.choice(chars) for x in range(size))
 ####################### DB Models #######################
 # do not use functions as defaults
-DB_TYPE_LIST = ["Users", 
-				"Objects", 
-				"Comments", 
-				"Messages", 
-				"UserBlob", 
-				"ObjectBlob", 
-				"WikiEntry"]
+DB_TYPE_LIST = [
+	"Users", 
+	"Objects", 
+	"Comments", 
+	"Messages", 
+	"UserBlob", 
+	"ObjectBlob", 
+	"WikiEntry"]
 DAY_SCALE = 2 # 2 days
 DAYS_TIL_DECLINE = 4 #also again below
 class Users(db.Model):
@@ -10826,127 +10827,127 @@ def app_start_cache(update = False):
 #########################################################
 #########################################################
 REFERER_BLACKLIST = [
-					 '/login', 
-					 '/logout', 
-					 '/signup', 
-					 '/welcome', 
-					 '/user_page_img_upload',
-					 '/object_img_upload',
-					 '/object_img_delete',
-					 '/visitor_img_upload']
+	'/login', 
+	'/logout', 
+	'/signup', 
+	'/welcome', 
+	'/user_page_img_upload',
+	'/object_img_upload',
+	'/object_img_delete',
+	'/visitor_img_upload']
 REG_EX = r'(/(?:[a-zA-Z0-9_-]+/?)*)'
 app = webapp2.WSGIApplication([
-	('/', MainEverything),
-	(r'/page/(\d+)', MainEverything),
+		('/', MainEverything),
+		(r'/page/(\d+)', MainEverything),
 
-	('/newmain', MainPageNew),
-	('/topmain', MainPageTop),
-	('/recentcommentsmain', MainPageRecentComments),
-	('/objects', MainPageObjects),
+		('/newmain', MainPageNew),
+		('/topmain', MainPageTop),
+		('/recentcommentsmain', MainPageRecentComments),
+		('/objects', MainPageObjects),
 
-	('/signup', SignUpPage),
-	('/welcome', WelcomePage),
-	('/contact', ContactPage),	
-	('/login', LoginPage),
-	('/logout', LogoutPage),
+		('/signup', SignUpPage),
+		('/welcome', WelcomePage),
+		('/contact', ContactPage),	
+		('/login', LoginPage),
+		('/logout', LogoutPage),
 
-	(r'/user/(\d+)', UserPage),
-	(r'/user/(\d+)/page/(\d+)', UserPage),
-	(r'/user/printshelf/(\d+)', UserPrintshelf),
-	(r'/user/messages/(\d+)', UserMessagePage),
-	(r'/user/note/(\d+)', UserNotePage),
-	(r'/user/edit/(\d+)', UserEdit),
-	(r'/user/del/(\d+)', UserDelPage),
-	('/user_page_img_upload', UserPageImgUpload),
+		(r'/user/(\d+)', UserPage),
+		(r'/user/(\d+)/page/(\d+)', UserPage),
+		(r'/user/printshelf/(\d+)', UserPrintshelf),
+		(r'/user/messages/(\d+)', UserMessagePage),
+		(r'/user/note/(\d+)', UserNotePage),
+		(r'/user/edit/(\d+)', UserEdit),
+		(r'/user/del/(\d+)', UserDelPage),
+		('/user_page_img_upload', UserPageImgUpload),
 
-	(r'/obj/(\d+)', ObjectPage),
-	(r'/obj/edit/(\d+)', ObjectEdit),
-	(r'/obj/tags/(\d+)', ObjectTagEdit),
-	('/ajaxdescription/', AjaxDescriptionEdit),
-	('/ajaxtag/', AjaxTagEdit),
-	(r'/obj/del/(\d+)', ObjDelPage),
-	('/object_img_upload', ObjectImgUpload),
-	('/object_img_delete', ObjectImgDelete),
-	('/object_page_specific_img_delete', ObjectSpecificImgDelete),
-	('/visitor_img_upload', VisitorImgUpload),
-	(r'/altfile/(\d+)', ObjectAltFile),
-	('/altfileupload/', ObjectAltFileUpload),
-	(r'/obj/(\d+)'+'.json', ObjectJSON),
+		(r'/obj/(\d+)', ObjectPage),
+		(r'/obj/edit/(\d+)', ObjectEdit),
+		(r'/obj/tags/(\d+)', ObjectTagEdit),
+		('/ajaxdescription/', AjaxDescriptionEdit),
+		('/ajaxtag/', AjaxTagEdit),
+		(r'/obj/del/(\d+)', ObjDelPage),
+		('/object_img_upload', ObjectImgUpload),
+		('/object_img_delete', ObjectImgDelete),
+		('/object_page_specific_img_delete', ObjectSpecificImgDelete),
+		('/visitor_img_upload', VisitorImgUpload),
+		(r'/altfile/(\d+)', ObjectAltFile),
+		('/altfileupload/', ObjectAltFileUpload),
+		(r'/obj/(\d+)'+'.json', ObjectJSON),
 
-	('/thingtracker', ThingTracker),
+		('/thingtracker', ThingTracker),
 
-	(r'/com/(\d+)', CommentPage),
+		(r'/com/(\d+)', CommentPage),
 
-	('/university', UniMain),
-	('/newuniversity', UniMainNew),
-	('/topuniversity', UniMainTop),	
-	('/video', UniMainVideo),
-	('/newlesson', NewLessonPage),
-	('/ask', NewAskPage),
+		('/university', UniMain),
+		('/newuniversity', UniMainNew),
+		('/topuniversity', UniMainTop),	
+		('/video', UniMainVideo),
+		('/newlesson', NewLessonPage),
+		('/ask', NewAskPage),
 
-	('/news', NewsPage),
-	('/newnews', NewsPageNew),
-	('/topnews', NewsPageTop),	
-	('/newarticle', NewArticlePage),
+		('/news', NewsPage),
+		('/newnews', NewsPageNew),
+		('/topnews', NewsPageTop),	
+		('/newarticle', NewArticlePage),
 
-	('/parts', RepRapTypesPage),
+		('/parts', RepRapTypesPage),
 
-	('/tag', TagSearchMain),
-	### tag_error is commented out above ###
-	('/tag_error', TagMainError),
-	###
-	(r'/tag/([a-zA-Z0-9_-]+)', TagPage),
-	
-	('/nsfw', NsfwPage),
+		('/tag', TagSearchMain),
+		### tag_error is commented out above ###
+		('/tag_error', TagMainError),
+		###
+		(r'/tag/([a-zA-Z0-9_-]+)', TagPage),
+		
+		('/nsfw', NsfwPage),
 
-	('/new', NewPage),
+		('/new', NewPage),
 
-	('/newobject', NewObjectPage),
-	('/upload_obj1', NewObjectUpload1),
-	(r'/newobject2/(\d+)', NewObjectPage2),
-	(r'/upload_obj2/(\d+)', NewObjectUpload2),
-	(r'/newobject3/(\d+)', NewObjectPage3),
+		('/newobject', NewObjectPage),
+		('/upload_obj1', NewObjectUpload1),
+		(r'/newobject2/(\d+)', NewObjectPage2),
+		(r'/upload_obj2/(\d+)', NewObjectUpload2),
+		(r'/newobject3/(\d+)', NewObjectPage3),
 
-	('/newlink', NewLinkPage),
-	(r'/newlink2/(\d+)', NewLinkPage2),
-	(r'/upload_link_photo/(\d+)', NewLinkUpload),
-	('/newtor', NewTorPage),
+		('/newlink', NewLinkPage),
+		(r'/newlink2/(\d+)', NewLinkPage2),
+		(r'/upload_link_photo/(\d+)', NewLinkUpload),
+		('/newtor', NewTorPage),
 
-	('/w_home', WikiMain),
-	('/w' + REG_EX, WikiPage),
-	('/_edit' + REG_EX, EditPage),
-	('/_history' + REG_EX, HistoryPage),
-	('/w_index', WikiIndex),
+		('/w_home', WikiMain),
+		('/w' + REG_EX, WikiPage),
+		('/_edit' + REG_EX, EditPage),
+		('/_history' + REG_EX, HistoryPage),
+		('/w_index', WikiIndex),
 
-	('/vote/', VoteHandler),
-	('/votecom/', CommentVoteHandler),
-	('/rate/', RateHandler),
-	('/flag/', FlagHandler),
-	('/flagcom/', CommentFlagHandler),
-	('/delcom/', DeleteCommentHandler),
-	('/editcom/', EditCommentHandler),
-	('/admin_del/', AdminDelHandler),
-	('/block/', BlockHandler),
-	('/follow/', FollowHandler),
-	('/printshelf_add/', PrintshelfAddHandler),
-	('/printshelf_remove/', PrintshelfRemoveHandler),
-	('/sendmessage/', SendMessageHandler),
+		('/vote/', VoteHandler),
+		('/votecom/', CommentVoteHandler),
+		('/rate/', RateHandler),
+		('/flag/', FlagHandler),
+		('/flagcom/', CommentFlagHandler),
+		('/delcom/', DeleteCommentHandler),
+		('/editcom/', EditCommentHandler),
+		('/admin_del/', AdminDelHandler),
+		('/block/', BlockHandler),
+		('/follow/', FollowHandler),
+		('/printshelf_add/', PrintshelfAddHandler),
+		('/printshelf_remove/', PrintshelfRemoveHandler),
+		('/sendmessage/', SendMessageHandler),
 
-	('/newmessageworker', NewMessageWorker),
-	('/tagupdateworker', TagUpdateWorker),
+		('/newmessageworker', NewMessageWorker),
+		('/tagupdateworker', TagUpdateWorker),
 
-	('/admin', AdminPage),
-	(r'/admin/(\d+)', AdminObjPage),
-	(r'/emailconfirmation/([a-z0-9]+)', EmailConfirmationHandler),
-	('/password_reset_request', PasswordResetHandler),
-	('/password_reset_acknowledgement', PasswordResetAcknowledgement),
-	(r'/password_reset_confirmation/([a-z0-9_-]+)', PasswordResetConfirmationHandler),
+		('/admin', AdminPage),
+		(r'/admin/(\d+)', AdminObjPage),
+		(r'/emailconfirmation/([a-z0-9]+)', EmailConfirmationHandler),
+		('/password_reset_request', PasswordResetHandler),
+		('/password_reset_acknowledgement', PasswordResetAcknowledgement),
+		(r'/password_reset_confirmation/([a-z0-9_-]+)', PasswordResetConfirmationHandler),
 
-	('/tos', TermsPage),
-	('/robots.txt', Robots),
+		('/tos', TermsPage),
+		('/robots.txt', Robots),
 
-	('/serve_obj/([^/]+)?', ObjFileServe),
-	], debug=True)
+		('/serve_obj/([^/]+)?', ObjFileServe),
+		], debug=True)
 ################## Error Handlers #######################
 def handle_404(request, response, exception):
 	logging.exception(exception)
