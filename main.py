@@ -7086,6 +7086,7 @@ class DeleteCommentHandler(Handler):
 		com.washed = True	
 		if com.has_children == False:
 			com.text = " "
+			com.markdown = " "
 			com.upvotes = None
 			com.downvotes = None
 			com.netvotes = None
@@ -7100,7 +7101,9 @@ class DeleteCommentHandler(Handler):
 			com.deleted = True
 		else:
 			com.text = "deleted"
+			com.markdown = "deleted"
 		com.put()
+		memcache.set("Comments_%d" % com.key().id(), [com])
 		logging.warning('db put -- comment deleted')
 		
 		obj_comments = obj_comment_cache(com.obj_ref_id, update=True, delay = 6)
