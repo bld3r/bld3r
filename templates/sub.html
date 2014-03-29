@@ -28,18 +28,21 @@
 													color:#42a2ba;
 													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
 													cursor: pointer;
-													">
-													
-													▲
-												</span>
+													">▲</span>
 											</span>
 										{% elif node[1] == -1 %}
 											<span class= "{{node[0].key().id()}}" id="voteup2com">
-												<span class='voteupcom' id="vucom{{node[0].key().id()}}">▲</span>
+												<span class='voteupcom' id="vucom{{node[0].key().id()}}" style="
+													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+													cursor: pointer;
+													">▲</span>
 											</span>
 										{% else %}
 											<span class= "{{node[0].key().id()}}" id="voteupcom">
-												<span class='voteupcom' id="vucom{{node[0].key().id()}}">▲</span>
+												<span class='voteupcom' id="vucom{{node[0].key().id()}}" style="
+													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+													cursor: pointer;
+													">▲</span>
 											</span>
 										{% endif %}
 									</span>
@@ -57,17 +60,21 @@
 													color:#d45e6a;
 													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
 													cursor: pointer;
-													">
-													▼
-											  	</span>
+													">▼</span>
 											</span>
 										{% elif node[1] == 1 %}
 											<span class= "{{node[0].key().id()}}" id="votedown2com">
-											  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}">▼</span>
+											  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}" style="
+													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+													cursor: pointer;
+													">▼</span>
 											</span>
 										{% else %}
 										  <span class= "{{node[0].key().id()}}" id="votedowncom">
-										  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}">▼</span>
+										  	<span class='votedowncom' id="vdcom{{node[0].key().id()}}" style="
+													text-shadow: -1px 0 #ddd, 0 1px #ddd, 1px 0 #ddd, 0 -1px #ddd;
+													cursor: pointer;
+													">▼</span>
 										  </span>	
 										{% endif %} 
 									</span>
@@ -291,7 +298,7 @@
 						{% if node[0].washed == False %}
 							<div class="comment_data_{{node[0].key().id()}}">	
 								{% if has_cookie %}
-									<form method='post'>
+									<form method='post' action="/postsubcomment/">
 										<label>
 											<input type = "hidden" name = "verify" value = "{{user_hash}}">
 											<span class="showsubcombox" id="{{node[0].key().id()}}" style="
@@ -303,7 +310,9 @@
 											<br>
 											<span class="subcombox" id="subcombox{{node[0].key().id()}}">
 												<br>
-												<textarea name="subcomment_form{{node[0].key().id()}}" style="
+												<input type="hidden" name="obj_id" value="{{node[0].obj_ref_id}}">
+												<input type="hidden" name="parent_id" value="{{node[0].key().id()}}">
+												<textarea name="subcomment_text_area" style="
 													width:600px; 
 													height:100px;"></textarea>
 												<br>

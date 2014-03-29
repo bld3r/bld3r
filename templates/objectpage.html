@@ -2373,7 +2373,7 @@
 
 				<div class="comment_section">
 					{% if user %}
-						<form method='post'>
+						<form method="post" action="/postcomment/">
 							<div class="combox">
 								Comment
 								<br>
@@ -2382,6 +2382,7 @@
 								<div style="color:red;">
 									{{error}}
 								</div>
+								<input type="hidden" name="obj_id" value="{{obj_id}}">
 								<input type="hidden" name="verify" value="{{user_hash}}">
 								<span style="float:right;">
 									<input type="submit" value="Post" style="

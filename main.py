@@ -39,7 +39,7 @@ from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext.webapp.util import run_wsgi_app
 #########################################################
 ####################### Global Variables #######################
-TRUSTED_USERS = ["piercet", "maxumx", "aoeu", "noob"]
+TRUSTED_USERS = ["OpenFabPDX", "bigluc", "theledman","geoffrey_king","piercet", "maxumx", "aoeu", "noob", "business_cat"]
 URL_SAFE_CHARS = [
 	"a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I",
 	"j","J","k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R",
@@ -971,6 +971,58 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 
 	#print "\n", page_time_list_tuple[1], "\n"
 	return page_time_list_tuple[1] # This should always be the current page.
+
+def update_front_page_memcache_for_specific_object(obj_id, page_type, content_type):
+	# i don't think this is actually being used right now, and i don't actually like it much to be honest.
+	obj = return_thing_by_id(obj_id, "Objects")
+	if not obj:
+		logging.error("no object for update_front_page_memcache_for_specific_object")
+		return 
+
+	if page_type == "/":
+		page_cache_key_prefix = "front_page"
+
+	reset_once = False
+
+	for i in range(999):
+		if i == 0:
+			continue
+		key = "%s_%s_%s" % (page_cache_key_prefix, content_type, i)
+
+		obj_tuple = memcache.get(key)
+		if obj_tuple and len(obj_tuple) == 2:
+			print obj_tuple
+			time_set_var = obj_tuple[0]
+			obj_list = obj_tuple[1]
+
+			set_memcache_now = False
+			dummy_list = []
+			for this_obj in obj_list:
+				#print "\n", this_obj
+				if this_obj.key().id() == obj.key().id():
+					dummy_list.append(obj)
+					set_memcache_now = True
+				else:
+					dummy_list.append(this_obj)
+			if set_memcache_now == True:
+				new_obj_list = dummy_list
+				for this_obj in new_obj_list:
+					this_obj.rank = return_rank(this_obj)
+				new_obj_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+				memcache.set(key, [time_set_var, new_obj_list])
+				break
+		else:
+			logging.warning("\n","\n","empty front page content","\n")
+			if reset_once: # We've already reset this cache, and there is probably a problem
+				logging.warning("We've already reset this cache, and there is probably a problem.")
+				break
+			else:
+				# update cache for this set
+				load_front_pages_from_memcache_else_query(page_type, i, content_type, update=True) # format: (page_type, page_num, content_type, update=False)
+				reset_once = True
+	return
+
+
 class FrontHandler(Handler):
 	def render_front_page(self, page_type, page_num="1"):
 		global ADMIN_USERNAMES
@@ -1561,13 +1613,11 @@ class ObjectPage(Handler):
 			self.inline_404()
 			return
 		author = return_thing_by_id(the_obj.author_id, "Users")
-		the_comments = obj_comment_cache(obj_id)
-		# head_comments = []
-		# for comment in the_comments:
-		# 	if comment.obj_parent is not None:
-		# 		#logging.warning(comment.key().id())
-		# 		head_comments.append(comment)
-		# #logging.warning(head_comments)
+
+
+
+
+
 
 		okay_for_kids = the_obj.okay_for_kids
 		if okay_for_kids != True:
@@ -1757,19 +1807,41 @@ class ObjectPage(Handler):
 		else:
 			voted_var = None # this shouldn't even render anyway
 
+		### comments section
+
+		the_comments = obj_comment_cache(obj_id)
+		# order the comments by rank
+		for comment in the_comments:
+			# reset all comment ranks
+			comment.rank = return_rank(comment)
+		the_comments.sort(key = lambda x: x.rank, reverse=True)
+
 		# comment tuples:
 		comment_triplet_list = []
+		# these triplets take the form (comment, vote_int, flag_int)
+		print "\n", "\n", the_comments, "\n", "\n"
 		for comment in the_comments:
 			comment.time_since =  time_since_creation(comment.epoch)
 			the_com_trip = return_comment_vote_flag_triplet(comment, user_id)
-			#logging.warning('com_trip')
-			#this takes the form (comment, vote_int, flag_int)
+			comment.rank = return_rank(comment)
+			#this triplet takes the form (comment, vote_int, flag_int)
 			if user:
 				#####
 				if str(the_com_trip[0].author_id) in user.block_list:
 					the_com_trip[0].text = "You have blocked this user's content."
+					the_com_trip[0].markdown = "You have blocked this user's content."
 			comment_triplet_list.append(the_com_trip)
-		
+
+		print "\n", "\n"
+		for comment in comment_triplet_list:
+			print ""
+			print comment[0].text
+			print "has children:", comment[0].has_children
+			print "ranked children:", comment[0].ranked_children
+			print ""
+
+		### end comments section
+
 		printed_by_list = return_printed_by_list(obj_id)
 		#logging.warning(printed_by_list)
 
@@ -1861,178 +1933,385 @@ class ObjectPage(Handler):
 		self.render_page(obj_num=obj_id)
 	
 	def post(self, obj_num):
+		pass # this used to only post comments and subcomments, but i've altered that
+class PostComment(Handler):
+	def post(self):
 		'''
 		This section posts a new comment
 		'''
-		the_comments = obj_comment_cache(int(obj_num))
+		obj_id_str = self.request.get("obj_id")
+		obj_id = int(obj_id_str)
+
+		next_url = self.request.headers.get('referer', '/obj/%d' % obj_id)
+
+		the_comments = obj_comment_cache(obj_id)
 		comment_var = self.request.get("obj_comment_form")
+
+		obj_author = None
+		note = None
+
+		if not comment_var:
+			# Empty comment submitted
+			self.redirect(next_url)
+			return
+
+		# Check if logged in again (to prevent delete cookies after page load)
+		user_id = self.check_cookie_return_val("user_id")
+		username_var = self.check_cookie_return_val("username")
+		if not (user_id and username_var):
+			self.redirect(next_url)
+			return
+
+		# Verify user
+		verify_hash = self.request.get("verify")
+		user_id = int(user_id)
+		user = return_thing_by_id(user_id, "Users")
+		if user is None:
+			self.error(400)
+			self.redirect(next_url)
+			return
+		user_hash = hashlib.sha256(user.random_string).hexdigest()
+		logging.warning(user_hash)
+		logging.warning(verify_hash)
+		if user_hash != verify_hash:
+			logging.error("Someone is trying to hack the comments")
+			self.error(400)
+			self.redirect(next_url)
+			return
+
+		# Success!
+
+		# markdown2 for clean comments
+		escaped_comment_text = None
+		if comment_var:
+			escaped_comment_text = cgi.escape(comment_var)
+		else:
+			logging.error("Something went wrong with a comment.")
+			self.redirect(next_url)
+			return
+		mkd_converted_comment = mkd.convert(escaped_comment_text)
+		if not mkd_converted_comment:
+			logging.error("Something went wrong with a comment.")
+			self.redirect(next_url)
+			return
+
+		the_object = object_page_cache(obj_id)
+
+		obj_author_name = the_object.author_name
+		obj_author_id = the_object.author_id
+		logging.warning(obj_author_id)
+		obj_title = the_object.title
+
+		new_comment = Comments(
+								author_id = user_id,
+								author_name = user.username,
+								epoch = float(time.time()),
+								text = comment_var,
+								markdown = mkd_converted_comment,
+
+								obj_parent = obj_id,
+
+								obj_ref_id = obj_id,
+								obj_ref_nsfw = the_object.nsfw,
+								obj_ref_okay_for_kids = the_object.okay_for_kids,
+
+								rank = new_rank(),
+								votesum = 1,
+								voter_list = [user_id],
+								voter_vote = ["%s|1" % str(user_id)],
+								)
+
+		# put new comment to db
+		new_comment.put()
+		logging.warning('New Comment Created: db put')
+
+		# reset cache for object page with new comment
+		# ie this should update obj_com_cache(obj_id)
+		key = "comments_for_obj_"+str(obj_id)
+		cache_reset = False
+		delay = 6
+		comments_in_cache = memcache.get(key)
+		print ""
+		print "debug"
+		print "\n", "\n"
+		for comment in comments_in_cache:
+			print comment.text
+		if comments_in_cache:
+			comments_in_cache.append(new_comment)
+			comments_in_cache.sort(key = lambda x: x.rank, reverse=True)
+			print "\n", "\n"
+			for comment in comments_in_cache:
+				print comment.text
+			print ""
+			try:
+				memcache.set(key, comments_in_cache)
+				cache_reset = True
+				delay = 0
+				number_of_comments = len(comments_in_cache)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
+
+
+		print ""
+		print "Comment #", new_comment.key().id()
+		print ""
+
+		memcache.set("Comments_%d" % int(new_comment.key().id()), [new_comment])
+
+		# send notification
+		if int(obj_author_id) != int(user_id):
+			if str(obj_author_id) not in user.blocked_by_list:
+				logging.warning('should sleep here')
+				new_note(int(obj_author_id),
+					"Comments|%d|%s| <a href='/user/%s'>%s</a> commented on <a href='/obj/%s'>%s</a>" % (
+							int(new_comment.key().id()),
+								str(time.time()),
+													str(user_id),
+														str(cgi.escape(user.username)),
+																						str(obj_id),
+																							str(cgi.escape(obj_title))),
+					delay=delay)
+			else:
+				# user blocked
+				logging.warning('user blocked, no notification / fake sleep')
+				time.sleep(delay)
+				# fake sleep
+
+		else:
+			# object author is commenter
+			logging.warning('%d second sleep for new comment by author' % delay)
+			time.sleep(delay)
+		
+		if not cache_reset:
+			# delay has already happened above
+			obj_comments = obj_comment_cache(obj_id, update=True)
+			number_of_comments = len(obj_comments)
+
+		# update the object's data
+		the_object.total_num_of_comments = number_of_comments
+
+		the_object.most_recent_comment_epoch = float(time.time())
+		the_object.put()
+		memcache.set("Objects_%d" % obj_id, [the_object])
+
+		# update various caches
+		if the_object.nsfw == True:
+			all_objects_query("nsfw", update = True)
+			update_front_page_memcache_for_specific_object(obj_id, "/", "nsfw")
+		else:
+			all_objects_query("sfw", update=True)
+			update_front_page_memcache_for_specific_object(obj_id, "/", "sfw")
+
+
+		user_page_comment_cache(user_id, update=True) # no longer needed really...
+		user_page_obj_com_cache(user_id, update=True)
+
+		if the_object.okay_for_kids == True:
+			user_page_obj_com_cache_kids(user_id, update = True)
+			update_front_page_memcache_for_specific_object(obj_id, "/", "kids")
+
+
+		self.redirect(next_url)
+		return
+
+class PostSubcomment(Handler):
+	def post(self):
+		obj_id_str = self.request.get("obj_id")
+		if not obj_id_str:
+			self.error(400)
+			return
+		obj_id = int(obj_id_str)
+
+		next_url = self.request.headers.get('referer', '/obj/%d' % obj_id)
+
+		the_comments = obj_comment_cache(obj_id)
 		subcomment_var = None
 		parent_id = None
 
 		obj_author = None
 		note = None
-		for i in the_comments:
-			val = i.key().id()
-			subcomment_var = self.request.get("subcomment_form%d" % val)
-			if subcomment_var:
-				parent_id = val
-				parent_comment = i
-				logging.warning(parent_id)
-				logging.warning(subcomment_var)
-				break
 
-		if not (comment_var or subcomment_var):
+		subcomment_var = self.request.get("subcomment_text_area")
+		if not subcomment_var:
 			# Empty comment submitted
-			obj_id = int(obj_num)
+			obj_id = obj_id
 			#error_var = "Please do not submit an empty comment."
-			self.redirect('/obj/%d' % obj_id)
-		else:
-			# Check if logged in again (to prevent delete cookies after page load)
-			user_id = self.check_cookie_return_val("user_id")
-			username_var = self.check_cookie_return_val("username")
-			if not (user_id and username_var):
-				self.redirect('/obj/%d' % int(obj_num))
+			self.redirect(next_url)
+			return
+
+		parent_id = self.request.get("parent_id")
+		parent_id = int(parent_id)
+		parent_comment = return_thing_by_id(parent_id, "Comments")
+		logging.warning(parent_id)
+		logging.warning(subcomment_var)
+
+		# Check if logged in again (to prevent delete cookies after page load)
+		user_id = self.check_cookie_return_val("user_id")
+		username_var = self.check_cookie_return_val("username")
+		if not (user_id and username_var):
+			self.redirect(next_url)
+			return
+
+		verify_hash = self.request.get("verify")
+		user_id = int(user_id)
+		user = return_thing_by_id(user_id, "Users")
+		if not user:
+			self.error(400)
+			self.redirect(next_url)
+			return
+
+		user_hash = gen_verify_hash(user)
+		logging.warning(user_hash)
+		logging.warning(verify_hash)
+		if user_hash != verify_hash:
+			logging.error("Someone is trying to hack the comments")
+			self.error(400)
+			self.redirect(next_url)
+			return
+
+		# Success!
+
+		# markdown2 for clean comments
+		escaped_comment_text = cgi.escape(subcomment_var)
+		mkd_converted_comment = mkd.convert(escaped_comment_text)
+		if not mkd_converted_comment:
+			logging.error("Something went wrong with a subcomment.")
+			self.redirect(next_url)
+			return
+
+		the_object = object_page_cache(obj_id)
+		nsfw_bool = the_object.nsfw
+		kids_bool = the_object.okay_for_kids
+
+		logging.warning(parent_id)
+		logging.warning(parent_comment)
+		
+		new_subcomment = Comments(
+								author_id = user_id,
+								author_name = username_var,
+								epoch = float(time.time()),
+								text = subcomment_var,
+								markdown = mkd_converted_comment,
+
+								com_parent = parent_comment.key().id(),
+								#parent = parent_comment.key(),
+
+								obj_ref_id = obj_id,
+								obj_ref_nsfw = nsfw_bool,
+								obj_ref_okay_for_kids = kids_bool,
+
+								rank = new_rank(),
+								votesum = 1,
+								voter_list = [user_id],
+								voter_vote = ["%s|1" % str(user_id)],
+								)
+		new_subcomment.put()
+		logging.warning('New Subcomment Created')
+		memcache.set("Comments_%d" % new_subcomment.key().id(), [new_subcomment])
+
+
+		# parent comment needs to be reset before the obj_com_cache is reset because ranked children need to be reset
+		if not parent_comment.has_children == True:
+			parent_comment.has_children = True
+		parent_comment.ranked_children.append(int(new_subcomment.key().id()))
+		if len(parent_comment.ranked_children) > 1:
+			parent_comment.ranked_children = sort_comment_child_ranks(parent_comment.ranked_children)
+		print parent_comment.ranked_children
+		parent_comment.put()
+		memcache.set('Comments_%d' % parent_comment.key().id(), [parent_comment])
+
+
+		# reset cache for object page with new comment
+		# ie this should update obj_com_cache(obj_id)
+		key = "comments_for_obj_" + str(obj_id)
+		cache_reset = False
+		delay = 6
+		comments_in_cache = memcache.get(key)
+		print ""
+		print "debug"
+		print "\n", "\n"
+		for comment in comments_in_cache:
+			print comment.text
+		if comments_in_cache:
+			# update parent comment in this cache
+			dummy_list = []
+			for potential_parent in comments_in_cache:
+				if not potential_parent.key().id() == parent_id:
+					dummy_list.append(potential_parent)
+				else:
+					# here we replace the cached parent with the updated parent
+					dummy_list.append(parent_comment)
+			comments_in_cache = dummy_list
+			comments_in_cache.append(new_subcomment)
+			comments_in_cache.sort(key = lambda x: x.rank, reverse=True)
+			print "\n", "\n"
+			for comment in comments_in_cache:
+				print comment.text
+			print ""
+			try:
+				memcache.set(key, comments_in_cache)
+				cache_reset = True
+				delay = 0
+				number_of_comments = len(comments_in_cache)
+			except Exception as exception:
+				logging.error("memcache set error")
+				print exception
+
+
+
+		# send notification to previous commenter
+		if int(parent_comment.author_id) != int(user_id):
+			if str(parent_comment.author_id) not in user.blocked_by_list:
+				logging.warning('should sleep here')
+				new_note(parent_comment.author_id,
+					"Comments|%d|%s| <a href='/user/%s'>%s</a> has replied to your <a href='/com/%s'>comment</a>" % (
+							int(new_subcomment.key().id()),
+								str(time.time()),
+													str(user_id),
+														str(cgi.escape(username_var)),
+																								str(parent_comment.key().id())),
+					# there should be a permelink for comments here (ugh, yet another pages to write)
+					delay=delay)
 			else:
-				verify_hash = self.request.get("verify")
-				user_id = int(user_id)
-				user = return_thing_by_id(user_id, "Users")
-				if user is None:
-					self.error(404)
-					return
-				user_hash = hashlib.sha256(user.random_string).hexdigest()
-				logging.warning(user_hash)
-				logging.warning(verify_hash)
-				if user_hash != verify_hash:
-					logging.error("Someone is trying to hack the comments")
-					self.error(400)
-					return
+				# user blocked
+				logging.warning('user blocked, no notification / fake sleep')
+				time.sleep(delay)
+				# fake sleep
+		else:
+			logging.warning('%d second sleep for new subcomment by same previous comment author' % delay)
+			time.sleep(delay)
 
-				# Success!
-	
-				# markdown2 for clean comments
-				escaped_comment_text = None
-				if comment_var:
-					escaped_comment_text = cgi.escape(comment_var)
-				elif subcomment_var:
-					escaped_comment_text = cgi.escape(subcomment_var)
-				mkd_converted_comment = mkd.convert(escaped_comment_text)
-	
-				obj_id = int(obj_num)
-				the_object = object_page_cache(obj_id)
-				nsfw_bool = the_object.nsfw
-				kids_bool = the_object.okay_for_kids
+		if not cache_reset:
+			# delay has already happened above
+			obj_comments = obj_comment_cache(obj_id, update=True)
+			number_of_comments = len(obj_comments)
 
-				if comment_var:
-					obj_author_name = the_object.author_name
-					obj_author_id = the_object.author_id
-					logging.warning(obj_author_id)
-					obj_title = the_object.title
+		the_object.total_num_of_comments = number_of_comments
 
-					new_comment = Comments(
-											author_id = user_id,
-											author_name = username_var,
-											epoch = float(time.time()),
-											text = comment_var,
-											markdown = mkd_converted_comment,
+		the_object.most_recent_comment_epoch = float(time.time())
+		the_object.put()
+		memcache.set("Objects_%d" % obj_id, [the_object])
 
-											obj_parent = obj_id,
+		# update various caches
+		if the_object.nsfw == True:
+			all_objects_query("nsfw", update = True)
+			update_front_page_memcache_for_specific_object(obj_id, "/", "nsfw")
+		else:
+			all_objects_query("sfw", update=True)
+			update_front_page_memcache_for_specific_object(obj_id, "/", "sfw")
 
-											obj_ref_id = obj_id,
-											obj_ref_nsfw = nsfw_bool,
-											obj_ref_okay_for_kids = kids_bool)
-					new_comment.put()
-					logging.warning('New Comment Created')
-					if int(obj_author_id) != int(user_id):
-						if str(obj_author_id) not in user.blocked_by_list:
-							logging.warning('should sleep here')
-							new_note(int(obj_author_id),
-								"Comments|%d|%s| <a href='/user/%s'>%s</a> commented on <a href='/obj/%s'>%s</a>" % (
-										int(new_comment.key().id()),
-											str(time.time()),
-																str(user_id),
-																	str(cgi.escape(username_var)),
-																									str(obj_id),
-																										str(cgi.escape(obj_title))),
-								delay=6)
-						else:
-							# user blocked
-							logging.warning('user blocked, no notification / fake sleep')
-							time.sleep(6)
-							# fake sleep
+		user_page_comment_cache(user_id, update=True) # no longer needed really...
+		user_page_obj_com_cache(user_id, update=True)
 
-					else:
-						logging.warning('6 second sleep for new comment by author')
-						time.sleep(6)
-				
-				elif subcomment_var:
-					logging.warning('db query -- get parent_comment by id')
-					logging.warning(parent_id)
-					logging.warning(parent_comment)
-					new_subcomment = Comments(
-											author_id = user_id,
-											author_name = username_var,
-											epoch = float(time.time()),
-											text = subcomment_var,
-											markdown = mkd_converted_comment,
+		if the_object.okay_for_kids == True:
+			user_page_obj_com_cache_kids(user_id, update = True)
+			update_front_page_memcache_for_specific_object(obj_id, "/", "kids")
 
-											com_parent = parent_comment.key().id(),
-											#parent = parent_comment.key(),
+		# redirect
+		self.redirect(next_url)
+		return
 
-											obj_ref_id = obj_id,
-											obj_ref_nsfw = nsfw_bool,
-											obj_ref_okay_for_kids = kids_bool)
-					new_subcomment.put()
-					#parent_comment.children.append(new_subcomment.key())
-					if parent_comment.has_children == False:
-						parent_comment.has_children = True
-					parent_comment.ranked_children.append(int(new_subcomment.key().id()))
-					if len(parent_comment.ranked_children) > 1:
-						parent_comment.ranked_children = sort_comment_child_ranks(parent_comment.ranked_children, delay = 6)
-					parent_comment.put()
-					memcache.set('Comments_%d' % parent_comment.key().id(), [parent_comment])
-					logging.warning('New Subcomment Created')
-					if int(parent_comment.author_id) != int(user_id):
-						if str(parent_comment.author_id) not in user.blocked_by_list:
-							logging.warning('should sleep here')
-							new_note(parent_comment.author_id,
-								"Comments|%d|%s| <a href='/user/%s'>%s</a> has replied to your <a href='/com/%s'>comment</a>" % (
-										int(new_subcomment.key().id()),
-											str(time.time()),
-																str(user_id),
-																	str(cgi.escape(username_var)),
-																											str(parent_comment.key().id())),
-								# there should be a permelink for comments here (ugh, yet another pages to write)
-								delay=6)
-						else:
-							# user blocked
-							logging.warning('user blocked, no notification / fake sleep')
-							time.sleep(6)
-							# fake sleep
-					else:
-						logging.warning('6 second sleep for new subcomment by same previous comment author')
-						time.sleep(6)
-
-				obj_comments = obj_comment_cache(obj_id, update=True)
-				the_object.total_num_of_comments = len(obj_comments)
-
-				the_object.most_recent_comment_epoch = float(time.time())
-				the_object.put()
-				memcache.set("Objects_%d" % obj_id, [the_object])
-
-				if nsfw_bool == True:
-					all_objects_query("nsfw", update = True)
-				else:
-					all_objects_query("sfw", update=True)
-
-
-
-				user_page_comment_cache(user_id, update=True) # no longer needed really...
-				user_page_obj_com_cache(user_id, update=True)
-				if kids_bool == True:
-					user_page_obj_com_cache_kids(user_id, update = True)
-				else:
-					pass
-				self.redirect('/obj/%d' % obj_id)
 class ObjectEdit(Handler):
 	def render_page(self, obj_num, error=""):
 		obj_id = int(obj_num)
@@ -3691,7 +3970,6 @@ class ObjDelPage(Handler):
 				self.redirect('/university')
 			else:
 				self.redirect('/')
-
 def delete_obj(obj_id):
 	obj_str = str(obj_id)
 	if not obj_str.isdigit():
@@ -4947,6 +5225,8 @@ class CommentPage(Handler):
 		else:
 			pass
 
+		user_hash = gen_verify_hash(user)
+
 		top_comment_singleton = [return_comment_vote_flag_triplet(com, user_id)]
 		# comment tuples:
 		the_comments = obj_comment_cache(com.obj_ref_id)
@@ -4957,6 +5237,7 @@ class CommentPage(Handler):
 		#logging.warning(comment_triplet_list)
 		self.render("comment_permalink.html",
 					user = user,
+					user_hash = user_hash,
 					com = com,
 					has_cookie = has_cookie,
 					user_is_author = user_is_author,
@@ -10174,7 +10455,7 @@ def return_com_by_id(com_id, update=True, delay = 0):
 	return comment[0]
 
 def obj_comment_cache(obj_id, update=False, delay = 0):
-	key = "comment"+str(obj_id)
+	key = "comments_for_obj_"+str(obj_id)
 	comments_in_cache = memcache.get(key)
 	if comments_in_cache is None or update:
 		if update:
@@ -10191,6 +10472,10 @@ def obj_comment_cache(obj_id, update=False, delay = 0):
 		except Exception as exception:
 			logging.error("memcache set error")
 			print exception
+	else:
+		print "\n", "\n"
+		print "obj_comment_cache returned cached list of comments for this object" 
+		print "\n", "\n"
 	return comments_in_cache
 
 def objects_cache(update=False, delay=0):
@@ -10691,19 +10976,20 @@ def strip_list_whitespace(some_list):
 def sort_comment_child_ranks(com_ranked_children, delay=0):
 	ranked_list = com_ranked_children
 	tuple_list = []
-	time.sleep(int(delay))
+	#time.sleep(int(delay))
 	for com_id in ranked_list:
-		com = return_com_by_id(com_id)
+		com = return_thing_by_id(com_id, "Comments")
+		com.rank = return_rank(com)
 		tuple_list.append("%s|%d" % (str(com.rank), int(com_id)))
-	logging.warning(tuple_list)
+	#logging.warning(tuple_list)
 	tuple_list.sort(key = lambda x: x.split('|')[0], reverse=True)
-	logging.warning(tuple_list)
+	#logging.warning(tuple_list)
 	sorted_list = []
 	for com_tuple in tuple_list:
 		sorted_list.append(int(com_tuple.split('|')[1]))
-		logging.warning(sorted_list)
+		#logging.warning(sorted_list)
 	ranked_list = sorted_list
-	logging.warning(ranked_list)
+	#logging.warning(ranked_list)
 	return ranked_list
 def strip_string_whitespace(some_string):
 	stripped_string = " ".join(some_string.split())
@@ -10871,13 +11157,14 @@ def is_ascii_stl(blobinfo_instance):
 		if params:
 			#logging.warning("checking 'params'")
 			cmd = params[0]
-			if cmd == "endsolid":
-				if name and params[1] == name:
-					#break
-					continue
-				else: #TODO: inform that name needs to be there
-					#break
-					continue
+			if cmd == "endsolid": #this started throwing errors
+				continue
+				#if name and params[1] == name:
+				#	#break
+				#	continue
+				#else: #TODO: inform that name needs to be there
+				#	#break
+				#	continue
 			elif cmd == "facet":
 				try:
 					norm = map(float, params[2:5])
@@ -11266,6 +11553,9 @@ app = webapp2.WSGIApplication([
 		(r'/altfile/(\d+)', ObjectAltFile),
 		('/altfileupload/', ObjectAltFileUpload),
 		(r'/obj/(\d+)'+'.json', ObjectJSON),
+
+		('/postcomment/', PostComment),
+		('/postsubcomment/', PostSubcomment),
 
 		('/thingtracker', ThingTracker),
 
