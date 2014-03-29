@@ -8,9 +8,12 @@
 							&nbsp;{{object.short_url}}&nbsp;
 						</span>
 				{% else %}
-					<a href="/obj/{{object.id}}">
+					<a class="masonry_img_link" href="/obj/{{object.id}}">
+						<span class="front_link_img_hover_text" >
+							&nbsp;bld3r.com&nbsp;
+						</span>						
 				{% endif %}
-					<img src="{{object.main_img_link}}">
+					<img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-original="{{object.main_img_link}}">
 				</a>
 			</div>
 		{% endif %}
@@ -25,7 +28,7 @@
 				{% else %}
 					<a href="/obj/{{object.id}}">
 				{% endif %}
-					<img src="{{object.main_img_link}}">
+					<img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-original="{{object.main_img_link}}" >
 				</a>
 			</div>
 		{% elif object.short_url == 'www.youtube.com' or object.short_url == 'youtu.be' %}
@@ -63,7 +66,9 @@
 					margin-right: 3px;
 					margin-top: -2px;
 				{% endif %}
-				">
+				"
+				title="Link to object's host."
+				>
 				→
 			</div>
 		{% elif object.obj_type == "tor" %}
@@ -78,7 +83,9 @@
 					margin-right: 3px;
 					margin-top: 0px;
 				{% endif %}
-				">
+				"
+				title="Link to object's torrent."
+				>
 				↕
 			</div>
 		{% elif object.obj_type == "learn" %}
@@ -255,10 +262,18 @@
 					<span class="short_url">
 						{{object.short_url}}
 					</span>
+				{% else %}
+					<br>
+					<span class="short_url">
+						bld3r.com
+					</span>					
 				{% endif %}
 				<br>
 			{% endif %}
-
+			<span style="color: #999;">
+				{{object.time_since}} ago
+			</span>
+			<br>
 			<a href="/user/{{object.author_id}}">
 				<span style="color:#0077cc;">
 					{% if object.author_name not in ADMIN_USERNAMES %}
@@ -274,10 +289,7 @@
 			</a>
 			
 			<br>
-			<span style="color: #999;">
-				{{object.time_since}} ago
-			</span>
-			<br>
+
 			{% if object.db_type == "Comments" %}
 				{% if object.com_parent %}
 					<a href="/com/{{object.com_parent}}">

@@ -160,8 +160,8 @@
 .masonry_text{
     width:180px;
     color:black;
-    font-weight:bold;
-    font-size:14px;
+    //font-weight:bold;
+    font-size:12px;
     float:left;      
 }
 .short_url {
