@@ -1832,14 +1832,6 @@ class ObjectPage(Handler):
 					the_com_trip[0].markdown = "You have blocked this user's content."
 			comment_triplet_list.append(the_com_trip)
 
-		print "\n", "\n"
-		for comment in comment_triplet_list:
-			print ""
-			print comment[0].text
-			print "has children:", comment[0].has_children
-			print "ranked children:", comment[0].ranked_children
-			print ""
-
 		### end comments section
 
 		printed_by_list = return_printed_by_list(obj_id)
@@ -2034,14 +2026,10 @@ class PostComment(Handler):
 		print ""
 		print "debug"
 		print "\n", "\n"
-		for comment in comments_in_cache:
-			print comment.text
 		if comments_in_cache:
 			comments_in_cache.append(new_comment)
 			comments_in_cache.sort(key = lambda x: x.rank, reverse=True)
 			print "\n", "\n"
-			for comment in comments_in_cache:
-				print comment.text
 			print ""
 			try:
 				memcache.set(key, comments_in_cache)
