@@ -21,7 +21,8 @@ import json
 #import matplotlib # this breaks the dev tools
 from fake_names import fake_names
 #from pystltoolkit import stlparser
-from do_not_copy import data
+from data import data
+from do_not_copy import do_not_copy
 from urlparse import urlparse
 from pybcrypt import bcrypt
 from pyemailcheck import emailcheck
@@ -655,7 +656,7 @@ class AdminPage(Handler):
 		self.render_front()
 
 	def post(self):
-		password = data.return_admin_password()
+		password = do_not_copy.return_admin_password()
 
 		user = self.return_user_if_cookie()
 		has_cookie = self.return_has_cookie()
@@ -10700,7 +10701,7 @@ def return_object_blob_by_obj_id_and_priority(obj_id, priority, update = False, 
 ####################### Hashing Functions #######################
 
 ####################### Cookies
-secret = data.secret()
+secret = do_not_copy.secret()
 def make_secure_val(val):
 	return "%s|%s" %(val, hmac.new(secret,val).hexdigest())
 def check_secure_val(secure_val):
