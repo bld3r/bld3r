@@ -1,5 +1,5 @@
 application: bld3r-app
-version: 1-0-4
+version: 1-0-5
 runtime: python27
 api_version: 1
 threadsafe: yes

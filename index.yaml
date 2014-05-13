@@ -192,6 +192,14 @@ indexes:
   - name: deleted
   - name: learn
   - name: nsfw
+  - name: epoch
+    direction: desc
+
+- kind: Objects
+  properties:
+  - name: deleted
+  - name: learn
+  - name: nsfw
   - name: rank
     direction: desc
 
@@ -228,6 +236,14 @@ indexes:
   - name: learn
   - name: okay_for_kids
   - name: created
+    direction: desc
+
+- kind: Objects
+  properties:
+  - name: deleted
+  - name: learn
+  - name: okay_for_kids
+  - name: epoch
     direction: desc
 
 - kind: Objects
@@ -313,9 +329,25 @@ indexes:
   - name: deleted
   - name: news
   - name: okay_for_kids
+  - name: epoch
+    direction: desc
+
+- kind: Objects
+  properties:
+  - name: deleted
+  - name: news
+  - name: okay_for_kids
   - name: rank
     direction: desc
   - name: epoch
+    direction: desc
+
+- kind: Objects
+  properties:
+  - name: deleted
+  - name: news
+  - name: okay_for_kids
+  - name: votesum
     direction: desc
 
 - kind: Objects

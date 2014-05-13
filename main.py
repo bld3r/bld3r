@@ -60,6 +60,20 @@ jinja_env = jinja2.Environment(extensions=['jinja2.ext.with_'],
 	loader = jinja2.FileSystemLoader(template_dir), 
 	autoescape = True)
 upload_url = blobstore.create_upload_url('/upload')
+
+# Multi Drag/Drop Globals
+MIN_FILE_SIZE = 1  # bytes
+MAX_FILE_SIZE = 10000000  # bytes
+IMAGE_TYPES = re.compile('image/(gif|p?jpeg|(x-)?png)')
+STL_TYPE = 'application/octet-stream' or 'application/sla' or 'application/vnd.ms-pki.stl' 
+ACCEPT_FILE_TYPES = IMAGE_TYPES
+IMAGE_EXTENTION_LIST = ["jpg", "jpeg", "gif", "png"]
+FILE_EXTENTION_LIST = ["stl"]
+ACCEPT_FILE_TYPE_LIST = IMAGE_EXTENTION_LIST + FILE_EXTENTION_LIST
+IMAGE_TYPES_LIST = ["image/" + x for x in IMAGE_EXTENTION_LIST]
+STL_TYPE_LIST = ['application/octet-stream' , 'application/sla' , 'application/vnd.ms-pki.stl' ]
+THUMBNAIL_MODIFICATOR = '=s80'  # max width / height
+
 #########################################################
 ####################### Primary Class Objects #######################
 class Handler(webapp2.RequestHandler):
@@ -417,9 +431,6 @@ class Objects(db.Model):
 	file_link_4			= db.StringProperty(default = None)
 	file_blob_key_4		= blobstore.BlobReferenceProperty()
 	file_blob_filename_4= db.TextProperty()
-	file_link_5			= db.StringProperty(default = None)
-	file_blob_key_5		= blobstore.BlobReferenceProperty()
-	file_blob_filename_5= db.TextProperty()
 	file_link_5			= db.StringProperty(default = None)
 	file_blob_key_5		= blobstore.BlobReferenceProperty()
 	file_blob_filename_5= db.TextProperty()
@@ -892,13 +903,44 @@ class AdminDelHandler(Handler):
 
 NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT = 999
 def load_front_pages_from_memcache_else_query(page_type, page_num, content_type, update=False):
+	all_types_included				= ["/",				"/newmain", 		"/topmain"]
+	only_object_types_included		= ["/objects",		"/newobjects", 		"/topobjects"]
+	only_university_types_included	= ["/university",	"/newuniversity",	"/topuniversity"]
+	only_news_types_included		= ["/news",			"/newnews",			"/topnews"]
+
+	rank_decending_pages			= ["/",			"/objects",		"/university",		"/news"]
+	new_decending_pages				= ["/newmain",	"/newobjects",	"/newuniversity",	"/newnews"]
+	top_decending_pages				= ["/topmain",	"/topobjects",	"/topuniversity",	"/topnews"]
+
 	if page_type == "/":
-		key = "front_page_%s_%s" % (content_type, page_num)
-		#print "\n", "loading:", key, "\n"
+		key_string = "front_page"
+	elif page_type == "/newmain":
+		key_string = "front_page_new"
+	elif page_type == "/topmain":
+		key_string = "front_page_top"
+	elif page_type == "/objects":
+		key_string = "object_front_page"
+	elif page_type == "/newobjects":
+		key_string = "object_front_page_new"
+	elif page_type == "/topobjects":
+		key_string = "object_front_page_top"
+	elif page_type == "/university":
+		key_string = "university_front_page"
+	elif page_type == "/newuniversity":
+		key_string = "university_front_page_new"
+	elif page_type == "/topuniversity":
+		key_string = "university_front_page_top"
+	elif page_type == "/news":
+		key_string = "news_front_page"
+	elif page_type == "/newnews":
+		key_string = "news_front_page_new"
+	elif page_type == "/topnews":
+		key_string = "news_front_page_top"
 	else:
-		# i will add other pages later
-		self.error("load_front_pages_from_memcache_else_query error. Improper page_type.")
-		return []
+		logging.error("load_front_pages_from_memcache_else_query -- appears to be an invalid page_type")
+
+	key = "%s_%s_%s" % (key_string, content_type, page_num)
+	print "\n", "loading:", key, "\n"
 
 	page_time_list_tuple = memcache.get(key)
 	if page_time_list_tuple is None:
@@ -924,9 +966,47 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 		logging.warning("DB query all_objects_query(%s)" % content_type) 
 		object_list = list(object_query)
 
+		applicable_objects = []
 		for obj in object_list:
-			obj.rank = return_rank(obj)
-		object_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+			if page_type in all_types_included:
+				applicable_objects.append(obj)
+			elif page_type in only_object_types_included:
+				if obj.obj_type in ["upload", "link", "tor"]:
+					applicable_objects.append(obj)
+			elif page_type in only_university_types_included:
+				if obj.obj_type in ["learn", "ask"]:
+					applicable_objects.append(obj)
+			elif page_type in only_news_types_included:
+				if obj.obj_type == "news":
+					applicable_objects.append(obj)
+			else:
+				logging.error("Check load_front_pages_from_memcache_else_query for obj.obj_type not covered by filter")
+				continue
+		object_list = applicable_objects
+		applicable_objects = []
+		
+		for obj in object_list:
+			if content_type == "kids":
+				if obj.okay_for_kids == True:
+					applicable_objects.append(obj)
+			elif content_type == "sfw":
+				if obj.nsfw == False:
+					applicable_objects.append(obj)
+			elif content_type == "nsfw":
+				if obj.nsfw == True:
+					applicable_objects.append(obj)
+		object_list = applicable_objects
+
+		if page_type in rank_decending_pages:
+			for obj in object_list:
+				obj.rank = return_rank(obj)
+			object_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+		elif page_type in new_decending_pages:
+			object_list.sort(key = lambda x: x.epoch, reverse=True)
+		elif page_type in top_decending_pages:
+			object_list.sort(key = lambda x: (x.votesum, x.epoch), reverse=True)
+		else:
+			logging.error("Page_type not included in load_front_pages_from_memcache_else_query")
 
 		#print "\n", "full object list:", object_list, "\n"
 		end_of_content = False
@@ -952,11 +1032,8 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 
 			page_time_list_tuple = [current_time, the_objects]
 
-			if page_type == "/":
-				new_key = "front_page_%s_%d" % (content_type, this_pages_number)
-				#print "\n", "\n", "new key:", new_key
-			else:
-				self.error("load_front_pages_from_memcache_else_query error. Improper page_type.")
+			new_key = "%s_%s_%d" % (key_string, content_type, this_pages_number)
+			print "\n", "\n", "new key:", new_key
 
 			memcache.set(new_key, page_time_list_tuple)
 
@@ -1039,7 +1116,7 @@ class FrontHandler(Handler):
 			over18 = True
 			content_type = "sfw"
 
-		if page_type == "/":
+		if page_type: # == "/": # no longer just for main page
 			the_objects = load_front_pages_from_memcache_else_query(page_type=page_type, page_num=page_num, content_type=content_type)
 
 			page_num = int(page_num)
@@ -1067,254 +1144,257 @@ class FrontHandler(Handler):
 						FAKE_NAME_LIST = FAKE_NAME_LIST,
 						)
 			return
-		object_query = all_objects_query(content_type)		
-		object_pages = ["/objects"]
 
-		cursor_url = None
-		if page_type in object_pages:
-			object_query = object_query.filter('printable =', True)
+		############### nothing below is launched ###############
 
-		### obj list method ###
-		use_object_list = False
-		if page_type =="/":
-			use_object_list = True
-			object_list = list(object_query)
-		###
+		# object_query = all_objects_query(content_type)		
+		# object_pages = ["/objects"]
 
-		if page_type == "/":
-			cursor_url = "/?cursor="
-			# sort by rank, then epoch if a tie
-			object_query.order('-rank').order('-epoch')
+		# cursor_url = None
+		# if page_type in object_pages:
+		# 	object_query = object_query.filter('printable =', True)
 
-			###
-			for obj in object_list:
-				obj.rank = return_rank(obj)
-			object_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
-			###
+		# ### obj list method ###
+		# use_object_list = False
+		# if page_type =="/":
+		# 	use_object_list = True
+		# 	object_list = list(object_query)
+		# ###
 
-		elif page_type == "/objects":
-			cursor_url = "/objects?cursor="
-			# sort by rank, then epoch if a tie
-			object_query.order('-rank').order('-epoch')
+		# if page_type == "/":
+		# 	cursor_url = "/?cursor="
+		# 	# sort by rank, then epoch if a tie
+		# 	object_query.order('-rank').order('-epoch')
 
-		elif page_type == "/recentcommentsmain":
-			cursor_url = "/recentcommentsmain?cursor="
-			object_query.order('-most_recent_comment_epoch')
+		# 	###
+		# 	for obj in object_list:
+		# 		obj.rank = return_rank(obj)
+		# 	object_list.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+		# 	###
 
-		elif page_type == "/newmain":
-			cursor_url = "/newmain?cursor="
-			object_query.order('-epoch')
+		# elif page_type == "/objects":
+		# 	cursor_url = "/objects?cursor="
+		# 	# sort by rank, then epoch if a tie
+		# 	object_query.order('-rank').order('-epoch')
 
-		elif page_type == "/topmain":
-			cursor_url = "/topmain?cursor="
-			object_query.order('-votesum')
+		# elif page_type == "/recentcommentsmain":
+		# 	cursor_url = "/recentcommentsmain?cursor="
+		# 	object_query.order('-most_recent_comment_epoch')
 
-		elif page_type == "/news":
-			object_query = object_query.filter('news =', True)
-			cursor_url = "/news?cursor="
-			object_query.order('-rank').order('-epoch')
+		# elif page_type == "/newmain":
+		# 	cursor_url = "/newmain?cursor="
+		# 	object_query.order('-epoch')
 
-		elif page_type == "/newnews":
-			object_query = object_query.filter('news =', True)
-			cursor_url = "/newnews?cursor="
-			object_query.order('-epoch')
+		# elif page_type == "/topmain":
+		# 	cursor_url = "/topmain?cursor="
+		# 	object_query.order('-votesum')
 
-		elif page_type == "/topnews":
-			object_query = object_query.filter('news =', True)
-			cursor_url = "/topnews?cursor="
-			object_query.order('-votesum')
+		# elif page_type == "/news":
+		# 	object_query = object_query.filter('news =', True)
+		# 	cursor_url = "/news?cursor="
+		# 	object_query.order('-rank').order('-epoch')
 
-		elif page_type == "/university":
-			object_query = object_query.filter('learn =', True)
-			cursor_url = "/university?cursor="
-			object_query.order('-rank').order('-epoch')
+		# elif page_type == "/newnews":
+		# 	object_query = object_query.filter('news =', True)
+		# 	cursor_url = "/newnews?cursor="
+		# 	object_query.order('-epoch')
 
-		elif page_type == "/newuniversity":
-			object_query = object_query.filter('learn =', True)
-			cursor_url = "/newuniversity?cursor="
-			object_query.order('-epoch')
+		# elif page_type == "/topnews":
+		# 	object_query = object_query.filter('news =', True)
+		# 	cursor_url = "/topnews?cursor="
+		# 	object_query.order('-votesum')
 
-		elif page_type == "/topuniversity":
-			object_query = object_query.filter('learn =', True)
-			cursor_url = "/topuniversity?cursor="
-			object_query.order('-votesum')
+		# elif page_type == "/university":
+		# 	object_query = object_query.filter('learn =', True)
+		# 	cursor_url = "/university?cursor="
+		# 	object_query.order('-rank').order('-epoch')
 
-		elif page_type == "/video":
-			object_query = object_query.filter('learn =', True)
-			cursor_url = "/video?cursor="
-			object_query.order('-rank').order('-epoch')
+		# elif page_type == "/newuniversity":
+		# 	object_query = object_query.filter('learn =', True)
+		# 	cursor_url = "/newuniversity?cursor="
+		# 	object_query.order('-epoch')
 
-		cursor = self.request.get("cursor")
-		if cursor:
-			object_query.with_cursor(cursor)
+		# elif page_type == "/topuniversity":
+		# 	object_query = object_query.filter('learn =', True)
+		# 	cursor_url = "/topuniversity?cursor="
+		# 	object_query.order('-votesum')
 
-		page_num = int(page_num)
-		next_page_num = page_num + 1
-		number_of_items_to_fetch = 30
+		# elif page_type == "/video":
+		# 	object_query = object_query.filter('learn =', True)
+		# 	cursor_url = "/video?cursor="
+		# 	object_query.order('-rank').order('-epoch')
 
-		# this is for using the object list style of page loading, which we are currently using for the index page
-		if use_object_list:
-			the_objects = object_list[( (page_num -1) * number_of_items_to_fetch) : (page_num * number_of_items_to_fetch)]
-		else:
-			the_objects = object_query.fetch(number_of_items_to_fetch, offset = max((page_num - 1) * number_of_items_to_fetch, 0))
-		cursor = object_query.cursor()
+		# cursor = self.request.get("cursor")
+		# if cursor:
+		# 	object_query.with_cursor(cursor)
 
-		if page_type in ["/", "/news", "/newnews", "/topnews", "/university", "/newuniverisy", "topuniversity", "/objects"]:
-			# resort with live updating rankings
-			for obj in the_objects:
-				obj.rank = return_rank(obj)
-			the_objects.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
+		# page_num = int(page_num)
+		# next_page_num = page_num + 1
+		# number_of_items_to_fetch = 30
 
-		the_dict = cached_vote_data_for_masonry(the_objects, user_id)
-		#if page_type == "/news":
-			#for obj in the_dict:
-				#print obj
-		#logging.warning(the_dict)
-		end_of_content = None
-		if len(the_dict) == 0:
-			#logging.warning("empty")
-			end_of_content = True
-		#logging.warning('loading front_infinite')
+		# # this is for using the object list style of page loading, which we are currently using for the index page
+		# if use_object_list:
+		# 	the_objects = object_list[( (page_num -1) * number_of_items_to_fetch) : (page_num * number_of_items_to_fetch)]
+		# else:
+		# 	the_objects = object_query.fetch(number_of_items_to_fetch, offset = max((page_num - 1) * number_of_items_to_fetch, 0))
+		# cursor = object_query.cursor()
 
-		everything_pages = ["/", "/recentcommentsmain", "/newmain", "/topmain"]
-		if page_type in everything_pages:
-			self.render("front_infinite.html", 
-						user = user,
-						user_id = user_id,
+		# if page_type in ["/", "/news", "/newnews", "/topnews", "/university", "/newuniverisy", "/topuniversity", "/objects"]:
+		# 	# resort with live updating rankings
+		# 	for obj in the_objects:
+		# 		obj.rank = return_rank(obj)
+		# 	the_objects.sort(key = lambda x: (int(x.rank), x.epoch), reverse=True)
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# the_dict = cached_vote_data_for_masonry(the_objects, user_id)
+		# #if page_type == "/news":
+		# 	#for obj in the_dict:
+		# 		#print obj
+		# #logging.warning(the_dict)
+		# end_of_content = None
+		# if len(the_dict) == 0:
+		# 	#logging.warning("empty")
+		# 	end_of_content = True
+		# #logging.warning('loading front_infinite')
 
-						page_num = page_num,
-						next_page_num = next_page_num,
+		# everything_pages = ["/", "/recentcommentsmain", "/newmain", "/topmain"]
+		# if page_type in everything_pages:
+		# 	self.render("front_infinite.html", 
+		# 				user = user,
+		# 				user_id = user_id,
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return
-		elif page_type == "/objects":
-			self.render("front.html", 
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				page_num = page_num,
+		# 				next_page_num = next_page_num,
 
-						page_num = page_num,
-						next_page_num = next_page_num,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return
+		# elif page_type == "/objects":
+		# 	self.render("front.html", 
+		# 				user = user,
+		# 				user_id = user_id,
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return
-		elif page_type == "/news":
-			self.render("news_front.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				page_num = page_num,
+		# 				next_page_num = next_page_num,
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return
+		# elif page_type == "/news":
+		# 	self.render("news_front.html",
+		# 				user = user,
+		# 				user_id = user_id,
 
-		elif page_type == "/newnews":
-			self.render("news_front.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return
+		# elif page_type == "/newnews":
+		# 	self.render("news_front.html",
+		# 				user = user,
+		# 				user_id = user_id,
 
-		elif page_type == "/topnews":
-			self.render("news_front.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return			
+		# elif page_type == "/topnews":
+		# 	self.render("news_front.html",
+		# 				user = user,
+		# 				user_id = user_id,
 
-		elif page_type == "/university":
-			self.render("uni_front.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return			
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return
+		# elif page_type == "/university":
+		# 	self.render("uni_front.html",
+		# 				user = user,
+		# 				user_id = user_id,
 
-		elif page_type == "/newuniversity":
-			self.render("uni_front.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return
+		# elif page_type == "/newuniversity":
+		# 	self.render("uni_front.html",
+		# 				user = user,
+		# 				user_id = user_id,
 
-		elif page_type == "/topuniversity":
-			self.render("uni_front.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return			
+		# elif page_type == "/topuniversity":
+		# 	self.render("uni_front.html",
+		# 				user = user,
+		# 				user_id = user_id,
 
-		elif page_type == "/video":
-			self.render("uni_front_video.html",
-						user = user,
-						user_id = user_id,
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
 
-						the_dict = the_dict,
-						cursor = cursor,
-						cursor_url = cursor_url,
-						end_of_content = end_of_content,
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return			
 
-						ADMIN_USERNAMES = ADMIN_USERNAMES,
-						FAKE_NAME_LIST = FAKE_NAME_LIST,
-						)
-			return	
+		# elif page_type == "/video":
+		# 	self.render("uni_front_video.html",
+		# 				user = user,
+		# 				user_id = user_id,
+
+		# 				the_dict = the_dict,
+		# 				cursor = cursor,
+		# 				cursor_url = cursor_url,
+		# 				end_of_content = end_of_content,
+
+		# 				ADMIN_USERNAMES = ADMIN_USERNAMES,
+		# 				FAKE_NAME_LIST = FAKE_NAME_LIST,
+		# 				)
+		# 	return	
 class MainEverything(FrontHandler):
 	def get(self, page_num = "1"):
 		self.render_front_page('/', page_num = page_num)
@@ -1553,8 +1633,7 @@ class MainPageTop(FrontHandler):
 		self.render_front_page("/topmain")
 
 	def post(self):
-		pass		
-
+		pass
 
 class ThingTracker(Handler):
 	def get(self):
@@ -1788,6 +1867,47 @@ class ObjectPage(Handler):
 			other_file_list.append(the_obj.file_link_14)
 		if the_obj.file_link_15:
 			other_file_list.append(the_obj.file_link_15)
+		
+		if the_obj.obj_type == "upload":
+			if not other_file_list:
+				# What has probably happened is that the user just attempted an upload,
+				# but did not upload an .stl file and then linked to the object page.
+				# So, what we do here is redirect them to the page where they add files
+				# and we throw an error in there to let them know they need to add a file.
+				redirect_url_path = "/uploadhandler"
+				title = the_obj.title
+				if the_obj.original_creator:
+					creator = the_obj.original_creator
+					sublicense = the_obj.license
+					license = ""
+					is_author = ""
+				else:
+					creator = ""
+					sublicense = ""
+					license = the_obj.license
+					is_author = "is_author"
+				description = the_obj.description
+				tags = the_obj.author_tags
+				if tags:
+					tags = ",".join(tags)
+
+				if the_obj.nsfw:
+					audience = "nsfw"
+				elif the_obj.okay_for_kids:
+					audience = "kids"
+				else:
+					audience = "sfw"
+				
+				rights = "yes"
+				food_related = the_obj.food_related
+
+				query_string = "title=%s&license=%s&sublicense=%s&rights=%s&audience=%s&food_related=%s&description=%s&tags=%s&creator=%s&is_author=%s" % (title, license, sublicense, rights, audience, str(food_related), description, tags, creator, is_author)
+				query_string = query_string + "&obj_id=%d" % obj_id
+				error = "You must upload a 3D printable file to continue."
+				error_string = "error_no_file_uploaded=%s" % error
+				self.redirect("%s?%s&%s" % (redirect_url_path, query_string, error_string))
+				return
+			#################################
 
 		if len(other_file_list) >= 14:
 			file_list_full = True
@@ -4372,8 +4492,8 @@ class SendMessageHandler(Handler):	# This was part of UserPage, but seperated it
 			logging.warning('new message -- write')
 			taskqueue.add(url ='/newmessageworker', 
 						  params = {'recipient_id' : recipient.key().id(),
-						  			'sender_id' : sender_id
-						  		   },
+									'sender_id' : sender_id
+								   },
 						  countdown = 6
 						 )
 			#user_messages_cache(recipient.key().id(), update=True, delay = 6)
@@ -5248,6 +5368,1536 @@ class NewPage(Handler):
 		user = self.return_user_if_cookie()
 		user_id = self.check_cookie_return_val("user_id")
 		self.render("new.html", user=user, user_id=user_id)
+
+
+
+
+
+#####Drag Drop Upload Page Begin######
+class NewObjectPageDragDrop(Handler):
+	def render_page(self):
+		user_id = self.check_cookie_return_val("user_id")
+		author_name = self.check_cookie_return_val("username")
+		user = return_thing_by_id(user_id, "Users")
+
+		stl_img_upload_url = blobstore.create_upload_url('/newobjectuploaddragdrop')
+		title_var = ""
+		description_var = ""
+		tag_var = ""
+		license_var = None
+		rights = None
+		audience_var = None
+		error_1 = ""
+		error_2 = ""
+		error_3 = ""
+		file_error = ""
+
+		cc_pd = None
+		cc_a = None
+		cc_a_sa = None
+		cc_a_nc = None
+		cc_a_sa_nc = None
+		cc_lgpl = None
+		bsd = None
+		not_author = None
+
+		need_license = ""
+		kids = "default"
+		sfw = None
+		nsfw = None
+		food = None
+
+		file_type_error = ""
+		
+		# redirect variables
+		redirect = self.request.get("redirect")
+		if redirect == "True":
+			error_1 = self.request.get("error_1")
+			error_2 = self.request.get("error_2")
+			error_3 = self.request.get("error_3")
+			file_error = self.request.get("file_error")
+			title_var = self.request.get("title")
+			description_var = self.request.get("description")
+			tag_var = self.request.get("tags")
+			license_var = self.request.get("license")
+			rights = self.request.get("rights")
+			audience_var = self.request.get("audience")
+			food_related = self.request.get("food")
+			
+			logging.warning(license_var)
+			if license_var == "cc_pd":
+				need_license = ""
+				cc_pd = "cc_pd"
+			elif license_var == "cc_a":
+				need_license = ""
+				cc_a = "cc_a"
+			elif license_var == "cc_a_sa":
+				need_license = ""
+				cc_a_sa = "cc_a_sa"
+			elif license_var == "cc_a_nc":
+				need_license = ""
+				cc_a_nc = "cc_a_nc"
+			elif license_var == "cc_a_sa_nc":
+				need_license = ""
+				cc_a_sa_nc = "cc_a_sa_nc"
+			elif license_var == "cc_lgpl":
+				need_license = ""
+				cc_lgpl = "cc_lgpl"
+			elif license_var == "bsd":
+				need_license = ""
+				bsd = "bsd"
+			elif license_var == "not_author":
+				need_license = ""
+				not_author = "not_author"
+			else:
+				need_license = "You must select a license."
+
+			if audience_var == "sfw":
+				kids = None
+				sfw = "cool!"
+			elif audience_var == "nsfw":
+				kids = None
+				nsfw = "gross"
+			if food_related == "True":
+				food = "Yum!"
+		elif redirect == "filetype":
+			file_type_error = self.request.get("file_type_error")
+
+		if not_author:
+			creator_license = self.request.get("creator_license")
+			creator_license = strip_string_whitespace(creator_license)
+			if not creator_license:
+				need_license = "You must enter the object's license."
+			elif creator_license in ["cc_a", "cc_a_sa", "cc_a_nc", "cc_a_sa_nc", "cc_lgpl", "bsd"]:
+				if error_2:
+					need_license = error_2
+
+
+		
+		over18 = self.check_cookie_return_val("over18")
+		if over18 == "True":
+			over18 = True
+		else:
+			over18 = False
+
+		if not (user_id or author_name):
+			self.redirect("/")
+		else:
+			self.render("newobjectpagedragdrop.html",
+						stl_img_upload_url = stl_img_upload_url,
+						over18 = over18,
+						user = user,
+						user_id = user_id,
+
+						title = title_var,
+						description = description_var,
+						tags = tag_var,
+						license = license_var,
+						rights = rights,
+						error_1 = error_1,
+						error_2 = error_2,
+						error_3 = error_3,
+						file_error = file_error,
+						need_license = need_license,
+						nsfw = nsfw,
+						sfw = sfw,
+						kids = kids,
+						food = food,
+						file_type_error = file_type_error,
+						)
+
+	def get(self):
+		self.render_page()
+#####Drag Drop Upload Page End######		
+#####Drag Drop Upload Handler Begin#####
+class NewObjectUploadDragDrop(ObjectUploadHandler):
+	#Local Variables
+	MIN_FILE_SIZE = 1  # bytes
+	IMAGE_TYPES = re.compile('image/(gif|p?jpeg|(x-)?png)')
+	STL_TYPE = 'application/octet-stream' or 'application/sla' or 'application/vnd.ms-pki.stl' 
+	THUMBNAIL_MODIFICATOR = '=s80'  # max width / height
+
+	#This was in the original source. Not sure if it's necessary
+	# def initialize(self, request, response):
+	# 	super(UploadHandler, self).initialize(request, response)
+	# 	self.response.headers['Access-Control-Allow-Origin'] = '*'
+	# 	self.response.headers[
+	# 		'Access-Control-Allow-Methods'
+	# 	] = 'OPTIONS, HEAD, GET, POST, PUT, DELETE'
+	# 	self.response.headers[
+	# 		'Access-Control-Allow-Headers'
+	# 	] = 'Content-Type, Content-Range, Content-Disposition'
+
+	#Validates upload file size and type
+	def validate(self, file):
+		if file['size'] < MIN_FILE_SIZE:
+			file['error'] = 'File is too small'
+		if file['size'] > MAX_FILE_SIZE_FOR_OBJECTS:
+			file['error'] = 'File is too big'
+		if IMAGE_TYPES.match(file['type']):   
+			pass    
+		elif STL_TYPE == (file['type']):
+			pass    
+		else:
+			file['error'] = 'Filetype not allowed'
+		return True
+	#Returns upload file size 
+	def get_file_size(self, file):
+		file.seek(0, 2)  # Seek to the end of the file
+		size = file.tell()  # Get the position of EOF
+		file.seek(0)  # Reset the file position to the beginning
+		return size	
+
+	#This function for writing blobs with the Files API is deprecated.
+	def write_blob(self, data, info):
+		blob = files.blobstore.create(
+			mime_type=info['type'],
+			_blobinfo_uploaded_filename=info['name']
+		)
+		with files.open(blob, 'a') as f:
+			f.write(data)
+		files.finalize(blob)
+		return files.blobstore.get_blob_key(blob)
+
+
+	#Original file upload post request
+	# def post(self):
+	#     if (self.request.get('_method') == 'DELETE'):
+	#         return self.delete()
+	#     result = {'files': self.handle_upload()}
+	#     s = json.dumps(result, separators=(',', ':'))
+	#     redirect = self.request.get('redirect')
+	#     if redirect:
+	#         return self.redirect(str(
+	#             redirect.replace('%s', urllib.quote(s, ''), 1)
+	#         ))
+	#     if 'application/json' in self.request.headers.get('Accept'):
+	#         self.response.headers['Content-Type'] = 'application/json'
+	#     self.response.write(s)
+
+	# Delete a file after uploaded. I'm not sure we will need this if we automatically direct to the new object page.
+	# def delete(self):
+	#     key = self.request.get('key') or ''
+	#     blobstore.delete(key)
+	#     s = json.dumps({key: True}, separators=(',', ':'))
+	#     if 'application/json' in self.request.headers.get('Accept'):
+	#         self.response.headers['Content-Type'] = 'application/json'
+	#     self.response.write(s)        
+
+	def post(self):
+		user_var = self.check_cookie_return_val("user_id")
+		author_name = self.check_cookie_return_val("username")
+		over18 = self.check_cookie_return_val("over18")
+		if not (user_var or author_name or over18):
+			self.redirect("/login")
+		else:
+			# User is signed in
+			user_id = int(user_var)
+			user = return_thing_by_id(user_id, "Users")
+			global TRUSTED_USERS
+			trusted_user = False
+			if user.username in TRUSTED_USERS:
+				trusted_user = True
+
+			# fields
+			title_var = self.request.get("title")
+			description_var = self.request.get("description")
+			tag_var = self.request.get("tags")
+			the_tags = None
+			if tag_var:
+				the_tags = tag_var.split(', ')
+				# tag string section
+				tag_list = the_tags
+				logging.warning(tag_list)
+				tag_list = remove_list_duplicates(tag_list)
+				logging.warning(tag_list)
+				tag_list = strip_list_whitespace(tag_list)
+				logging.warning(tag_list)
+				tag_list = remove_unsafe_chars_from_tags(tag_list)
+				tag_list.sort()
+				if not tag_list:
+					tag_list = ["None"]
+					logging.warning("public tag list set to None")
+				the_tags = tag_list	
+			# if description_var:
+			# 	# Now escape, and save as markdown text
+			# 	escaped_description_text = cgi.escape(description_var)
+			# 	mkd_converted_description = mkd.convert(escaped_description_text)
+			# 	# Matt, how do we handle this next line?
+			# 	#new_object.markdown = mkd_converted_description
+			# else:
+			# 	pass
+			# if the_tags:
+			# 	for tag in the_tags:
+			# 		# Matt, how do we handle these next 2 lines?
+			# 		#new_object.tags.append(tag)
+			# 		#new_object.author_tags.append(tag)
+			# else:
+			# 	pass
+			### Thong: Change this? ###									
+			main_file_var = self.request.get("file")
+			logging.warning(main_file_var)
+			###
+			license_var = self.request.get("license")
+			rights = self.request.get("rights")
+			food_related = self.request.get("food_related")
+			if food_related:
+				food_related = True
+			else:
+				food_related = False
+			
+			# Kids and NSFW entries (if available)
+			# Here, defaults are okay-for-kids/sfw, because no entry if kids online:
+			okay_for_kids_var = True
+			nsfw_var = False
+			audience_var = self.request.get("audience")
+			if audience_var: 
+				if audience_var == "kids":
+					pass
+				elif audience_var == "sfw":
+					okay_for_kids_var = False
+				elif audience_var == "nsfw":
+					okay_for_kids_var = False
+					nsfw_var = True
+				else:
+					logging.warning("New Object -- nsfw parser not working properly")
+			else:
+				pass
+			
+			if not (title_var and license_var and rights): #main_file_var and main_img_var and license_var):
+				# Unsuccessful
+				error_1 = ""
+				error_2 = ""
+				error_3 = ""
+				file_error = ""
+				if not title_var:
+					error_1 = "You must include a title."
+				if not license_var:
+					error_2 = "You must select a license."
+				if not rights:
+					error_3 = "It must be legal for you to share this model."
+				if not main_file_var:
+					file_error = "Hmm, it looks like you forgot to select a file to upload."
+				self.redirect("/newobject?redirect=True&error_1=%s&error_2=%s&error_3=%s&file_error=%s&title=%s&license=%s&rights=%s&audience=%s&food=%s" % (error_1, error_2, error_3, file_error, title_var, license_var, rights, audience_var, str(food_related)))
+			else:
+				if license_var == "not_author":
+					sublicense = self.request.get("creator_license")
+					if sublicense in ["cc_pd", "cc_a", "cc_a_sa", "cc_lgpl", "bsd"]:
+						if sublicense in ["cc_a", "cc_a_sa", "cc_lgpl", "bsd"]:
+							creator = self.request.get("creator")
+							creator = strip_string_whitespace(creator)
+							if not creator:
+								error_2 = "That license requires you to give attribution."
+								self.redirect("/newobject?redirect=True&error_2=%s&title=%s&license=%s&rights=%s&audience=%s&food=%s&creator_license=%s" % (error_2, title_var, license_var, rights, audience_var, str(food_related), sublicense))
+								return
+						else:
+							creator = None
+					else:
+						error_2 = "You must select the author's license."
+						self.redirect("/newobject?redirect=True&error_2=%s&title=%s&license=%s&rights=%s&audience=%s&food=%s&creator_license=%s" % (error_2, title_var, license_var, rights, audience_var, str(food_related), sublicense))
+						return
+
+					license_var = sublicense
+				else:
+					creator = None
+
+				# Success
+
+				if license_var == "cc_pd":
+					license_var = "Creative Commons: Public Domain Dedication"
+				elif license_var == "cc_a":
+					license_var = "Creative Commons: Attribution"
+				elif license_var == "cc_a_sa":
+					license_var = "Creative Commons: Attribution, Share Alike"
+				elif license_var == "cc_a_nc":
+					license_var = "Creative Commons: Attribution, Non-Commercial"
+				elif license_var == "cc_a_sa_nc":
+					license_var = "Creative Commons: Attribution, Share Alike, Non-Commercial"
+				elif license_var == "cc_lgpl":
+					license_var = "GNU Lesser General Public License"
+				elif license_var == "bsd":
+					license_var = "BSD License"
+
+				# try:
+				# Thong: Matt, was there a reason we needed this 1==1 condition?
+				if 1==1:
+					# STL data
+					file_data = None
+					file_blob_key = None
+					file_url = None
+					# Image data
+					img_upload = None
+					img_blob_key = None
+					img_url = None						
+
+					# this is a problem:
+					# if only one file is uploaded, it will default to img...
+					# hmm... how to fix
+
+					# Thong I'm commenting out the next 5 or so lines since validation can now and should happen before uploading.
+					# try:
+					# 	file_data = self.get_uploads()[0]
+					# except:
+					# 	pass
+
+					# if file_data:
+
+					# The section below formats and returns JSON data and sends results for validation.
+					results = []
+					blob_keys = []
+					#fieldStorage is a built-in function(?) that allows you received a file's name, type, size, etc.
+					for name, fieldStorage in self.request.POST.items():
+						if type(fieldStorage) is unicode:
+							continue
+						result = {}
+						result['name'] = re.sub(
+							r'^.*\\',
+							'',
+							fieldStorage.filename
+						)
+						result['type'] = fieldStorage.type
+						#Uses the get_file_size function from the Jquery File Upload code
+						result['size'] = self.get_file_size(fieldStorage.file)
+						#Uses the validation above instead of Matt's
+						if self.validate(result):
+							# blob_key = str(
+							#     self.write_blob(fieldStorage.value, result)
+							# )
+							# Thong: The 3 lines above defined a blob_key while at the same time wrote the Blob to the Blobstore.  I think the following two line accomplish the same.
+							file_data = self.get_uploads()[0]
+							blob_key = file_data.key()
+							blob_keys.append(blob_key)
+							# Thong: the following 3 lines are Matt's.  The variables are for the put request for data in the Datastore in the put request below.
+							if (STL_TYPE == (result['type'])):	
+								try:
+									file_url = '/serve_obj/%s' % file_data.key()
+									file_blob_key = file_data.key()
+									filename = file_data.filename
+									result['url'] = files.blobstore.get_blob_key(
+										blob_key,
+										secure_url=self.request.host_url.startswith(
+											'https'
+										)
+									)										
+								except:
+									pass
+							if (IMAGE_TYPES.match(result['type'])):
+								try:
+									img_url = '/serve_obj/%s' % file_data.key()
+									img_blob_key = file_data.key()
+									filename = file_data.filename	
+									result['url'] = images.get_serving_url(
+										blob_key,
+										secure_url=self.request.host_url.startswith(
+											'https'
+										)
+									)
+									result['thumbnailUrl'] = result['url'] +\
+										THUMBNAIL_MODIFICATOR									
+								except:
+									pass					
+
+							result['deleteType'] = 'DELETE'
+							result['deleteUrl'] = self.request.host_url +\
+								'/?key=' + urllib.quote(blob_key, '')      
+							if not 'url' in result:
+								result['url'] = self.request.host_url +\
+									'/' + blob_key + '/' + urllib.quote(
+										result['name'].encode('utf-8'), '')
+						results.append(result)
+					deferred.defer(
+						blob_keys
+					)
+					return results						
+						# Thong: We no longer need this validation since we have a new validation function
+						# size limit
+						# global MAX_FILE_SIZE_FOR_OBJECTS
+
+						# Thong: Deleted the temporary trusted users section
+						# if not trusted_user: # trusted users can upload larger files
+						# 	if file_data.size > MAX_FILE_SIZE_FOR_OBJECTS:
+						# 		logging.warning(file_data)
+						# 		logging.warning(file_data.size)
+						# 		file_data.delete()
+						# 		self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file is too large. Our maximum file size is 5MB. We're very sorry, but currently, hosting exceptionally large files is prohibitively expensive for us. Please upload your file to an alternative host and link to it instead.") 
+						# 		return
+
+						# file_url = '/serve_obj/%s' % file_data.key()
+						# file_blob_key = file_data.key()
+						# filename = file_data.filename
+						# Thong: I don't think we need the following line
+						#filename_full = filename
+
+						# Thong: We no longer need this validation since we have a new validation function
+						# filename = filename.split('.')
+						# logging.warning(filename)
+						# if filename[-1].lower() not in ["stl"]:
+						# 	logging.warning('not "stl" filetype, redirect')
+						# 	file_data.delete()
+						# 	self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file must be a stereo lithography filetype (.stl).") # this should return to an error version of the upload page
+						# 	return
+
+						# Thong: Deleted the temporary trusted users section
+						# if not trusted_user: # trusted users can upload binaries
+						# 	if not is_ascii_stl(file_data):
+						# 		logging.warning('not "ascii stl" after parse, redirect')
+						# 		file_data.delete()
+						# 		self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "This file must be a ASCII stereo lithography filetype (.stl). We had a problem parsing your file. It may be a binary .stl, which we do not currently support (if you open the file in a text editor an it is only numbers, this is the problem). However, it may be corrupt, contain questionable content, or not actually be an ascii .stl filetype.") # this should return to an error version of the upload page
+						# 		return
+							
+
+						### future parser to rewrite would go here, but this is diminished and will be removed in the future
+						
+						# if 1 != 1:
+						# 	parsed_stl = 'put parsed stl here'
+
+						# 	# Save parsed_stl back to blobstore
+						# 	new_file = files.blobstore.create(mime_type='application/octet-stream',
+						# 									  _blobinfo_uploaded_filename=filename_full)
+						# 	with files.open(new_file, 'a') as f:
+						# 		f.write(parsed_stl)
+						# 	files.finalize(new_file)
+						# 	logging.warning(new_file)
+						# 	new_key = files.blobstore.get_blob_key(new_file)   
+						# 	# Remove the original file
+						# 	file_data.delete()
+						# 	# Reset file_data variable
+						# 	file_data = blobstore.BlobInfo.get(new_key)
+						# 	logging.warning('db query get blobinfo')
+						# 	file_url = '/serve_obj/%s' % file_data.key()
+						# 	file_blob_key = str(file_data.key())
+
+					# else:
+					# 	self.redirect("/newobject?redirect=filetype&file_type_error=%s" % "Your file upload appears to have failed. Please try again. If the problem persists please contact us at bld3r.com@gmail.com.") # this should return to an error version of the upload page
+					# 	return
+
+					new_object = Objects(title = title_var, 
+										description = description_var,
+										tags = tag_var,
+										author_id = user_id, # Not sure how file uploads will work, so below are default links for an object
+										author_name = author_name,
+										obj_type = 'upload',
+										epoch = float(time.time()),
+
+										okay_for_kids = okay_for_kids_var,
+										nsfw = nsfw_var,
+										food_related = food_related,
+
+										stl_file_link = file_url, # main_img_var, # main_file_var,
+										stl_file_blob_key = file_data.key(),
+										stl_filename = str(file_data.filename),
+
+										main_img_link = img_url,
+										main_img_blob_key = img_upload.key(),
+										main_img_filename = str(img_upload.filename),										
+
+										license = license_var,
+										printable = True,
+										original_creator = creator,
+										rank = new_rank(),
+										num_user_when_created = num_users_now(),
+										voter_list = [user_id],
+										voter_vote = ["%s|1" % str(user_id)],
+
+										uuid = str(uuid.uuid4()),
+										)
+					new_object.put()
+
+					# if file_data:
+					# 	new_object_data = ObjectBlob(blob_type = "data",
+					# 								priority = 0,
+					# 								obj_id = int(new_object.key().id()),
+					# 								uploader = int(new_object.author_id),
+					# 								blob_key = file_data.key(),
+					# 								filename = str(file_data.filename),
+
+					# 								key_name = "blob|%s" % str(file_data.key())
+					# 								) 
+
+					# 	new_object_data.put()
+					# 	memcache.set("objectblob|%s" % str(new_object_data.blob_key), new_object_data)
+					# 	return_object_blob_by_obj_id_and_priority(new_object.key().id(), 0, update=True)
+					# else:
+					# 	pass
+
+					if nsfw_var == True:
+						all_objects_query("nsfw", update = True, delay = 6)
+					else:
+						all_objects_query("sfw", update = True, delay = 6)
+
+					if okay_for_kids_var == True:
+						all_objects_query("kids", update = True)
+						user_page_obj_com_cache_kids(user_id, update = True)
+					else:
+						pass
+
+					object_page_cache(new_object.key().id(),update=True)
+					user_page_object_cache(user_id, update=True) # No longer needed really...
+					user_page_obj_com_cache(user_id, update=True)
+
+
+					# Update all front pages using the load_front_pages_from_memcache_else_query function
+					global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+					if nsfw_var == True:
+						# currently no other page types supported beyond "/"
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+					else:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+					if okay_for_kids_var == True:
+						load_front_pages_from_memcache_else_query("/", NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+
+					if user:
+						for follower_id in user.follower_list:
+							logging.warning('should sleep here')
+							new_note(int(follower_id),
+								"Objects|%d|%s| <a href='/user/%s'>%s</a> uploaded <a href='/obj/%s'>%s</a>" % (
+										int(new_object.key().id()),
+											str(time.time()),
+																str(user.key().id()),
+																	str(cgi.escape(user.username)),
+																									str(new_object.key().id()),
+																										str(cgi.escape(new_object.title))),
+								)
+					# Thong: Now redirects to object page
+					# self.redirect('/newobject2/%d' % new_object.key().id())
+					self.redirect('/obj/%d' % new_object.key().id())					
+
+				#except:
+				else:
+					self.redirect('/upload_failure.html')
+#####Drag Drop Uploand Handler End#####
+
+#####Upload Handler Begin#####
+class ObjectCreation(Handler):
+	def get(self):
+		redirect_url_path = "/newobject"
+
+		title				= self.request.get("title")
+		description			= self.request.get("description")
+		tags				= self.request.get("tags")
+		license				= self.request.get("license")
+		sublicense			= self.request.get("sublicense")
+		audience			= self.request.get("audience")
+		creator				= self.request.get("creator")
+		food_related		= self.request.get("food_related")
+		rights				= self.request.get("rights")
+		is_author			= self.request.get("is_author")
+		if not (title or license or sublicense or rights or audience or food_related or description or tags or creator or is_author):
+			# We can safely say this is a new upload is happening, thus:
+			is_author = "is_author"
+
+		# Errors:
+		error_title			= self.request.get("error_title")
+		error_license		= self.request.get("error_license")
+		error_attribution	= self.request.get("error_attribution")
+		error_rights		= self.request.get("error_rights")
+
+		creator = strip_string_whitespace(creator)
+		if creator == "None":
+			creator = ""
+
+		if is_author:
+			sublicense = None
+			creator = None
+		else:
+			license = None
+
+		if food_related == "False":
+			food_related = False
+
+		upload = False
+		self.render("jquery-ui.html",
+					upload = upload,
+					title = title,
+					description = description,
+					tags = tags,
+					is_author = is_author,
+					license = license,
+					sublicense = sublicense,
+					food_related = food_related,
+					rights = rights,
+
+					error_title = error_title,
+					error_license = error_license,
+					error_attribution = error_attribution,
+					error_rights = error_rights,
+					)
+
+	def post(self):
+		print "\nStart!\n"
+		user = self.return_user_if_cookie()
+		if not user:
+			self.redirect("/login")
+			return
+
+		user_id = user.key().id()
+		author_name = user.username
+		over18 = user.over18
+
+		######################################
+		title = self.request.get("title_post")
+		license = self.request.get("license_post")
+		sublicense = self.request.get("sublicense_post")
+		is_author = self.request.get("is_author_post")
+		creator = self.request.get("creator_post")
+		rights = self.request.get("rights_post")
+		food_related = self.request.get("food_related_post")
+		audience = self.request.get("audience_post")
+		description = self.request.get("description_post")
+		tags = self.request.get("tags_post")
+		######################################
+
+		#############################
+		redirect_url_path = "/newobject"
+		query_string = "title=%s&license=%s&sublicense=%s&rights=%s&audience=%s&food_related=%s&description=%s&tags=%s&creator=%s&is_author=%s" % (title, license, sublicense, rights, audience, str(food_related), description, tags, creator, is_author)
+		redirect_str = "%s?%s" % (redirect_url_path, query_string)
+		#############################
+
+		# Required fields
+		print "Title:", title
+		title = strip_string_whitespace(title)
+
+		print "License:",license, "\n"
+		###
+
+		print "Rights:", rights, "\n"
+		rights = str(rights)
+
+		if is_author:
+			license = return_license_text_from_shortform(license)
+			sublicense = None
+			creator = None
+		else:
+			sublicense = return_license_text_from_shortform(sublicense)
+			license = None
+
+		# Error check
+		if not (title and (license or (sublicense and creator)) and rights): 
+			# Unsuccessful
+			error_title = ""
+			error_license = ""
+			error_rights = ""
+			error_attribution = ""
+			if not title:
+				error_title = "You must include a title."
+			if not (license or (sublicense and creator)):
+				if not (license or sublicense):
+					error_license = "You must select a license."
+				if sublicense and not creator:
+					error_attribution = "You must give attribution."
+			if not rights:
+				error_rights = "It must be legal for you to share this model."
+			error_str = "&error_title=%s&error_license=%s&error_rights=%s&error_attribution=%s" % (error_title, error_license, error_rights, error_attribution)
+						
+			self.redirect(redirect_str + error_str)
+			return
+		if sublicense:
+			license = sublicense
+		
+		# Kids and NSFW entries (if available)
+		# Here, defaults are okay-for-kids/sfw, because no entry if kids online:
+		okay_for_kids_var = True
+		nsfw_var = False
+		if audience: 
+			if audience == "kids":
+				pass
+			elif audience == "sfw":
+				okay_for_kids_var = False
+			elif audience == "nsfw":
+				okay_for_kids_var = False
+				nsfw_var = True
+			else:
+				logging.warning("New Object -- nsfw parser not working properly")
+		
+		if food_related:
+			food_related = True
+		else:
+			food_related = False
+		
+
+
+		# description and tags
+		
+		the_tags = None
+		tag_str = tags # for url redirect at the end of this method
+		if tags:
+			the_tags = tags.split(', ')
+			# tag string section
+			tag_list = the_tags
+			logging.warning(tag_list)
+			tag_list = remove_list_duplicates(tag_list)
+			logging.warning(tag_list)
+			tag_list = strip_list_whitespace(tag_list)
+			logging.warning(tag_list)
+			tag_list = remove_unsafe_chars_from_tags(tag_list)
+			tag_list.sort()
+			if not tag_list:
+				tag_list = ["None"]
+				logging.warning("public tag list set to None")
+			the_tags = tag_list
+		tags = the_tags
+		if not tags:
+			tags = []
+
+		description = strip_string_whitespace(description)
+		if description:
+			# Now escape, and save as markdown text
+			escaped_description_text = cgi.escape(description)
+			mkd_converted_description = mkd.convert(escaped_description_text)
+			markdown = mkd_converted_description
+		else:
+			markdown = ""
+
+		print "\nObject:"
+		print "Title:", title
+		print "Description:", description
+		print "Tags:", tags
+		print "Is author?", is_author
+		print "License:", license
+		print "Sublicense:", sublicense
+		print "Creator:", creator
+		print "Audience:", audience
+		print "Food related:", food_related
+		print "Rights:", rights
+		print ""
+
+		print "\nDone!\n"
+
+		# end Matt's code
+
+		logging.error("fix new object comment out params")
+		new_object = Objects(title = title, 
+							author_id = user_id, # Not sure how file uploads will work, so below are default links for an object
+							author_name = author_name,
+							obj_type = 'upload',
+							epoch = float(time.time()),
+
+							okay_for_kids = okay_for_kids_var,
+							nsfw = nsfw_var,
+							food_related = food_related,
+
+							#stl_file_link = file_url, # main_img_var, # main_file_var,
+							#stl_file_blob_key = file_data.key(),
+							#stl_filename = str(file_data.filename),
+
+							license = license,
+							printable = True,
+							original_creator = creator,
+
+							description = description,
+							markdown = markdown,
+							tags = tags,
+							author_tags = tags,
+							#rank = new_rank(),
+							#num_user_when_created = num_users_now(),
+							voter_list = [user_id],
+							voter_vote = ["%s|1" % str(user_id)],
+
+							#uuid = str(uuid.uuid4()),
+							)
+		new_object.put()
+		obj_id = new_object.key().id()
+		memcache.set("Objects_%d" % obj_id, [new_object])
+
+		self.redirect("/uploadhandler?%s&obj_id=%d" % (query_string, obj_id))
+class UploadHandler(Handler):
+	# -*- coding: utf-8 -*-
+	#
+	# jQuery File Upload Plugin GAE Python Example 2.1.1
+	# https://github.com/blueimp/jQuery-File-Upload
+	#
+	# Copyright 2011, Sebastian Tschan
+	# https://blueimp.net
+	#
+	# Licensed under the MIT license:
+	# http://www.opensource.org/licenses/MIT
+	#
+	# Step 1: Get request
+	def get(self):
+		self.render_page()
+
+	# Step 2: Page rendered
+	def render_page(self):
+		obj_num = self.request.get("obj_id")
+		print "\n", "obj_id:", obj_num
+		if not obj_num:
+			print "\nno object id\n"
+			self.render("jquery-ui.html")
+			return
+		obj_id = int(obj_num)
+		obj = return_thing_by_id(obj_id, "Objects")
+		if not obj:
+			self.redirect("/newobject")
+			pass
+		
+		user = self.return_user_if_cookie()
+		if not user:
+			self.redirect("/login")
+			return
+		user_id = user.key().id()
+		author_name = user.username
+		over18 = user.over18
+
+		# make user verification has
+		verify_hash = gen_verify_hash(user)
+
+		url = self.request.url
+		# print "\n", url
+
+		title				= self.request.get("title")
+		description			= self.request.get("description")
+		tags				= self.request.get("tags")
+		license				= self.request.get("license")
+		sublicense			= self.request.get("sublicense")
+		audience			= self.request.get("audience")
+		creator				= self.request.get("creator")
+		food_related		= self.request.get("food_related")
+		rights				= self.request.get("rights")
+		is_author			= self.request.get("is_author")
+
+		# Errors:
+		error_title			= self.request.get("error_title")
+		error_license		= self.request.get("error_license")
+		error_attribution	= self.request.get("error_attribution")
+		error_rights		= self.request.get("error_rights")
+
+		error_no_file_uploaded = self.request.get("error_no_file_uploaded")
+
+		if creator == "None":
+			creator = ""
+
+		if food_related == "False":
+			food_related = False
+
+		obj_image_link_list = []
+		potential_images = [
+							[obj.main_img_link, obj.main_img_filename],
+							[obj.img_link_2, obj.img_blob_filename_2],
+							[obj.img_link_3, obj.img_blob_filename_3],
+							[obj.img_link_4, obj.img_blob_filename_4],
+							[obj.img_link_5, obj.img_blob_filename_5]
+							]
+		for image_tuple in potential_images:
+			if image_tuple[0]:
+				obj_image_link_list.append(image_tuple)
+
+		obj_file_filename_list = []
+		potential_filenames = [obj.stl_filename,
+								obj.file_blob_filename_2,
+								obj.file_blob_filename_3,
+								obj.file_blob_filename_4,
+								obj.file_blob_filename_5,
+								obj.file_blob_filename_6,
+								obj.file_blob_filename_7,
+								obj.file_blob_filename_8,
+								obj.file_blob_filename_9,
+								obj.file_blob_filename_10,
+								obj.file_blob_filename_11,
+								obj.file_blob_filename_12,
+								obj.file_blob_filename_13,
+								obj.file_blob_filename_14,
+								obj.file_blob_filename_15,
+								]
+		for filename in potential_filenames:
+			if filename:
+				obj_file_filename_list.append(filename)
+		if obj_file_filename_list:
+			# .stl file uploaded
+			allow_to_leave_upload_page = True
+		else:
+			# the user has not yet uploaded a 3D file
+			allow_to_leave_upload_page = False
+
+		create_obj_img_table = False
+		if obj_image_link_list or obj_file_filename_list:
+			create_obj_img_table = True
+
+
+
+		print ""
+		print ""
+		print ""
+		print ""
+		print ""
+		print ""
+		print "Object:"
+		print "Title:", title
+		print "Description:", description
+		print "Tags:", tags
+		print "Is author?", is_author
+		print "License:", license
+		print "Sublicense:", sublicense
+		print "Creator:", creator
+		print "Audience:", audience
+		print "Food related:", food_related
+		print "Rights:", rights
+		print ""
+		print ""
+		print ""
+		print ""
+		print ""
+		print ""
+
+
+		upload = True
+		self.render("jquery-ui.html",
+					obj_id = obj_id,
+					url = url,
+					upload = upload,
+
+					title = title,
+					description = description,
+					tags = tags,
+					license = license,
+					sublicense = sublicense,
+					audience = audience,
+					rights = rights,
+					food_related = food_related,
+					creator = creator,
+					is_author = is_author,
+					
+					verify_hash = verify_hash,
+
+					create_obj_img_table = create_obj_img_table,
+					obj_image_link_list = obj_image_link_list,
+					obj_file_filename_list = obj_file_filename_list,
+					allow_to_leave_upload_page = allow_to_leave_upload_page,
+
+					error_title = error_title,
+					error_license = error_license,
+					error_rights = error_rights,
+					error_attribution = error_attribution,
+					error_no_file_uploaded = error_no_file_uploaded,
+					)
+
+	# Step 3: Upload process starts here.
+	def post(self):
+		# url = self.request.url
+		# all_query = self.request.get_all()
+		# print "\n", "url:", url, "\n", "all query string:", all_query, "\n"
+		obj_num = self.request.get("obj_id_post")
+		#print obj_num
+		if not obj_num:
+			logging.error("no object id")
+			self.redirect("/newobject")
+			return
+		obj_id = int(obj_num)
+		obj = return_thing_by_id(obj_id, "Objects")
+
+		user = self.return_user_if_cookie()
+		if not user:
+			self.redirect("/login")
+			return
+		user_id = user.key().id()
+		author_name = user.username
+		over18 = user.over18
+
+		# make user verification has
+		user_hash = gen_verify_hash(user)
+		verify_hash = self.request.get("verify")
+
+		#print "User hash:", user_hash
+		#print "Verify hash:", verify_hash
+
+		#if user_hash != verify_hash:
+		#	self.redirect("/")
+		#	#change this to somewhere more productive
+		#	return
+
+
+		# get all relevant items
+		######################################
+		title = self.request.get("title_post")
+		license = self.request.get("license_post")
+		sublicense = self.request.get("sublicense_post")
+		is_author = self.request.get("is_author_post")
+		creator = self.request.get("creator_post")
+		rights = self.request.get("rights_post")
+		food_related = self.request.get("food_related_post")
+		audience = self.request.get("audience_post")
+		description = self.request.get("description_post")
+		tags = self.request.get("tags_post")
+		######################################
+
+		# previous_title = obj.title
+		# previous_creator = obj.original_creator
+		# previous_food_related = obj.food_related
+		# previous_audience = obj.audience
+		# previous_description = obj.description
+		# previous_tags = obj.tags
+		# previous_tags_str = ",".join(tags)
+		# if previous_creator:
+		# 	previous_is_author = "is_author"
+		# 	previous_license = ""
+		# 	previous_sublicense = obj.license
+		# else:
+		# 	previous_is_author = ""
+		# 	previous_license = obj.license
+		# 	previous_sublicense = ""
+
+		# set errors
+		error_title = ""
+		error_license = ""
+		error_attribution = ""
+		error_rights = ""
+		#############################
+		redirect_url_path = "/uploadhandler"
+		query_string = "title=%s&license=%s&sublicense=%s&rights=%s&audience=%s&food_related=%s&description=%s&tags=%s&creator=%s&is_author=%s" % (title, license, sublicense, rights, audience, str(food_related), description, tags, creator, is_author)
+		query_string = query_string + "&obj_id=%d" % obj_id
+
+		# query_string_no_save = "title=%s&license=%s&sublicense=%s&rights=%s&audience=%s&food_related=%s&description=%s&tags=%s&creator=%s&is_author=%s" % (previous_title, previous_license, previous_sublicense, rights, previous_audience, str(previous_food_related), previous_description, previous_tags_str, previous_creator, previous_is_author)
+		#############################
+
+		#############################
+		# Firstly, and most importantly, redirect without save first if necessary.
+
+		if not rights:
+			error_rights = "Sorry, we could not save your changes because you have not agreed to our terms. Please check the terms box below and click update."
+			self.redirect("%s?%s&error_rights=%s" % (redirect_url_path, query_string, error_rights))
+			return
+
+		error_with_save = False
+		# Errors with title.
+		title = strip_string_whitespace(title)
+		if not title:
+			title = obj.title
+			error_title = "The title entered was invalid, we've replaced it with the previously saved title."
+			error_with_save = True
+
+		# Next errors with licenses.
+		if is_author:
+			if not license:
+				error_license = "We recieved no license selection, so we've replaced the selection with the previously saved license."
+				if obj.original_creator:
+					sublicense = return_license_short_form_from_full(obj.license)
+					creator = obj.original_creator
+					license = ""
+					full_license = None
+					full_sublicense = None
+					is_author = ""
+				else:
+					license = return_license_short_form_from_full(obj.license)
+					sublicense = None
+					creator = None
+					full_license = None
+					full_sublicense = None
+					is_author = "is_author"
+				error_with_save = True
+			else:
+				full_license = return_license_text_from_shortform(license)
+				full_sublicense = None
+				sublicense = ""
+				creator = None
+		else:
+			print ''
+			print "here!!!"
+			print ''
+			if not sublicense:
+				error_license = "We recieved no license selection, so we've replaced the selection with the previously saved license."
+				if obj.original_creator:
+					sublicense = return_license_short_form_from_full(obj.license)
+					creator = obj.original_creator
+					license = ""
+					full_license = None
+					full_sublicense = None
+					is_author = ""
+				else:
+					license = return_license_short_form_from_full(obj.license)
+					sublicense = None
+					creator = None
+					full_license = None
+					full_sublicense = None
+					is_author = "is_author"
+				error_with_save = True
+			else:
+				full_sublicense = return_license_text_from_shortform(sublicense)
+				full_license = None
+				license = ""
+				if not creator:
+					if obj.original_creator: # if previously there was a creator redirect with sublicense:
+						creator = obj.original_creator
+						sublicense = return_license_short_form_from_full(obj.license)
+						license = ""
+						full_license = None
+						full_sublicense = None
+						is_author = ""
+					else:
+						print ''
+						print "sublicence is fine!!!"
+						print ''
+						license = return_license_short_form_from_full(obj.license)
+						is_author = "is_author"
+						creator = ""
+						full_license = None
+						full_sublicense = None
+						is_author = "is_author"
+					error_attribution = "It appears the required attribution section was blank. So, we did not save this new license. Please give attribution and click the update button."
+					error_with_save = True
+
+		# All errors established. Reset query string
+		query_string = "title=%s&license=%s&sublicense=%s&rights=%s&audience=%s&food_related=%s&description=%s&tags=%s&creator=%s&is_author=%s" % (title, license, sublicense, rights, audience, str(food_related), description, tags, creator, is_author)
+		query_string = query_string + "&obj_id=%d" % obj_id
+		# Set error string
+		error_string = "error_title=%s&error_license=%s&error_attribution=%s" %(error_title, error_license, error_attribution)
+
+		# Now to save everything
+		do_save = False
+
+		if title != obj.title:
+			obj.title = title
+			do_save = True
+
+		description = strip_string_whitespace(description)
+		if description != obj.description:
+			obj.description = description
+			# Now escape, and save as markdown text
+			escaped_description_text = cgi.escape(description)
+			mkd_converted_description = mkd.convert(escaped_description_text)
+			markdown = mkd_converted_description
+			do_save = True
+
+		tag_list = ",".split(tags)
+		tag_list = strip_list_whitespace(tag_list)
+		if tag_list != obj.author_tags:
+			obj.author_tags = tag_list
+			for tag in tag_list:
+				obj.tags.append(tag)
+			obj.tags = remove_list_duplicates(obj.tags)
+			do_save = True
+
+		if full_license:
+			if full_license != obj.license:
+				obj.license = full_license
+				do_save = True
+			if obj.original_creator:
+				obj.original_creator = None
+				do_save = True
+		elif full_sublicense:
+			if creator:
+				if full_sublicense != obj.license:
+					obj.license = full_sublicense
+					do_save = True
+				if creator != obj.original_creator:
+					obj.original_creator = creator
+					do_save = True
+
+
+		# Kids and NSFW entries (if available)
+		# Here, defaults are okay-for-kids/sfw, because no entry if kids online:
+		okay_for_kids_var = True
+		nsfw_var = False
+		if audience: 
+			if audience == "kids":
+				pass
+			elif audience == "sfw":
+				okay_for_kids_var = False
+			elif audience == "nsfw":
+				okay_for_kids_var = False
+				nsfw_var = True
+			
+		if okay_for_kids_var != obj.okay_for_kids:
+			obj.okay_for_kids = okay_for_kids_var
+			do_save = True
+		if nsfw_var != obj.nsfw:
+			obj.nsfw = nsfw_var
+			do_save = True
+
+		if food_related == "True":
+			food_related = True
+		else:
+			food_related = False
+		if food_related != obj.food_related:
+			obj.food_related = food_related
+			do_save = True
+
+		# end Matt's code
+
+
+		###############################################################################################
+		if (self.request.get('_method') == 'DELETE'):
+			return self.delete()
+		result = {'files': self.handle_upload(obj)}
+
+		data_list = []
+		for a_file in result['files']:
+			print a_file
+			print ""
+			the_key = a_file['deleteUrl'].split('key=')[1]
+			
+			blob_key = the_key
+			print "Blob key:", the_key, "\n"
+			file_name = a_file['name']
+			print "File name:", file_name, "\n"
+			file_url = a_file['url']
+			print "File url:", file_url, "\n"
+			data_list.append([blob_key, file_name, file_url])
+
+		s = json.dumps(result, separators=(',', ':'))
+		redirect = self.request.get('redirect')
+		if redirect:
+			return self.redirect(str(
+				redirect.replace('%s', urllib.quote(s, ''), 1)
+			))
+		if 'application/json' in self.request.headers.get('Accept'):
+			self.response.headers['Content-Type'] = 'application/json'
+		self.response.write(s)
+
+		for triplet in data_list:
+			blob_key = triplet[0]
+			file_name = triplet[1]
+			file_url = triplet[2]
+			if not (blob_key and file_name and file_url):
+				logging.error("triplet has empty values in file upload post url")
+				continue
+			file_extention = file_name.split(".")[-1]
+			print file_extention
+			global IMAGE_EXTENTION_LIST
+			if file_extention.lower() in IMAGE_EXTENTION_LIST:
+				print "saving image file"
+				if not obj.main_img_blob_key:
+					obj.main_img_blob_key 	= blob_key
+					obj.main_img_filename 	= file_name
+					obj.main_img_link 		= file_url
+					logging.warning("\n\nMain file set\n")
+				elif not obj.img_blob_key_2:
+					obj.img_blob_key_2		= blob_key
+					obj.img_blob_filename_2	= file_name
+					obj.img_link_2			= file_url
+				elif not obj.img_blob_key_3:
+					obj.img_blob_key_3		= blob_key
+					obj.img_blob_filename_3	= file_name
+					obj.img_link_3			= file_url
+				elif not obj.img_blob_key_4:
+					obj.img_blob_key_4		= blob_key
+					obj.img_blob_filename_4	= file_name
+					obj.img_link_4			= file_url
+				elif not obj.img_blob_key_5:
+					obj.img_blob_key_5		= blob_key
+					obj.img_blob_filename_5	= file_name
+					obj.img_link_5			= file_url
+				else:
+					logging.error("too many images")
+					blobstore.delete(blob_key)
+
+			elif file_extention.lower() == "stl":
+				print "saving .stl file"
+				if not obj.stl_file_blob_key:
+					print "obj.stl_file_blob_key empty"
+					obj.stl_file_link 			= file_url
+					print file_url
+					obj.stl_file_blob_key 		= blob_key
+					print blob_key
+					obj.stl_filename			= file_name
+					print file_name
+				elif not obj.file_blob_key_2:
+					print "obj.file_blob_key_2 empty"
+					obj.file_link_2				= file_url
+					obj.file_blob_key_2			= blob_key
+					obj.file_blob_filename_2	= file_name
+				elif not obj.file_blob_key_3:
+					print "obj.file_blob_key_3 empty"
+					obj.file_link_3				= file_url
+					obj.file_blob_key_3			= blob_key
+					obj.file_blob_filename_3	= file_name
+				elif not obj.file_blob_key_4:
+					obj.file_link_4				= file_url
+					obj.file_blob_key_4			= blob_key
+					obj.file_blob_filename_4	= file_name
+				elif not obj.file_blob_key_5:
+					obj.file_link_5				= file_url
+					obj.file_blob_key_5			= blob_key
+					obj.file_blob_filename_5	= file_name
+				elif not obj.file_blob_key_6:
+					obj.file_link_6				= file_url
+					obj.file_blob_key_6			= blob_key
+					obj.file_blob_filename_6	= file_name
+				elif not obj.file_blob_key_7:
+					obj.file_link_7				= file_url
+					obj.file_blob_key_7			= blob_key
+					obj.file_blob_filename_7	= file_name
+				elif not obj.file_blob_key_8:
+					obj.file_link_8				= file_url
+					obj.file_blob_key_8			= blob_key
+					obj.file_blob_filename_8	= file_name
+				elif not obj.file_blob_key_9:
+					obj.file_link_9				= file_url
+					obj.file_blob_key_9			= blob_key
+					obj.file_blob_filename_9	= file_name
+				elif not obj.file_blob_key_10:
+					obj.file_link_10			= file_url
+					obj.file_blob_key_10		= blob_key
+					obj.file_blob_filename_10	= file_name
+				elif not obj.file_blob_key_11:
+					obj.file_link_11			= file_url
+					obj.file_blob_key_11		= blob_key
+					obj.file_blob_filename_11	= file_name
+				elif not obj.file_blob_key_12:
+					obj.file_link_12			= file_url
+					obj.file_blob_key_12		= blob_key
+					obj.file_blob_filename_12	= file_name
+				elif not obj.file_blob_key_13:
+					obj.file_link_13			= file_url
+					obj.file_blob_key_13		= blob_key
+					obj.file_blob_filename_13	= file_name
+				elif not obj.file_blob_key_14:
+					obj.file_link_14			= file_url
+					obj.file_blob_key_14		= blob_key
+					obj.file_blob_filename_14	= file_name
+				elif not obj.file_blob_key_15:
+					obj.file_link_15			= file_url
+					obj.file_blob_key_15		= blob_key
+					obj.file_blob_filename_15	= file_name
+				else:
+					print "stl file section full"
+					blobstore.delete(blob_key)
+
+			else:
+				print "invalid file extention"
+				continue
+			do_save = True
+
+		if do_save:
+			logging.warning("\n\nPutting new file to db\n")
+			memcache.set("Objects_%d" % obj_id, [obj])
+			obj.put()
+
+		if error_with_save:
+			self.redirect("%s?%s&%s" % (redirect_url_path, query_string, error_string))
+			return
+
+		if not result['files']:
+			self.redirect("%s?%s" % (redirect_url_path, query_string))
+			return
+
+	# 1st potential method launched by post request
+	def delete(self):
+		key = self.request.get('key') or ''
+		blobstore.delete(key)
+		s = json.dumps({key: True}, separators=(',', ':'))
+		if 'application/json' in self.request.headers.get('Accept'):
+			self.response.headers['Content-Type'] = 'application/json'
+		self.response.write(s)
+
+	# 2nd potential method launched by post request
+	def handle_upload(self, obj):
+		results = []
+		blob_keys = []
+		for name, fieldStorage in self.request.POST.items():
+			if type(fieldStorage) is unicode:
+				continue
+			result = {}
+			result['name'] = re.sub(
+				r'^.*\\',
+				'',
+				fieldStorage.filename
+			)
+			result['type'] = fieldStorage.type
+			result['size'] = self.get_file_size(fieldStorage.file)
+			if self.validate(result, obj):
+				blob_key = str(
+					self.write_blob(fieldStorage.value, result)
+				)
+				blob_keys.append(blob_key)
+				result['deleteType'] = 'DELETE'
+				result['deleteUrl'] = self.request.host_url +\
+					'/?key=' + urllib.quote(blob_key, '')
+
+				if str(result['type']) in IMAGE_TYPES_LIST:
+					try:
+						result['url'] = images.get_serving_url(
+							blob_key,
+							secure_url=self.request.host_url.startswith(
+								'https'
+							)
+						)
+						result['thumbnailUrl'] = result['url'] +\
+							THUMBNAIL_MODIFICATOR
+					except:  # Could not get an image serving url
+						pass
+				elif str(result['type']) in STL_TYPE_LIST:
+					try:
+						result['url'] = files.blobstore.get_blob_key(
+							blob_key,
+							secure_url=self.request.host_url.startswith(
+								'https'
+							)
+						)
+					except:  # Could not get a serving url
+						pass
+				if not 'url' in result:
+					result['url'] = self.request.host_url +\
+						'/' + blob_key + '/' + urllib.quote(
+							result['name'].encode('utf-8'), '')
+			results.append(result)
+		
+
+		# Deferred deletion should be removed.
+		# deferred.defer(
+		# 	cleanup,
+		# 	blob_keys,
+		# 	_countdown=EXPIRATION_TIME
+		# )
+		return results
+
+	# 1st method call in handle_upload
+	def get_file_size(self, file):
+		file.seek(0, 2)  # Seek to the end of the file
+		size = file.tell()  # Get the position of EOF
+		file.seek(0)  # Reset the file position to the beginning
+		return size
+
+	# 2nd method call in handle_upload
+	def validate(self, file, obj):
+		if file['size'] < MIN_FILE_SIZE:
+			file['error'] = 'File is too small'
+		if file['size'] > MAX_FILE_SIZE:
+			file['error'] = 'File is too big'
+		if ACCEPT_FILE_TYPES.match(file['type']):
+			# if all image files are full
+			if obj.main_img_blob_key and obj.img_blob_key_2 and obj.img_blob_key_3 and obj.img_blob_key_4 and obj.img_blob_key_5:
+				file['error'] = 'Too many images: limit is 5'
+			else:
+				pass
+		elif str(file['type']) in STL_TYPE_LIST:
+			if obj.stl_file_blob_key and obj.file_blob_key_2 and obj.file_blob_key_3 and obj.file_blob_key_4 and obj.file_blob_key_5 and obj.file_blob_key_6 and obj.file_blob_key_7 and obj.file_blob_key_8 and obj.file_blob_key_9 and obj.file_blob_key_10 and obj.file_blob_key_11 and obj.file_blob_key_12 and obj.file_blob_key_13 and obj.file_blob_key_14 and obj.file_blob_key_15:
+				file['error'] = 'Too many data files: limit is 15'
+			else:
+				pass
+		else:
+			file['error'] = 'Filetype not allowed'
+		return True
+
+	# 3rd method call in handle_upload
+	def write_blob(self, data, info):
+		blob = files.blobstore.create(
+			mime_type=info['type'],
+			_blobinfo_uploaded_filename=info['name']
+		)
+		with files.open(blob, 'a') as f:
+			f.write(data)
+		files.finalize(blob)
+		return files.blobstore.get_blob_key(blob)
+
+
+
+	def initialize(self, request, response):
+		super(UploadHandler, self).initialize(request, response)
+		self.response.headers['Access-Control-Allow-Origin'] = '*'
+		self.response.headers[
+			'Access-Control-Allow-Methods'
+		] = 'OPTIONS, HEAD, GET, POST, PUT, DELETE'
+		self.response.headers[
+			'Access-Control-Allow-Headers'
+		] = 'Content-Type, Content-Range, Content-Disposition'
+
+	def options(self):
+		pass
+
+	def head(self):
+		pass
+##############################
+
 class NewObjectPage(Handler):
 	def render_page(self):
 		user_id = self.check_cookie_return_val("user_id")
@@ -6787,6 +8437,7 @@ class SignUpPage(Handler):
 				return
 
 		#password must equal the verified password to proceed
+		email_var = strip_string_whitespace(email_var)
 		if email_var and (not emailcheck.isValidEmailAddress(email_var)):
 			# user entered an email, but it was invalid
 			error_var = "That doesn't seem to be a valid email address"
@@ -10999,8 +12650,8 @@ def check_url_instance(url_str):
 	try:
 		f = urlfetch.fetch(url=link_var, deadline=30)
 		if f.status_code == 200:
-  			#logging.warning(f.content)
-  			pass
+			#logging.warning(f.content)
+			pass
 		deadLinkFound = False
 	except Exception as e:
 		logging.warning('that failed')
@@ -11210,6 +12861,44 @@ def is_blacklisted_referer(referer):
 			is_blacklisted = True
 			break
 	return is_blacklisted
+def return_license_text_from_shortform(license_var):
+	if license_var == "cc_pd":
+		license_var = "Creative Commons: Public Domain Dedication"
+	elif license_var == "cc_a":
+		license_var = "Creative Commons: Attribution"
+	elif license_var == "cc_a_sa":
+		license_var = "Creative Commons: Attribution, Share Alike"
+	elif license_var == "cc_a_nc":
+		license_var = "Creative Commons: Attribution, Non-Commercial"
+	elif license_var == "cc_a_sa_nc":
+		license_var = "Creative Commons: Attribution, Share Alike, Non-Commercial"
+	elif license_var == "cc_lgpl":
+		license_var = "GNU Lesser General Public License"
+	elif license_var == "bsd":
+		license_var = "BSD License"
+	else:
+		license_var = None
+	return license_var
+def return_license_short_form_from_full(license_var):
+	if license_var == "Creative Commons: Public Domain Dedication":
+		license_var = "cc_pd"
+	elif license_var == "Creative Commons: Attribution":
+		license_var = "cc_a"
+	elif license_var == "Creative Commons: Attribution, Share Alike":
+		license_var = "cc_a_sa"
+	elif license_var == "Creative Commons: Attribution, Non-Commercial":
+		license_var = "cc_a_nc"
+	elif license_var == "Creative Commons: Attribution, Share Alike, Non-Commercial":
+		license_var = "cc_a_sa_nc"
+	elif license_var == "GNU Lesser General Public License":
+		license_var = "cc_lgpl"
+	elif license_var == "BSD License":
+		license_var = "bsd"
+	else:
+		license_var = None
+	return license_var
+
+
 
 def num_users_now():
 	all_users = users_cache()
@@ -11467,7 +13156,13 @@ app = webapp2.WSGIApplication([
 
 		('/new', NewPage),
 
-		('/newobject', NewObjectPage),
+		('/newobjectpagedragdrop', NewObjectPageDragDrop),
+		('/newobjectuploaddragdrop', NewObjectUploadDragDrop),
+
+		('/newobject', ObjectCreation),
+		('/uploadhandler', UploadHandler),
+
+		('/newobject_old_version', NewObjectPage),
 		('/upload_obj1', NewObjectUpload1),
 		(r'/newobject2/(\d+)', NewObjectPage2),
 		(r'/upload_obj2/(\d+)', NewObjectUpload2),
