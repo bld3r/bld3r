@@ -10,7 +10,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-body {
+body .main_div {
   max-width: 750px;
   margin: 0 auto;
   padding: 1em;

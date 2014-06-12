@@ -903,7 +903,7 @@ class AdminDelHandler(Handler):
 
 NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT = 999
 def load_front_pages_from_memcache_else_query(page_type, page_num, content_type, update=False):
-	all_types_included				= ["/",				"/newmain", 		"/topmain"]
+	all_types_included				= ["/",				"/newmain", 		"/topmain",			"/recentcommentsmain"]
 	only_object_types_included		= ["/objects",		"/newobjects", 		"/topobjects"]
 	only_university_types_included	= ["/university",	"/newuniversity",	"/topuniversity"]
 	only_news_types_included		= ["/news",			"/newnews",			"/topnews"]
@@ -911,6 +911,7 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 	rank_decending_pages			= ["/",			"/objects",		"/university",		"/news"]
 	new_decending_pages				= ["/newmain",	"/newobjects",	"/newuniversity",	"/newnews"]
 	top_decending_pages				= ["/topmain",	"/topobjects",	"/topuniversity",	"/topnews"]
+	recent_comments_decending_pages = ["/recentcommentsmain"]
 
 	if page_type == "/":
 		key_string = "front_page"
@@ -918,6 +919,8 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 		key_string = "front_page_new"
 	elif page_type == "/topmain":
 		key_string = "front_page_top"
+	elif page_type == "/recentcommentsmain":
+		key_string = "front_page_recent_coms"
 	elif page_type == "/objects":
 		key_string = "object_front_page"
 	elif page_type == "/newobjects":
@@ -963,7 +966,7 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 		number_of_items_to_fetch = 30
 
 		object_query = all_objects_query(content_type)
-		logging.warning("DB query all_objects_query(%s)" % content_type) 
+		#logging.warning("DB query all_objects_query(%s)" % content_type) 
 		object_list = list(object_query)
 
 		applicable_objects = []
@@ -1005,6 +1008,8 @@ def load_front_pages_from_memcache_else_query(page_type, page_num, content_type,
 			object_list.sort(key = lambda x: x.epoch, reverse=True)
 		elif page_type in top_decending_pages:
 			object_list.sort(key = lambda x: (x.votesum, x.epoch), reverse=True)
+		elif page_type in recent_comments_decending_pages:
+			object_list.sort(key = lambda x: (x.most_recent_comment_epoch, x.epoch), reverse=True)
 		else:
 			logging.error("Page_type not included in load_front_pages_from_memcache_else_query")
 
@@ -1869,7 +1874,7 @@ class ObjectPage(Handler):
 			other_file_list.append(the_obj.file_link_15)
 		
 		if the_obj.obj_type == "upload":
-			if not other_file_list:
+			if not the_obj.stl_file_link and not other_file_list:
 				# What has probably happened is that the user just attempted an upload,
 				# but did not upload an .stl file and then linked to the object page.
 				# So, what we do here is redirect them to the page where they add files
@@ -1889,7 +1894,7 @@ class ObjectPage(Handler):
 				description = the_obj.description
 				tags = the_obj.author_tags
 				if tags:
-					tags = ",".join(tags)
+					tags = ", ".join(tags)
 
 				if the_obj.nsfw:
 					audience = "nsfw"
@@ -5334,7 +5339,9 @@ class CommentPage(Handler):
 		else:
 			pass
 
-		user_hash = gen_verify_hash(user)
+		user_hash = None
+		if user:
+			user_hash = gen_verify_hash(user)
 
 		top_comment_singleton = [return_comment_vote_flag_triplet(com, user_id)]
 		# comment tuples:
@@ -5971,6 +5978,7 @@ class NewObjectUploadDragDrop(ObjectUploadHandler):
 #####Upload Handler Begin#####
 class ObjectCreation(Handler):
 	def get(self):
+		user = self.return_user_if_cookie()
 		redirect_url_path = "/newobject"
 
 		title				= self.request.get("title")
@@ -6008,6 +6016,7 @@ class ObjectCreation(Handler):
 
 		upload = False
 		self.render("jquery-ui.html",
+		            user = user,
 					upload = upload,
 					title = title,
 					description = description,
@@ -6122,7 +6131,7 @@ class ObjectCreation(Handler):
 		the_tags = None
 		tag_str = tags # for url redirect at the end of this method
 		if tags:
-			the_tags = tags.split(', ')
+			the_tags = tags.split(',')
 			# tag string section
 			tag_list = the_tags
 			logging.warning(tag_list)
@@ -6166,7 +6175,6 @@ class ObjectCreation(Handler):
 
 		# end Matt's code
 
-		logging.error("fix new object comment out params")
 		new_object = Objects(title = title, 
 							author_id = user_id, # Not sure how file uploads will work, so below are default links for an object
 							author_name = author_name,
@@ -6177,10 +6185,6 @@ class ObjectCreation(Handler):
 							nsfw = nsfw_var,
 							food_related = food_related,
 
-							#stl_file_link = file_url, # main_img_var, # main_file_var,
-							#stl_file_blob_key = file_data.key(),
-							#stl_filename = str(file_data.filename),
-
 							license = license,
 							printable = True,
 							original_creator = creator,
@@ -6189,16 +6193,23 @@ class ObjectCreation(Handler):
 							markdown = markdown,
 							tags = tags,
 							author_tags = tags,
-							#rank = new_rank(),
-							#num_user_when_created = num_users_now(),
+							rank = new_rank(),
+							num_user_when_created = num_users_now(),
 							voter_list = [user_id],
 							voter_vote = ["%s|1" % str(user_id)],
 
-							#uuid = str(uuid.uuid4()),
+							uuid = str(uuid.uuid4()),
+							under_review = True,
 							)
 		new_object.put()
 		obj_id = new_object.key().id()
 		memcache.set("Objects_%d" % obj_id, [new_object])
+
+		object_page_cache(new_object.key().id(), update=True)
+		user_page_object_cache(user_id, update=True) # No longer needed really...
+		user_page_obj_com_cache(user_id, update=True)
+
+
 
 		self.redirect("/uploadhandler?%s&obj_id=%d" % (query_string, obj_id))
 class UploadHandler(Handler):
@@ -6220,9 +6231,9 @@ class UploadHandler(Handler):
 	# Step 2: Page rendered
 	def render_page(self):
 		obj_num = self.request.get("obj_id")
-		print "\n", "obj_id:", obj_num
+		# print "\n", "obj_id:", obj_num
 		if not obj_num:
-			print "\nno object id\n"
+			# print "\nno object id\n"
 			self.render("jquery-ui.html")
 			return
 		obj_id = int(obj_num)
@@ -6314,34 +6325,9 @@ class UploadHandler(Handler):
 			create_obj_img_table = True
 
 
-
-		print ""
-		print ""
-		print ""
-		print ""
-		print ""
-		print ""
-		print "Object:"
-		print "Title:", title
-		print "Description:", description
-		print "Tags:", tags
-		print "Is author?", is_author
-		print "License:", license
-		print "Sublicense:", sublicense
-		print "Creator:", creator
-		print "Audience:", audience
-		print "Food related:", food_related
-		print "Rights:", rights
-		print ""
-		print ""
-		print ""
-		print ""
-		print ""
-		print ""
-
-
 		upload = True
 		self.render("jquery-ui.html",
+		            user = user,
 					obj_id = obj_id,
 					url = url,
 					upload = upload,
@@ -6490,9 +6476,9 @@ class UploadHandler(Handler):
 				sublicense = ""
 				creator = None
 		else:
-			print ''
-			print "here!!!"
-			print ''
+			# print ''
+			# print "here!!!"
+			# print ''
 			if not sublicense:
 				error_license = "We recieved no license selection, so we've replaced the selection with the previously saved license."
 				if obj.original_creator:
@@ -6523,9 +6509,9 @@ class UploadHandler(Handler):
 						full_sublicense = None
 						is_author = ""
 					else:
-						print ''
-						print "sublicence is fine!!!"
-						print ''
+						# print ''
+						# print "sublicence is fine!!!"
+						# print ''
 						license = return_license_short_form_from_full(obj.license)
 						is_author = "is_author"
 						creator = ""
@@ -6557,8 +6543,10 @@ class UploadHandler(Handler):
 			markdown = mkd_converted_description
 			do_save = True
 
-		tag_list = ",".split(tags)
+		tag_list = tags.split(",")
+
 		tag_list = strip_list_whitespace(tag_list)
+
 		if tag_list != obj.author_tags:
 			obj.author_tags = tag_list
 			for tag in tag_list:
@@ -6621,16 +6609,16 @@ class UploadHandler(Handler):
 
 		data_list = []
 		for a_file in result['files']:
-			print a_file
-			print ""
+			# print a_file
+			# print ""
 			the_key = a_file['deleteUrl'].split('key=')[1]
 			
 			blob_key = the_key
-			print "Blob key:", the_key, "\n"
+			# print "Blob key:", the_key, "\n"
 			file_name = a_file['name']
-			print "File name:", file_name, "\n"
+			# print "File name:", file_name, "\n"
 			file_url = a_file['url']
-			print "File url:", file_url, "\n"
+			# print "File url:", file_url, "\n"
 			data_list.append([blob_key, file_name, file_url])
 
 		s = json.dumps(result, separators=(',', ':'))
@@ -6643,18 +6631,34 @@ class UploadHandler(Handler):
 			self.response.headers['Content-Type'] = 'application/json'
 		self.response.write(s)
 
+		delay = 0
+		object_will_appear_in_queries_now = False
 		for triplet in data_list:
 			blob_key = triplet[0]
 			file_name = triplet[1]
 			file_url = triplet[2]
+
+			# print ""
+			# print "file_url", file_url
+			# print ""
+
+			file_url = file_url
+
 			if not (blob_key and file_name and file_url):
 				logging.error("triplet has empty values in file upload post url")
 				continue
 			file_extention = file_name.split(".")[-1]
-			print file_extention
+			# print file_extention
 			global IMAGE_EXTENTION_LIST
 			if file_extention.lower() in IMAGE_EXTENTION_LIST:
-				print "saving image file"
+				if '_ah' in file_url:
+					# print "saving image file"
+					file_url = file_url.split("/")
+					# print file_url
+					file_url = "/serve_obj/" + file_url[-1]
+					# print ""
+					# print "saving:", file_url
+					# print ""
 				if not obj.main_img_blob_key:
 					obj.main_img_blob_key 	= blob_key
 					obj.main_img_filename 	= file_name
@@ -6681,79 +6685,140 @@ class UploadHandler(Handler):
 					blobstore.delete(blob_key)
 
 			elif file_extention.lower() == "stl":
-				print "saving .stl file"
+				if '.stl' in file_url:
+
+					file_url = file_url.split("/")
+					# print "file url split:", file_url
+					file_url = "/serve_obj/%s" % file_url[-2]
+					# print ""
+					# print "saving", file_url
+					# print ""
 				if not obj.stl_file_blob_key:
-					print "obj.stl_file_blob_key empty"
 					obj.stl_file_link 			= file_url
-					print file_url
 					obj.stl_file_blob_key 		= blob_key
-					print blob_key
 					obj.stl_filename			= file_name
-					print file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_2:
-					print "obj.file_blob_key_2 empty"
 					obj.file_link_2				= file_url
 					obj.file_blob_key_2			= blob_key
 					obj.file_blob_filename_2	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_3:
-					print "obj.file_blob_key_3 empty"
 					obj.file_link_3				= file_url
 					obj.file_blob_key_3			= blob_key
 					obj.file_blob_filename_3	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_4:
 					obj.file_link_4				= file_url
 					obj.file_blob_key_4			= blob_key
 					obj.file_blob_filename_4	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_5:
 					obj.file_link_5				= file_url
 					obj.file_blob_key_5			= blob_key
 					obj.file_blob_filename_5	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_6:
 					obj.file_link_6				= file_url
 					obj.file_blob_key_6			= blob_key
 					obj.file_blob_filename_6	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_7:
 					obj.file_link_7				= file_url
 					obj.file_blob_key_7			= blob_key
 					obj.file_blob_filename_7	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_8:
 					obj.file_link_8				= file_url
 					obj.file_blob_key_8			= blob_key
 					obj.file_blob_filename_8	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_9:
 					obj.file_link_9				= file_url
 					obj.file_blob_key_9			= blob_key
 					obj.file_blob_filename_9	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_10:
 					obj.file_link_10			= file_url
 					obj.file_blob_key_10		= blob_key
 					obj.file_blob_filename_10	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_11:
 					obj.file_link_11			= file_url
 					obj.file_blob_key_11		= blob_key
 					obj.file_blob_filename_11	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_12:
 					obj.file_link_12			= file_url
 					obj.file_blob_key_12		= blob_key
 					obj.file_blob_filename_12	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_13:
 					obj.file_link_13			= file_url
 					obj.file_blob_key_13		= blob_key
 					obj.file_blob_filename_13	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_14:
 					obj.file_link_14			= file_url
 					obj.file_blob_key_14		= blob_key
 					obj.file_blob_filename_14	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				elif not obj.file_blob_key_15:
 					obj.file_link_15			= file_url
 					obj.file_blob_key_15		= blob_key
 					obj.file_blob_filename_15	= file_name
+					if obj.under_review == True:
+						obj.under_review = False
+						object_will_appear_in_queries_now = True
+						delay = 6
 				else:
-					print "stl file section full"
+					#print "stl file section full"
 					blobstore.delete(blob_key)
 
 			else:
-				print "invalid file extention"
+				#print "invalid file extention"
 				continue
 			do_save = True
 
@@ -6761,6 +6826,99 @@ class UploadHandler(Handler):
 			logging.warning("\n\nPutting new file to db\n")
 			memcache.set("Objects_%d" % obj_id, [obj])
 			obj.put()
+
+			if obj.tags:
+				for tag in obj.tags:
+					if obj.okay_for_kids == True:
+						store_page_cache_kids(tag, update=True)
+					if obj.nsfw == True:
+						store_page_cache_nsfw(tag, update=True)
+					else:
+						store_page_cache_sfw(tag, update=True)
+
+			if obj.nsfw == True:
+				all_objects_query("nsfw",update = True, delay = delay)
+				content_type = "nsfw"
+			else:
+				all_objects_query("sfw", update = True, delay = delay)
+				content_type = "sfw"
+
+			if obj.okay_for_kids == True:
+				all_objects_query("kids", update = True)
+				user_page_obj_com_cache_kids(user_id, update = True)
+			else:
+				pass
+
+
+			object_page_cache(obj.key().id(),update=True)
+			user_page_object_cache(user_id, update=True) # No longer needed really...
+			user_page_obj_com_cache(user_id, update=True)
+
+
+
+			# Update all front pages using the load_front_pages_from_memcache_else_query function
+			all_types_included				= ["/",				"/newmain", 		"/topmain"]
+			only_object_types_included		= ["/objects",		"/newobjects", 		"/topobjects"]
+			only_university_types_included	= ["/university",	"/newuniversity",	"/topuniversity"]
+			only_news_types_included		= ["/news",			"/newnews",			"/topnews"]
+
+			global NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT
+			if obj.nsfw == True:
+				for path in all_types_included:
+					load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+			else:
+				for path in all_types_included:
+					load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+			if obj.okay_for_kids == True:
+				for path in all_types_included:
+					load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)
+
+			if obj.obj_type in ["upload", "link", "tor"]:
+				if obj.nsfw == True:
+					for path in only_object_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					for path in only_object_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)				
+				if obj.okay_for_kids == True:
+					for path in only_object_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)				
+
+			elif obj.obj_type in ["learn", "ask"]:
+				if obj.nsfw == True:
+					for path in only_university_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					for path in only_university_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if obj.okay_for_kids == True:
+					for path in only_university_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)				
+
+			elif obj.obj_type == "news":
+				if obj.nsfw == True:
+					for path in only_news_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "nsfw", update=True)
+				else:
+					for path in only_news_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "sfw", update=True)
+				if obj.okay_for_kids == True:
+					for path in only_news_types_included:
+						load_front_pages_from_memcache_else_query(path, NUMBER_OF_PAGES_TO_UPDATE_WHEN_NEW_OBJECT, "kids", update=True)				
+
+		if object_will_appear_in_queries_now:
+			if user:
+				for follower_id in user.follower_list:
+					logging.warning('should sleep here')
+					new_note(int(follower_id),
+						"Objects|%d|%s| <a href='/user/%s'>%s</a> uploaded <a href='/obj/%s'>%s</a>" % (
+								int(new_object.key().id()),
+									str(time.time()),
+														str(user.key().id()),
+															str(cgi.escape(user.username)),
+																							str(new_object.key().id()),
+																								str(cgi.escape(new_object.title))),
+						)
 
 		if error_with_save:
 			self.redirect("%s?%s&%s" % (redirect_url_path, query_string, error_string))
@@ -12036,6 +12194,7 @@ def all_objects_query(content_type, update=False, delay = 0):
 		object_query = Objects.all()
 		logging.warning("db query: all_objects_query Objects.all()")
 		object_query = object_query.filter('deleted =', False)
+		object_query = object_query.filter('under_review =', False)
 		if content_type == "all":
 			pass
 		elif content_type == "sfw":
