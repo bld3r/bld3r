@@ -50,8 +50,8 @@ page_url = data.page_url()
 URL_CHECK_HEADERS = {
 	'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
 	}
-ALLOWED_IMAGE_EXTENTIONS = ['png','jpg','jpeg','bmp']
-ALLOWED_ALTERNATE_FILE_EXTENTIONS = ['stl', 'scad']
+ALLOWED_IMAGE_EXTENTIONS = ["jpg", "jpeg", "gif", "png", "bmp"]
+ALLOWED_ALTERNATE_FILE_EXTENTIONS = ["stl", "scad"] # IMPORTANT: when changing these, you need to add them to the regex in "jquery.fileupload-validate.js" on line 63
 MAX_FILE_SIZE_FOR_OBJECTS = 5242880
 NUMBER_OF_MINUTES_BETWEEN_FRONT_PAGE_UPDATES = 15
 mkd = markdown2.Markdown()
@@ -67,8 +67,8 @@ MAX_FILE_SIZE = 10000000  # bytes
 IMAGE_TYPES = re.compile('image/(gif|p?jpeg|(x-)?png)')
 STL_TYPE = 'application/octet-stream' or 'application/sla' or 'application/vnd.ms-pki.stl' 
 ACCEPT_FILE_TYPES = IMAGE_TYPES
-IMAGE_EXTENTION_LIST = ["jpg", "jpeg", "gif", "png"]
-FILE_EXTENTION_LIST = ["stl"]
+IMAGE_EXTENTION_LIST = ALLOWED_IMAGE_EXTENTIONS #redundant, but i don't want to mess with the jquery code for multiple uploads
+FILE_EXTENTION_LIST = ALLOWED_ALTERNATE_FILE_EXTENTIONS
 ACCEPT_FILE_TYPE_LIST = IMAGE_EXTENTION_LIST + FILE_EXTENTION_LIST
 IMAGE_TYPES_LIST = ["image/" + x for x in IMAGE_EXTENTION_LIST]
 STL_TYPE_LIST = ['application/octet-stream' , 'application/sla' , 'application/vnd.ms-pki.stl' ]
@@ -6324,6 +6324,8 @@ class UploadHandler(Handler):
 		if obj_image_link_list or obj_file_filename_list:
 			create_obj_img_table = True
 
+		global ACCEPT_FILE_TYPE_LIST
+		accepted_file_extentions = ACCEPT_FILE_TYPE_LIST
 
 		upload = True
 		self.render("jquery-ui.html",
@@ -6355,6 +6357,8 @@ class UploadHandler(Handler):
 					error_rights = error_rights,
 					error_attribution = error_attribution,
 					error_no_file_uploaded = error_no_file_uploaded,
+
+					accepted_file_extentions = accepted_file_extentions,
 					)
 
 	# Step 3: Upload process starts here.
@@ -6534,7 +6538,9 @@ class UploadHandler(Handler):
 			obj.title = title
 			do_save = True
 
-		description = strip_string_whitespace(description)
+		# Someone complained about no new line stuff here, so i got ride of the remove whitespace
+
+		# description = strip_string_whitespace(description)
 		if description != obj.description:
 			obj.description = description
 			# Now escape, and save as markdown text
@@ -6620,6 +6626,7 @@ class UploadHandler(Handler):
 			file_url = a_file['url']
 			# print "File url:", file_url, "\n"
 			data_list.append([blob_key, file_name, file_url])
+			print type(a_file)
 
 		s = json.dumps(result, separators=(',', ':'))
 		redirect = self.request.get('redirect')
@@ -6650,6 +6657,7 @@ class UploadHandler(Handler):
 			file_extention = file_name.split(".")[-1]
 			# print file_extention
 			global IMAGE_EXTENTION_LIST
+			global FILE_EXTENTION_LIST
 			if file_extention.lower() in IMAGE_EXTENTION_LIST:
 				if '_ah' in file_url:
 					# print "saving image file"
@@ -6684,15 +6692,15 @@ class UploadHandler(Handler):
 					logging.error("too many images")
 					blobstore.delete(blob_key)
 
-			elif file_extention.lower() == "stl":
-				if '.stl' in file_url:
-
-					file_url = file_url.split("/")
-					# print "file url split:", file_url
-					file_url = "/serve_obj/%s" % file_url[-2]
-					# print ""
-					# print "saving", file_url
-					# print ""
+			elif file_extention.lower() in FILE_EXTENTION_LIST:
+				for extention in FILE_EXTENTION_LIST:
+					if ('.' + extention) in file_url:
+						file_url = file_url.split("/")
+						# print "file url split:", file_url
+						file_url = "/serve_obj/%s" % file_url[-2]
+						# print ""
+						# print "saving", file_url
+						# print ""
 				if not obj.stl_file_blob_key:
 					obj.stl_file_link 			= file_url
 					obj.stl_file_blob_key 		= blob_key

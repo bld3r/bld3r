@@ -74,7 +74,10 @@
 						Drop your files anywhere and scroll down
 					</span>
 						<br>
-						Accepted types: stl, png, jpg, or gif
+						Accepted types: 
+							{% for filetype in accepted_file_extentions %}
+								.{{ filetype }}{% if not loop.last%},{% endif %}
+							{% endfor %}
 						<br>
 						Size limit: 5mb
 				</div>

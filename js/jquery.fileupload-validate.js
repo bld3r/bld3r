@@ -60,7 +60,7 @@
             minFileSize: undefined, // No minimal file size
             // The limit of files to be uploaded:
             */
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png|stl)$/i,
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png|stl|scad)$/i,
             // The maximum allowed file size in bytes:
             
             maxNumberOfFiles: 20,
