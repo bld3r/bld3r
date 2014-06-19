@@ -3,32 +3,36 @@ $(document).ready(
         $(function(){
             $("body").on("click","div.email_current", 
                 function(){
-                    $('.email_edit').toggle();   
-                    $('.email_current').toggle(); 
+                    $('.email_current').fadeOut("slow", function() {
+                        $('.email_edit').fadeIn("slow");   
+                    }); 
                 }
             );
         });
         $(function(){
-            $("body").on("click","span.email_cancel", 
+            $("body").on("click","span#email_cancel", 
                 function(){
-                    $('.email_edit').toggle();   
-                    $('.email_current').toggle(); 
+                    $('.email_edit').fadeOut("slow", function() {
+                        $('.email_current').fadeIn("slow");   
+                    });
                 }
             );
         });  
                $(function(){
             $("body").on("click","div.summary_current", 
                 function(){
-                    $('.summary_edit').toggle();   
-                    $('.summary_current').toggle(); 
+                    $('.summary_current').fadeOut("slow", function() {
+                        $('.summary_edit').fadeIn("slow");   
+                    });
                 }
             );
         });
         $(function(){
-            $("body").on("click","span.summary_cancel", 
+            $("body").on("click","span#summary_cancel", 
                 function(){
-                    $('.summary_edit').toggle();   
-                    $('.summary_current').toggle(); 
+                    $('.summary_edit').fadeOut("slow", function() {
+                        $('.summary_current').fadeIn("slow");   
+                    });
                 }
             );
         });  
@@ -36,67 +40,93 @@ $(document).ready(
         $(function(){
             $("body").on("click","div.location_current", 
                 function(){
-                    $('.location_edit').toggle();   
-                    $('.location_current').toggle(); 
+                    $('.location_current').fadeOut("slow", function() {
+                        $('.location_edit').fadeIn("slow");   
+                    });
                 }
             );
         });
         $(function(){
-            $("body").on("click","span.location_cancel", 
+            $("body").on("click","span#location_cancel", 
                 function(){
-                    $('.location_edit').toggle();   
-                    $('.location_current').toggle(); 
+                    $('.location_edit').fadeOut("slow", function() {
+                        $('.location_current').fadeIn("slow");   
+                    });
                 }
             );
         });   
         $(function(){
             $("body").on("click","div.printer_current", 
                 function(){
-                    $('.printer_edit').toggle();   
-                    $('.printer_current').toggle(); 
+                    $('.printer_current').fadeOut("slow", function() {
+                        $('.printer_edit').fadeIn("slow");   
+                    });
                 }
             );
         });
         $(function(){
-            $("body").on("click","span.printer_cancel", 
+            $("body").on("click","span#printer_cancel", 
                 function(){
-                    $('.printer_edit').toggle();   
-                    $('.printer_current').toggle(); 
+                    $('.printer_edit').fadeOut("slow", function() {
+                        $('.printer_current').fadeIn("slow");   
+                    });
                 }
             );
         });
         $(function(){
             $("body").on("click","div.slicer_current", 
                 function(){
-                    $('.slicer_edit').toggle();   
-                    $('.slicer_current').toggle(); 
+                    $('.slicer_current').fadeOut("slow", function() {
+                        $('.slicer_edit').fadeIn("slow");   
+                    });
                 }
             );
         });
         $(function(){
-            $("body").on("click","span.slicer_cancel", 
+            $("body").on("click","span#slicer_cancel", 
                 function(){
-                    $('.slicer_edit').toggle();   
-                    $('.slicer_current').toggle(); 
+                    $('.slicer_edit').fadeOut("slow", function() {
+                        $('.slicer_current').fadeIn("slow");   
+                    });
                 }
             );
         });        
         $(function(){
             $("body").on("click","div.software_current", 
                 function(){
-                    $('.software_edit').toggle();   
-                    $('.software_current').toggle(); 
+                    $('.software_current').fadeOut("slow", function() {
+                        $('.software_edit').fadeIn("slow");   
+                    });
                 }
             );
         });
         $(function(){
-            $("body").on("click","span.software_cancel", 
+            $("body").on("click","span#software_cancel", 
                 function(){
-                    $('.software_edit').toggle();   
-                    $('.software_current').toggle(); 
+                    $('.software_edit').fadeOut("slow", function() {
+                        $('.software_current').fadeIn("slow");   
+                    });
                 }
             );
-        });                  
+        });
+        $(function(){
+            $("body").on("click","div.filament_brand_current", 
+                function(){
+                    $('.filament_brand_current').fadeOut("slow", function() {
+                        $('.filament_brand_edit').fadeIn("slow");   
+                    });
+                }
+            );
+        });
+        $(function(){
+            $("body").on("click","span#filament_brand_cancel", 
+                function(){
+                    $('.filament_brand_edit').fadeOut("slow", function() {
+                        $('.filament_brand_current').fadeIn("slow");   
+                    });
+                }
+            );
+        });
     }
 
 

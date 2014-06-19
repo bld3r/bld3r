@@ -53,12 +53,20 @@
 		width:auto;
 		margin:20px;
 	}
+
 	.error {
 		color:red;
 	}
 	.email_edit {
 		display:none;
-
+	}
+	.edit_cancel {
+		width: 35px;
+		border:solid 3px #C20000;
+		border-radius:4px;
+		padding: 5px 5px 4px 5px;
+		cursor:pointer;
+		margin-bottom: 20px;
 	}
 	.summary_edit {
 		display: none;
@@ -66,22 +74,38 @@
 	.location_edit {
 		display: none;
 	}
+	.previous_input_box {
+		border: solid 1px #999;
+		padding: 5px;
+		max-width: 600px;
+	}
 	.printer_edit {
 		display: none;
+	}
+	.section_title {
+		font-size: 20px;
+		margin: 10px 0px 10px 0px;
 	}
 	.slicer_edit {
 		display: none;
 	}	
 	.software_edit {
 		display: none;
-	}	
+	}
+	.filament_brand_edit {
+		display: none;
+	}
+	.update_warning {
+		font-size: 10px;
+		margin-top: 2px;"
+	}
 	#edit {
 		width: 35px;
-		border:solid 1px #999; 
+		text-align: center;
+		border:solid 3px #999; 
 		border-radius:4px;
-		padding: 5px;
+		padding: 5px 5px 4px 5px;
 		cursor:pointer;
-		margin-left:15px;
 		margin-bottom: 20px;
 
 	}	
@@ -108,251 +132,378 @@
 			<div class="top" style="width:1000px; margin-top:20px;">
 				<img src="/img/empty_white_favicon.png" width="100" height="auto" />
 				<span>
-					{{username}}
-					<br>
-					Edit Page
+					<a href="/user/{{user_id}}">{{user.username}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;Edit Profile
 				</span>
 			</div>
-			<div style="padding-top:10px;clear:both;">
+
+		
+			<div class="is_user">	
+				<div style="text-align:right;">
+					<a href="/user/del/{{user_id}}">
+						<div style="float:right; color:black; margin-right:5px; border:solid #999 3px; padding:6px 5px 4px 5px; border-radius:5px; height: 24px; width:auto;">
+							delete account
+						</div>
+					</a>
+				</div>
+			</div>
+
+			<div style="padding-top:5px; clear:both;">
 				<hr>
 			</div>
 			<br>
 
-			
-			{% if user_is_user == True %}
-				<div class="is_user">	
-					<div style="text-align:right;">
-						<a href="/user/del/{{user_id}}">
-							<div style="float:right; color:black; margin-right:5px; border:solid #999 3px; padding-top:6px;padding-left:5px;padding-right:5px; border-radius:5px; height: 24px;  width:auto;">
-								delete account
-							</div>
-						</a>
-					</div>
-				</div>
-			{% endif %}
-			
 
+			<div class="below_top_line" style="padding-left: 15px;">
 
-
-			{% if img %}
-				<img src="{{img}}" height="150">
-				<br>
-			{% else %}
-				{% if user_is_user == True %}
-					<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
-						<label>
-							Would you like to upload an image of yourself?
-							<br>
-							<br>
-							<input type="file" name="img" value="{{img_file}}">
-						</label>
-						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
-						<br>
-						<input type="submit" value="upload">
-					</form>
+				{% if user.main_img_link %}
+					<img src="{{user.main_img_link}}" height="150">
 					<br>
-
 				{% else %}
-				{% endif %}		
-			{% endif %}
-			<hr>
-			<div>
-				Infinite scroll
-				<span class='error'>
-					{{error}}
-				</span>
-				<div class="infinite_scroll_edit">
-					<br>
-					<form method='post'>
-						<input type="checkbox" name="infinite_scroll" value="infinite"
-						{% if not user.no_infinite_scroll %}
-							checked
+						<form method="post" action="{{photo_upload_url}}" enctype="multipart/form-data">
+							<label>
+								<div class="section_title">
+									Would you like to upload an image of yourself?
+								</div>
+								<input type="file" name="img" value="{{img_file}}">
+							</label>
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<br>
+							<input type="submit" value="upload photo">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+						<br>
+
+				{% endif %}
+				<div>
+					<span class='error'>
+						{{error}}
+					</span>
+					<div class="infinite_scroll_edit">
+						<form method='post'>
+							<input type="checkbox" name="infinite_scroll" value="infinite"
+							{% if not user.no_infinite_scroll %}
+								checked
+							{% endif %}
+							>
+							<span class="section_title">
+								Infinite scroll
+							</span>
+							<br>
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type="hidden" name="infinite_verify" value="editing_infinite_scroll">
+							<input type='submit' value="update infinite scroll">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+						<br>
+					</div>
+				<div>
+					<div class="section_title">
+						Current email:
+					</div>
+					<span class='error'>
+						{{error}}
+					</span>
+					<div class="email_current">
+						{% if email %}
+							<div style="margin-left: 15px;">
+								<span class="emailnote" style="color:red;">
+									{{emailnote}}
+								</span>
+								{{email}} 
+							</div>
+							<br>
 						{% endif %}
-						>
-						&nbsp;
-						<span>
-							infinite scroll
+					</div>
+					<div class="email_edit">
+						<form method='post'>
+							<input onkeypress="return event.keyCode != 13;" name='email' value="{{email}}">
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value="update email">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+						<br>
+						<span class="edit_cancel" id="email_cancel">
+							Cancel
 						</span>
 						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
-						<input type="hidden" name="infinite_verify" value="editing_infinite_scroll">
 						<br>
-						<input type='submit' value="update">
-					</form>
-					<br>
-					<span class="email_cancel">
+					</div>
+					<div class="email_current" id="edit">
+							edit
+					</div>	
+				</div>
+				<div>
+					<div class = "section_title">
+						About Me:
+					</div>
+					<div class="summary_current">
+						<div class="previous_input_box">
+							{{user.summary}}
+						</div>
+					</div>
+					<div class="summary_edit">
+						<form method='post'>
+							<pre><textarea name='summary'>{{user.summary}}</textarea></pre>
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value="update summary">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+						<br>
+						<span class="edit_cancel" id="summary_cancel">
 							Cancel
-					</span>	
+						</span>	
+					</div>					
+					<br>
+					<div class="summary_current" id="edit">
+							edit
+					</div>	
 				</div>
-			<hr>
-			<div>
-				Current email
-				<span class='error'>
-					{{error}}
-				</span>
-				<div class="email_current">
-					<br>
-					<span class="emailnote" style="color:red;">
-						{{emailnote}}
-					</span>
-					{{email}} 
-				</div>
-				<div class="email_edit">
-					<br>
-					<form method='post'>
-						<input onkeypress="return event.keyCode != 13;" name='email' value="{{email}}">
+				<div>
+					<div class="section_title">
+						Location:
+					</div>
+					<div class="location_current">
+						{% if user.location %}
+							<div style="margin-left: 15px;">
+								{{user.location}}
+							</div>
+							<br>
+						{% endif %}
+					</div>
+					<div class="location_edit">
+						<form method='post'>
+							<input onkeypress="return event.keyCode != 13;" name='location' value="{{user.location}}">
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value = "update location">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
 						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
-						<br>
-						<input type='submit' value="update email">
-					</form>
-					<br>
-					<span class="email_cancel">
+						<span class="edit_cancel" id="location_cancel">
 							Cancel
-					</span>	
-				</div>
-				<br>
-				<div class="email_current" id="edit">
+						</span>	
+						<br>
+						<br>
+					</div>	
+					<div class="location_current" id="edit">
 						edit
-				</div>	
-			</div>
-			<hr>
-			<div>
-				Summary
-				<div class="summary_current">
-					<br>
-					{{summary}}
+					</div>	
 				</div>
-				<div class="summary_edit">
-					<br>
-					<form method='post'>
-						<pre><textarea name='summary'>{{summary}}</textarea></pre>
-						<input type="hidden" name="verify" value="{{user_hash}}">
-						<br>
-						<input type='submit' value="update summary">
-					</form>
-					<br>
-					<br>
-					<span class="summary_cancel">
-						Cancel
-					</span>	
-				</div>					
+
+				<hr>
 				<br>
-				<div class="summary_current" id="edit">
+
+				<div style="font-size: 25px;">
+					Pro User Configurations:
+				</div>
+				<div style="font-size: 12px;">
+					If you print a lot, update these settings and configurations to find other users with similar setups.
+				</div>
+				<br>
+				<div>
+					<div class="section_title">
+						My printer(s):
+					</div>
+					<div class="printer_current">
+						{% if user.printer %}
+							<div style="margin-left: 15px;">
+								{{user.printer}}
+							</div>
+							<br>
+						{% endif %}
+					</div>
+					<div class="printer_edit">
+						<form method='post'>
+							<input onkeypress="return event.keyCode != 13;" name='printer' value="{{user.printer}}">
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value = "update printer">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+						<br>
+						<span class="edit_cancel" id="printer_cancel">
+							Cancel
+						</span>	
+						<br>
+						<br>
+					</div>					
+					<div class="printer_current" id = "edit">	
 						edit
-				</div>	
-			</div>
-			<hr>
-			<div>
-				Location
-				<div class="location_current">
-					<br>
-					{{location}}
+					</div>	
 				</div>
-				<div class="location_edit">
-					<br>
-					<form method='post'>
-						<input onkeypress="return event.keyCode != 13;" name='location' value="{{location}}">
-						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
-						<br>
-						<input type='submit' value = "update location">
-					</form>
-					<br>
-					<br>
-					<span class="location_cancel">
-						Cancel
-					</span>	
-				</div>	
-				<br>				
-				<div class="location_current" id="edit">
-					edit
-				</div>	
-			</div>
 
-			<hr>
-			<div>
-				Printer
-				<div class="printer_current">
-					<br>
-					{{printer}}
-				</div>
-				<div class="printer_edit">
-					<br>
-					<form method='post'>
-						<input onkeypress="return event.keyCode != 13;" name='printer' value="{{printer}}">
+				<div>
+					<div class="section_title">
+						My slicer(s):
+					</div>
+					<div class="slicer_current">
+						{% if user.slicer %}
+							<div style="margin-left: 15px;">
+								{{user.slicer}}
+							</div>
+							<br>
+						{% endif %}
+					</div>
+					<div class="slicer_edit">
+						<form method='post'>
+							<input onkeypress="return event.keyCode != 13;" name='slicer' value="{{user.slicer}}">
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value = "update slicer">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
 						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
+						<span class="edit_cancel" id="slicer_cancel">
+							Cancel
+						</span>	
 						<br>
-						<input type='submit' value = "update printer">
-					</form>
-					<br>
-					<br>
-					<span class="printer_cancel">
-						Cancel
-					</span>	
-				</div>					
-				<br>
-				<div class="printer_current" id = "edit">	
-					edit
-				</div>	
-			</div>
-
-			<hr>
-			<div>
-				Slicer
-				<div class="slicer_current">
-					<br>
-					{{slicer}}
-				</div>
-				<div class="slicer_edit">
-					<br>
-					<form method='post'>
-						<input onkeypress="return event.keyCode != 13;" name='slicer' value="{{slicer}}">
 						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
-						<br>
-						<input type='submit' value = "update slicer">
-					</form>
-					<br>
-					<br>
-					<span class="slicer_cancel">
-						Cancel
-					</span>	
-				</div>					
-				<br>
-				<div class="slicer_current" id = "edit">
+					</div>					
+					<div class="slicer_current" id = "edit">
 						edit
-				</div>	
-			</div>
-
-			<hr>
-			<div>
-				Modeling Software
-				<div class="software_current">
-					<br>
-					{{software}}
+					</div>	
 				</div>
-				<div class="software_edit">
-					<br>
-					<form method='post'>
-						<input onkeypress="return event.keyCode != 13;" name='software' value="{{software}}">
+
+				<div>
+					<div class="section_title">
+						Modeling software I use:
+					</div>
+					<div class="software_current">
+						{% if user.software %}
+							<div style="margin-left: 15px;">
+								{{user.software}}
+							</div>
+							<br>
+						{% endif %}
+					</div>
+					<div class="software_edit">
+						<form method='post'>
+							<input onkeypress="return event.keyCode != 13;" name='software' value="{{user.software}}">
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value = "update software">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
 						<br>
-						<input type="hidden" name="verify" value="{{user_hash}}">
+						<span class="edit_cancel" id="software_cancel">
+							Cancel
+						</span>
 						<br>
-						<input type='submit' value = "update software">
-					</form>
+						<br>
+					</div>
+					<div class="software_current" id = "edit">
+						edit
+					</div>	
+				</div>
+				<div>
+					<div class="section_title">
+						My Filament Size:
+					</div>
+					<div class="software_current">
+						{{user.filament_size}}
+					</div>
+					<div class="filament_size_edit">
+						<form method='post'>
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<select name="filament_size" style="width:150px; font-size:20px;" >
+								<option value="1.75mm" {% if user.filament_size == "1.75mm" or not user.filament_size %}selected {% endif %}>1.75 mm</option>
+								<option value="3mm" {% if user.filament_size == "3mm" %} selected {% endif %}>3.00 mm</option>   
+								<option value="other" {% if user.filament_size == "other" %} selected {% endif %}>Other</option>   
+							</select>
+							<input type='submit' value = "update filament size">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+					</div>
 					<br>
+				</div>
+				<div>
+					<div class="section_title">
+						Filament brand I use:
+					</div>
+					<div class="filament_brand_current">
+						{% if user.filament_brand %}
+							<div style="margin-left: 15px;">
+								{{user.filament_brand}}
+							</div>
+							<br>
+						{% endif %}
+					</div>
+					<div class="filament_brand_edit">
+						<form method='post'>
+							<input onkeypress="return event.keyCode != 13;" name='filament_brand' value="{{user.filament_brand}}">
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<input type='submit' value = "update filament brand">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+						<br>
+						<span class="edit_cancel" id="filament_brand_cancel">
+							Cancel
+						</span>	
+						<br>
+						<br>
+					</div>	
+					<div class="filament_brand_current" id = "edit">
+						edit
+					</div>
+				</div>
+				<div>
+					<div class="section_title">
+						Print resolution I generally use:
+					</div>
+					<div class="print_quality_edit">
+						<form method='post'>
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<select name="print_quality" style="width:150px; font-size:20px;" >
+								<option value="high" {% if user.print_quality == "high" %}selected {% endif %}>High</option>
+								<option value="medium" {% if user.print_quality == "medium" or not user.print_quality %} selected {% endif %}>Medium</option>   
+								<option value="low" {% if user.print_quality == "low" %} selected {% endif %}>Low</option>   
+							</select>
+							<input type='submit' value = "update print quality">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+					</div>	
 					<br>
-					<span class="software_cancel">
-						Cancel
-					</span>	
-				</div>	
-				<br>				
-				<div class="software_current" id = "edit">
-					edit
-				</div>	
+				</div>
+				<div>
+					<div class="section_title">
+						Print speed I generally use:
+					</div>
+					<div class="print_speed_edit">
+						<form method='post'>
+							<input type="hidden" name="verify" value="{{user_hash}}">
+							<select name="print_speed" style="width:150px; font-size:20px;" >
+								<option value="fast" {% if user.print_speed == "fast" %}selected {% endif %}>Fast</option>
+								<option value="average" {% if user.print_speed == "average" or not user.print_speed %} selected {% endif %}>Average</option>   
+								<option value="slow" {% if user.print_speed == "slow" %} selected {% endif %}>Slow</option>   
+							</select>
+							<input type='submit' value = "update print speed">
+							<div class="update_warning">
+								Updating will reload this page, please update one section at a time.
+							</div>
+						</form>
+					</div>	
+					<br>
+				</div>
+				<br>
+				<br>
 			</div>
 		</div>
 	</div>

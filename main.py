@@ -285,9 +285,17 @@ class Users(db.Model):
 
 	summary			= db.TextProperty(default = "")
 	location		= db.StringProperty(default = "")
+	
+	# Pro User Options
 	printer			= db.StringProperty(default = "")
 	slicer			= db.StringProperty(default = "")
+	hotend			= db.StringProperty(default = "")
+	filament_size	= db.StringProperty(default = "")
+	filament_brand	= db.StringProperty(default = "")
+	print_quality	= db.StringProperty(default = "")
+	print_speed		= db.StringProperty(default = "")
 	software		= db.StringProperty(default = "")
+	##
 
 	no_infinite_scroll = db.BooleanProperty(default= False)
 
@@ -4810,75 +4818,50 @@ class UserNotePage(Handler):
 class UserEdit(Handler):
 	def render_page(self, user_num, error=""):
 		userpage_id = int(user_num)
-		the_user = user_page_cache(userpage_id)
 
-		if not the_user:
+		#check if user is valid
+		userpage = return_thing_by_id(userpage_id, "Users")
+		user = self.return_user_if_cookie()
+		if not user:
+			self.redirect("/login")
+		if not userpage:
 			self.error(404)
+		if user.key().id() != userpage.key().id():
+			self.redirect("/user/edit/%d" % user.key.id())
+
+		user_id = user.key().id()
+
+		user_hash = gen_verify_hash(user)
+		over18 = user.over18
+		the_list = []
+		if over18:
+			# under 18 or no cookie
+			the_list = user_page_obj_com_cache_kids(userpage_id)
 		else:
-			user_hash = hashlib.sha256(the_user.random_string).hexdigest()
-			over18 = self.check_cookie_return_val("over18")
-			the_list = []
-			if over18 != "True":
-				# under 18 or no cookie
-				the_list = user_page_obj_com_cache_kids(userpage_id)
-			else:
-				# over 18
-				the_list = user_page_obj_com_cache(userpage_id)
+			# over 18
+			the_list = user_page_obj_com_cache(userpage_id)
 
-			user_is_user = False
-			user_id = self.check_cookie_return_val("user_id")
-			logged_in = None
-			if user_id:
-				user_id = int(user_id)
-				logged_in = "This guy is logged in"
-			else:
-				pass
-			if the_user.key().id() == user_id:
-				# User is object author
-				user_is_user = True
-			else:
-				pass
-			if user_is_user == False:
-				self.redirect('/user/%d' % userpage_id)
+		email = None
+		emailnote = ""
+		if user.user_email:
+			email = user.user_email
+		elif user.unconfirmed_email:
+			emailnote = "You have not yet confirmed your email address: "
+			email = user.unconfirmed_email
+		else:
+			email = ""
 
-			username_var = the_user.username
-			created_var = the_user.created
-			img = the_user.main_img_link
-			summary = the_user.summary
-			location = the_user.location
-			printer = the_user.printer
-			slicer = the_user.slicer
-			software = the_user.software
-			email = None
-			emailnote = ""
-			if the_user.user_email:
-				email = the_user.user_email
-			elif the_user.unconfirmed_email:
-				emailnote = "You have not yet confirmed your email address: "
-				email = the_user.unconfirmed_email
-			else:
-				email = ""
+		self.render('useredit.html', 
+					user = user,
+					user_id = userpage_id,
+					userpage_id = userpage_id,
 
-			self.render('useredit.html', 
-						user = the_user,
-						error=error,
-						username=username_var, 
-						created=created_var, 
-						the_list = the_list,
-						user_id = user_id,
-						userpage_id = userpage_id,
-						user_is_user = user_is_user,
-						logged_in = logged_in,
-						img = img,
-						email = email,
-						emailnote = emailnote,
-						summary = summary,
-						location = location,
-						printer = printer,
-						slicer = slicer,
-						software = software,
-						user_hash = user_hash,
-						)
+					error = error,
+					the_list = the_list,
+					email = email,
+					emailnote = emailnote,
+					user_hash = user_hash,
+					)
 
 	def get(self, user_num):
 		user_id = int(user_num)
@@ -4901,7 +4884,8 @@ class UserEdit(Handler):
 
 		#hopefully this takes care of it
 		infinite_var = self.request.get('infinite_scroll')
-		infitite_scroll_form_submitted = self.request.get('infinite_verify')
+		infinite_scroll_form_submitted = self.request.get('infinite_verify')
+
 		email_var = self.request.get('email')
 		summary_var = self.request.get('summary')
 		location_var = self.request.get('location')
@@ -4909,24 +4893,18 @@ class UserEdit(Handler):
 		slicer_var = self.request.get('slicer')
 		software_var = self.request.get('software')
 
-		edit_list = [infitite_scroll_form_submitted, email_var, summary_var, location_var, printer_var, slicer_var, software_var]
-		item_count = 0
-		for item in edit_list:
-			if len(item) > 0:
-				item_count += 1
+		filament_size = self.request.get('filament_size')
+		filament_brand = self.request.get('filament_brand')
+		print_quality = self.request.get('print_quality')
+		print_speed = self.request.get('print_speed')
 
+		# variables = [infinite_var, infinite_scroll_form_submitted, email_var, summary_var, location_var, printer_var, slicer_var, software_var, filament_size, filament_brand, print_quality, print_speed]
+		# for var in variables:
+		# 	if var:
+		# 		print ""
+		# 		print var
+		# 		print ""
 
-		if item_count > 1:
-			logging.error(edit_list)
-			logging.error('user edit page: more than one form submitted')
-			self.error(404)
-			return
-		if item_count == 0:
-			logging.error('something fucked up, empty forms submitted')
-			self.redirect('/user/edit/%d' % user_id)
-			return
-		#logging.warning('well we got this far')
-		
 		# Now we know we have one form submission and only one.
 		if (infinite_var and user.no_infinite_scroll) or (not infinite_var and not user.no_infinite_scroll):
 			if infinite_var:
@@ -4940,60 +4918,75 @@ class UserEdit(Handler):
 			memcache.set("Users_%s" % str(user_id), [user])
 			user.put()
 
-		if email_var:
+		elif email_var:
 			if emailcheck.isValidEmailAddress(email_var):
-				user = Users.get_by_id(user_id)
-				logging.warning('db query -- object edit post descripiton')
 				user.unconfirmed_email = email_var
-				user.put()
-				user_page_cache(user_id, update=True, delay = 6)
 				confirmation_email(email_var)
+
+				memcache.set("Users_%d" % user_id, [user])
+				logging.warning('db query -- object edit post descripiton')
+				user.put()
+
 			else:
 				error = '"' + email_var + '" did not appear to be a valid email address.'
 				self.render_page(user_num = user_num, error = error)
 				return
 
-
 		if summary_var:
-			user = Users.get_by_id(user_id)
-			logging.warning('db query -- object edit post descripiton')
 			user.summary = summary_var
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
 			user.put()
-			user_page_cache(user_id, update=True, delay = 6)
 
 		elif location_var:
-			user = Users.get_by_id(user_id)
-			logging.warning('db query -- object edit post descripiton')
 			user.location = location_var
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
 			user.put()
-			user_page_cache(user_id, update=True, delay = 6)
 			
 		elif printer_var:
-			user = Users.get_by_id(user_id)
-			logging.warning('db query -- object edit post descripiton')
 			user.printer = printer_var
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
 			user.put()
-			user_page_cache(user_id, update=True, delay = 6)
 			
 		elif slicer_var:
-			user = Users.get_by_id(user_id)
-			logging.warning('db query -- object edit post descripiton')
 			user.slicer = slicer_var
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
 			user.put()
-			user_page_cache(user_id, update=True, delay = 6)
 			
 		elif software_var:
-			user = Users.get_by_id(user_id)
-			logging.warning('db query -- object edit post descripiton')
 			user.software = software_var
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
 			user.put()
-			user_page_cache(user_id, update=True, delay = 6)
 			
-		else:
-			# something broke
-			logging.warning("ERROR -- in object edit post request")
+		elif filament_size:
+			user.filament_size = filament_size
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
+			user.put()
 
-		self.redirect('/user/%d' % user_id)
+		elif filament_brand:
+			user.filament_brand = filament_brand
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
+			user.put()
+
+		elif print_quality:
+			user.print_quality = print_quality
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
+			user.put()
+
+		elif print_speed:
+			user.print_speed = print_speed
+			memcache.set("Users_%d" % user_id, [user])
+			logging.warning('db query -- object edit post descripiton')
+			user.put()
+
+		self.redirect('/user/edit/%d' % user_id)
 class UserDelPage(Handler):
 	def render_page(self, user_num):
 		user_id = int(user_num)

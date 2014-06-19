@@ -500,6 +500,14 @@ indexes:
 - kind: Objects
   properties:
   - name: deleted
+  - name: obj_type
+  - name: under_review
+  - name: epoch
+    direction: desc
+
+- kind: Objects
+  properties:
+  - name: deleted
   - name: okay_for_kids
   - name: created
     direction: desc
